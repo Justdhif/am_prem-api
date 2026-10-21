@@ -95,11 +95,11 @@ async function runTests() {
       'Clean Architecture (Domain, Application, Infrastructure, Presentation)'
     );
 
-    // Web UI Test: GET /dashboard (Web Generator)
+    // Web UI Test: GET /dashboard (Documentation Only)
     const dashboardRes = await axios.get(`${baseUrl}/dashboard`);
     assert.strictEqual(dashboardRes.status, 200);
     assert(dashboardRes.data.includes('Alight Motion VIP'));
-    assert(dashboardRes.data.includes('Web Generator'));
+    assert(dashboardRes.data.includes('Dokumentasi'));
     assert(dashboardRes.data.includes('by Justdhif'));
 
     // Static Asset Test: GET /logo.jpg

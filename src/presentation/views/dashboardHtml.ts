@@ -50,22 +50,16 @@ export function renderDashboardHtml(): string {
   <header class="sticky top-0 z-30 border-b border-gray-800/80 bg-[#0d121f]/90 backdrop-blur-md">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <img src="${LOGO_DATA_URI}" alt="Alight Motion Logo" class="w-9 h-9 rounded-xl object-cover border border-[#00e599]/40 shadow-sm shadow-[#00e599]/20">
-        <div>
-          <div class="flex items-center gap-1.5 flex-wrap">
-            <span class="font-bold text-base text-white tracking-tight">AM Pro VIP API</span>
-            <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#00e599]/15 text-[#00e599] font-semibold border border-[#00e599]/30">by Justdhif</span>
-          </div>
+        <img src="${LOGO_DATA_URI}" alt="Alight Motion Logo" class="w-10 h-10 rounded-xl object-cover border border-[#00e599]/40 shadow-sm shadow-[#00e599]/20">
+        <div class="flex flex-col items-start justify-center">
+          <span class="font-bold text-base text-white tracking-tight leading-none">AM Pro VIP API</span>
+          <span class="text-[10px] px-2 py-0.5 mt-1 rounded-full bg-[#00e599]/15 text-[#00e599] font-semibold border border-[#00e599]/30 leading-none">by Justdhif</span>
         </div>
       </div>
 
       <div class="flex items-center space-x-2">
-        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-[#00e599] border border-emerald-500/20">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#00e599] mr-1.5 animate-pulse"></span>
-          Online
-        </span>
-        <a href="https://github.com/Justdhif/am_prem-api" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-400 hover:text-white transition text-sm" title="GitHub Repository">
-          <i class="fa-brands fa-github text-lg"></i>
+        <a href="https://github.com/Justdhif/am_prem-api" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-400 hover:text-white transition" title="GitHub Repository">
+          <i class="fa-brands fa-github text-xl"></i>
         </a>
       </div>
     </div>

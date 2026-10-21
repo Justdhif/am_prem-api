@@ -56,7 +56,7 @@ export function createApp(): Application {
       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-bundle.min.js',
       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-standalone-preset.min.js',
     ],
-    customSiteTitle: 'Alight Motion Pro VIP API - Swagger Docs',
+    customSiteTitle: 'Alight Motion Pro VIP API by Justdhif - Swagger Docs',
   };
 
   // Endpoint raw OpenAPI JSON spec
@@ -79,6 +79,7 @@ export function createApp(): Application {
       success: true,
       status: 'ok',
       service: 'alight-motion-premium-api',
+      author: 'Justdhif',
       timestamp: new Date().toISOString(),
     });
   });
@@ -86,8 +87,10 @@ export function createApp(): Application {
   // Root welcome & info endpoint
   app.get('/', (_req: Request, res: Response) => {
     res.status(200).json({
-      name: 'Alight Motion Premium API',
+      name: 'Alight Motion Premium API by Justdhif',
       version: '1.0.0',
+      author: 'Justdhif',
+      repository: 'https://github.com/Justdhif/am_prem-api',
       description: 'TypeScript REST API Service for Alight Motion Pro VIP Activation & Magic Link Verification',
       architecture: 'Clean Architecture (Domain, Application, Infrastructure, Presentation)',
       environment: config.nodeEnv,

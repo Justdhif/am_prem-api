@@ -1,12 +1,13 @@
 export const swaggerSpec = {
   openapi: '3.0.3',
   info: {
-    title: 'Alight Motion Pro VIP API',
+    title: 'Alight Motion Pro VIP API by Justdhif',
     version: '1.0.0',
     description:
-      'Layanan REST API modern berbasis TypeScript untuk integrasi aktivasi lisensi **Alight Motion Pro VIP 1 Tahun** dan verifikasi Firebase Magic Link.',
+      'Layanan REST API modern berbasis TypeScript by **Justdhif** untuk integrasi aktivasi lisensi **Alight Motion Pro VIP 1 Tahun** dan verifikasi Firebase Magic Link.',
     contact: {
-      name: 'API Support',
+      name: 'Justdhif',
+      url: 'https://github.com/Justdhif/am_prem-api',
     },
     license: {
       name: 'ISC',

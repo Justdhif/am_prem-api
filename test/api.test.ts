@@ -89,7 +89,7 @@ async function runTests() {
     const swaggerJsonRes = await axios.get(`${baseUrl}/docs/json`);
     assert.strictEqual(swaggerJsonRes.status, 200);
     assert.strictEqual(swaggerJsonRes.data.openapi, '3.0.3');
-    assert.strictEqual(swaggerJsonRes.data.info.title, 'Alight Motion Pro VIP API');
+    assert(swaggerJsonRes.data.info.title.includes('Justdhif'));
 
     // GET /docs/ (Swagger UI HTML)
     const swaggerUiRes = await axios.get(`${baseUrl}/docs/`);
@@ -99,6 +99,7 @@ async function runTests() {
     // GET /
     const rootRes = await axios.get(`${baseUrl}/`);
     assert.strictEqual(rootRes.status, 200);
+    assert.strictEqual(rootRes.data.author, 'Justdhif');
     assert(rootRes.data.endpoints);
     assert.strictEqual(
       rootRes.data.architecture,

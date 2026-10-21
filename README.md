@@ -1,6 +1,6 @@
-# 🎬 Alight Motion Pro VIP API (TypeScript)
+# 🎬 Alight Motion Pro VIP API by Justdhif
 
-REST API modern berbasis **TypeScript** yang dibangun dengan arsitektur **Clean Architecture (Ports & Adapters)** untuk mengotomatisasi aktivasi lisensi **Alight Motion Pro VIP 1 Tahun**. 
+REST API modern berbasis **TypeScript** yang dibangun dengan arsitektur **Clean Architecture (Ports & Adapters)** oleh **[Justdhif](https://github.com/Justdhif)** untuk mengotomatisasi aktivasi lisensi **Alight Motion Pro VIP 1 Tahun**. 
 
 Project ini mengadopsi dan menyempurnakan seluruh alur logika dari modul Alight Motion pada project bot WhatsApp sebelumnya (`justbot_v2`), kemudian ditransformasikan menjadi layanan API mandiri yang siap digunakan untuk aplikasi web, mobile app, maupun bot chat.
 
@@ -8,9 +8,11 @@ Project ini mengadopsi dan menyempurnakan seluruh alur logika dari modul Alight 
 
 ## 📌 Kondisi & Status Project Saat Ini
 
+- **Developer / Author:** [Justdhif](https://github.com/Justdhif)
 - **Arsitektur:** Clean Architecture 4 Lapis (*Domain, Application, Infrastructure, Presentation*).
 - **Runtime:** Node.js (ESM / NodeNext) dengan TypeScript 5.
 - **Framework Web:** Express.js 4 dengan validasi skema berbasis Zod.
+- **Dokumentasi Interaktif:** Swagger UI OpenAPI 3.0 aktif di semua environment (`/docs`).
 - **Deployability:** Siap dideploy ke **Vercel** (Serverless) maupun server VPS/Docker/PaaS konvensional.
 - **Testing:** Dilengkapi suite pengujian otomatis (`test/api.test.ts`) yang mencakup unit logic, repositories, dan endpoint HTTP Express.
 - **Keamanan Data:** File konfigurasi sensitif (`.env`) dan penyimpanan data lokal (`data/stats.json`) telah diatur pada `.gitignore` agar aman saat di-push ke GitHub.

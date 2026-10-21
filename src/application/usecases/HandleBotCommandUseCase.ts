@@ -1,6 +1,7 @@
 import { SendVerificationLinkUseCase } from './SendVerificationLinkUseCase.js';
 import { VerifyMagicLinkUseCase } from './VerifyMagicLinkUseCase.js';
 import { GetStatsUseCase } from './GetStatsUseCase.js';
+import { FindAlightPresetUseCase } from './FindAlightPresetUseCase.js';
 import { IFirebaseAuthGateway } from '../../domain/gateways/IFirebaseAuthGateway.js';
 import { ISessionRepository } from '../../domain/repositories/ISessionRepository.js';
 import { BotCommandInputDto, BotCommandOutputDto } from '../dto/alightMotion.dto.js';
@@ -11,6 +12,7 @@ export class HandleBotCommandUseCase {
     private readonly sendVerificationLinkUseCase: SendVerificationLinkUseCase,
     private readonly verifyMagicLinkUseCase: VerifyMagicLinkUseCase,
     private readonly getStatsUseCase: GetStatsUseCase,
+    private readonly findAlightPresetUseCase: FindAlightPresetUseCase,
     private readonly firebaseAuthGateway: IFirebaseAuthGateway,
     private readonly sessionRepository: ISessionRepository
   ) {}
@@ -46,7 +48,37 @@ export class HandleBotCommandUseCase {
       };
     }
 
-    // 3. !amprem / !amlink / !ampremium <email>
+    // 3. !ampreset / !findpreset / !preset <tiktok_url>
+    if (command === '!ampreset' || command === '!findpreset' || command === '!preset') {
+      const tiktokUrl = parts.slice(1).join(' ').trim();
+      if (!tiktokUrl) {
+        return {
+          success: false,
+          command: 'ampreset',
+          replyText:
+            '⚠️ *Format Perintah Belum Lengkap*\n\nSilakan sertakan URL video TikTok.\nContoh:\n`!ampreset https://vt.tiktok.com/xxxx/`\n`!ampreset https://www.tiktok.com/@user/video/xxxx`',
+        };
+      }
+
+      try {
+        const result = await this.findAlightPresetUseCase.execute({ url: tiktokUrl });
+        return {
+          success: true,
+          command: 'ampreset',
+          replyText: result.data.formattedText,
+          data: result.data,
+        };
+      } catch (err: any) {
+        return {
+          success: false,
+          command: 'ampreset',
+          replyText: `❌ *Gagal Mencari Preset TikTok*\n\n${err.message || err}`,
+          error: err.message || String(err),
+        };
+      }
+    }
+
+    // 4. !amprem / !amlink / !ampremium <email>
     if (
       command === '!amprem' ||
       command === '!amlink' ||
@@ -97,7 +129,7 @@ export class HandleBotCommandUseCase {
       }
     }
 
-    // 4. !amverify / !amverif <email?> <link>
+    // 5. !amverify / !amverif <email?> <link>
     if (command === '!amverify' || command === '!amverif') {
       let email = '';
       let magicLink = '';

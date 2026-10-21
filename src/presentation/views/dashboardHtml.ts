@@ -244,7 +244,69 @@ export function renderDashboardHtml(): string {
         </div>
       </section>
 
-      <!-- ENDPOINT 3: BOT COMMAND RUNNER -->
+      <!-- ENDPOINT 3: FIND TIKTOK PRESET -->
+      <section class="doc-card p-5 sm:p-6 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-gray-800">
+          <div class="flex items-center space-x-2.5 flex-wrap">
+            <span class="badge-method bg-purple-500/20 text-purple-400 border border-purple-500/30">POST</span>
+            <code class="text-sm font-bold text-white break-all">/api/am/preset/find</code>
+          </div>
+          <span class="text-xs text-gray-400">Pindai Preset TikTok (Caption &amp; Komen)</span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-gray-300">
+          Mencari tautan preset Alight Motion (<code class="text-[#00e599]">alight.link</code>, Google Drive, Mediafire, Sfile) secara otomatis dari caption dan komentar video TikTok.
+        </p>
+
+        <!-- Request Body -->
+        <div class="space-y-2">
+          <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider block">Request Body (JSON)</span>
+          <div class="relative">
+            <pre class="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs text-gray-300 overflow-x-auto border border-gray-800/80"><code>{
+  "url": "https://vt.tiktok.com/ZSxxxxxxx/"
+}</code></pre>
+            <button onclick="copySnippet('find-preset-curl')" class="absolute top-2 right-2 px-2.5 py-1 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition">
+              <i class="fa-regular fa-copy mr-1"></i>Salin cURL
+            </button>
+          </div>
+        </div>
+
+        <textarea id="find-preset-curl" class="hidden">curl -X POST https://your-domain.com/api/am/preset/find \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://vt.tiktok.com/ZSxxxxxxx/"}'</textarea>
+
+        <!-- Response Example -->
+        <div class="space-y-2">
+          <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider block">Response Berhasil (200 OK)</span>
+          <pre class="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs text-[#00e599] overflow-x-auto border border-gray-800/80"><code>{
+  "success": true,
+  "message": "Berhasil menemukan 2 link preset Alight Motion dari video TikTok!",
+  "data": {
+    "totalPresetsFound": 2,
+    "totalCommentsScanned": 50,
+    "presets": [
+      {
+        "url": "https://alight.link/xxxxxx",
+        "type": "alight_link",
+        "source": "comment",
+        "label": "Alight Link (Official)",
+        "author": "creator_name",
+        "isCreator": true
+      },
+      {
+        "url": "https://drive.google.com/file/d/xxxxxx/view",
+        "type": "google_drive",
+        "source": "caption",
+        "label": "Google Drive (XML/Preset)",
+        "author": "creator_name",
+        "isCreator": true
+      }
+    ],
+    "formattedText": "*乂 TIKTOK ALIGHT MOTION PRESET FINDER 乂*\\n..."
+  }
+}</code></pre>
+        </div>
+      </section>
       <section class="doc-card p-5 sm:p-6 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-gray-800">
           <div class="flex items-center space-x-2.5 flex-wrap">
@@ -260,8 +322,9 @@ export function renderDashboardHtml(): string {
 
         <div class="space-y-2">
           <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider block">Contoh Perintah Teks yang Didukung</span>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs">
             <div class="bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!amprem user@gmail.com</div>
+            <div class="bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!ampreset &lt;url_tiktok&gt;</div>
             <div class="bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!amstats</div>
             <div class="bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!amhelp</div>
           </div>

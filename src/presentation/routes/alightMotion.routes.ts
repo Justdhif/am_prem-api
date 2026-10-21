@@ -1,10 +1,12 @@
 import { Router } from 'express';
 import { alightMotionController } from '../controllers/alightMotion.controller.js';
+import { presetController } from '../controllers/preset.controller.js';
 import { validateBody } from '../middlewares/validateRequest.js';
 import {
   sendLinkLimiter,
   verifyLimiter,
   commandLimiter,
+  generalLimiter,
 } from '../middlewares/rateLimiter.js';
 import { apiKeyAuth } from '../middlewares/apiKeyAuth.js';
 import {
@@ -12,6 +14,7 @@ import {
   verifyMagicLinkSchema,
   commandSchema,
 } from '../schemas/alightMotion.schema.js';
+import { findPresetSchema } from '../schemas/preset.schema.js';
 
 const router = Router();
 
@@ -56,6 +59,22 @@ router.post(
   commandLimiter,
   validateBody(commandSchema),
   alightMotionController.handleCommand.bind(alightMotionController)
+);
+
+// Temukan Link Preset Alight Motion dari Video TikTok (Caption & Komentar)
+router.post(
+  '/preset/find',
+  generalLimiter,
+  validateBody(findPresetSchema),
+  presetController.findPresets.bind(presetController)
+);
+
+// Alias untuk preset finder
+router.post(
+  '/find-preset',
+  generalLimiter,
+  validateBody(findPresetSchema),
+  presetController.findPresets.bind(presetController)
 );
 
 // Ambil Statistik Aktivasi

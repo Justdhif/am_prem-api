@@ -166,6 +166,70 @@ async function runTests() {
       assert(err.response?.data?.message.includes('terlalu panjang'));
     }
 
+    // Test 7: TikTok Preset Finder Logic & Endpoint
+    console.log('\nTest 7: TikTok Preset Finder Regex & Extraction Logic');
+    const sampleCaption = 'Preset jedag jedug viral xml drive: https://drive.google.com/file/d/123456/view?usp=sharing';
+    const sampleComment1 = 'Preset 5mb: https://alight.link/aBcDeFgH123 yuk comot';
+    const sampleComment2 = 'xml nya disini ya guys alight.link/xYz987 dan mediafire https://www.mediafire.com/file/sample/preset.xml';
+
+    const pCaption = container.findAlightPresetUseCase.extractPresetsFromText(
+      sampleCaption,
+      'caption',
+      'creator_user',
+      true
+    );
+    assert.strictEqual(pCaption.length, 1);
+    assert.strictEqual(pCaption[0].type, 'google_drive');
+
+    const pComment1 = container.findAlightPresetUseCase.extractPresetsFromText(
+      sampleComment1,
+      'comment',
+      'creator_user',
+      true
+    );
+    assert.strictEqual(pComment1.length, 1);
+    assert.strictEqual(pComment1[0].url, 'https://alight.link/aBcDeFgH123');
+    assert.strictEqual(pComment1[0].type, 'alight_link');
+
+    const pComment2 = container.findAlightPresetUseCase.extractPresetsFromText(
+      sampleComment2,
+      'comment',
+      'other_user',
+      false
+    );
+    assert.strictEqual(pComment2.length, 2);
+    assert.strictEqual(pComment2[0].url, 'https://alight.link/xYz987');
+    assert.strictEqual(pComment2[1].type, 'mediafire');
+
+    // TikTok URL Extraction
+    assert.strictEqual(
+      container.tikTokGateway.extractTikTokUrl('Tonton video ini https://vt.tiktok.com/ZSjR1234/ mantap'),
+      'https://vt.tiktok.com/ZSjR1234/'
+    );
+    assert.strictEqual(
+      container.tikTokGateway.extractTikTokUrl('https://www.tiktok.com/@user/video/7106594312292453675?is_from_webapp=1'),
+      'https://www.tiktok.com/@user/video/7106594312292453675'
+    );
+
+    // POST /api/am/preset/find validation (invalid URL throws 400)
+    try {
+      await axios.post(`${baseUrl}/api/am/preset/find`, { url: 'https://youtube.com/watch?v=123' });
+      assert.fail('Should have failed for non-TikTok URL');
+    } catch (err: any) {
+      assert.strictEqual(err.response?.status, 400);
+      assert(err.response?.data?.message.includes('TikTok'));
+    }
+
+    // POST /api/am/command (!ampreset without url) -> 400
+    try {
+      await axios.post(`${baseUrl}/api/am/command`, { text: '!ampreset' });
+      assert.fail('Should have failed for empty !ampreset');
+    } catch (err: any) {
+      assert.strictEqual(err.response?.status, 400);
+      assert(err.response?.data?.replyText.includes('Belum Lengkap'));
+    }
+    console.log('✅ TikTok Preset Finder passed');
+
     console.log('✅ Express API endpoints & Web Generator passed');
   } finally {
     server.close();

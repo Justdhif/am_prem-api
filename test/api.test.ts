@@ -85,6 +85,17 @@ async function runTests() {
     assert.strictEqual(healthRes.status, 200);
     assert.strictEqual(healthRes.data.status, 'ok');
 
+    // GET /docs/json (Swagger OpenAPI Spec)
+    const swaggerJsonRes = await axios.get(`${baseUrl}/docs/json`);
+    assert.strictEqual(swaggerJsonRes.status, 200);
+    assert.strictEqual(swaggerJsonRes.data.openapi, '3.0.3');
+    assert.strictEqual(swaggerJsonRes.data.info.title, 'Alight Motion Pro VIP API');
+
+    // GET /docs/ (Swagger UI HTML)
+    const swaggerUiRes = await axios.get(`${baseUrl}/docs/`);
+    assert.strictEqual(swaggerUiRes.status, 200);
+    assert(swaggerUiRes.data.includes('swagger'));
+
     // GET /
     const rootRes = await axios.get(`${baseUrl}/`);
     assert.strictEqual(rootRes.status, 200);

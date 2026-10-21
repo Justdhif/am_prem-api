@@ -130,6 +130,11 @@ API ini telah diperkuat dengan berbagai lapisan pengamanan berstandar industri:
 
 ## 📡 Daftar Endpoint API
 
+### 📖 Swagger UI Interactive Documentation
+Dokumentasi interaktif OpenAPI 3.0 aktif di semua environment (**Development & Production** / Vercel):
+- **Swagger UI:** `GET /docs` (alias: `GET /api-docs`)
+- **OpenAPI JSON Spec:** `GET /docs/json` (alias: `GET /api-docs.json`)
+
 Semua endpoint utama berada di bawah prefix `/api/am`.
 
 ### 1. Kirim Magic Link

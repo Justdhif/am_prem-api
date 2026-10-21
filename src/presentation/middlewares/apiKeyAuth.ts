@@ -7,37 +7,44 @@ export interface ApiKeyRequest extends Request {
   isAdmin?: boolean;
 }
 
-export const apiKeyAuth = async (
+/**
+ * Ekstrak API key dari header x-api-key atau Authorization: Bearer
+ */
+function extractProvidedKey(req: Request): string {
+  const headerApiKey = req.headers['x-api-key'];
+  if (typeof headerApiKey === 'string' && headerApiKey.trim()) {
+    return headerApiKey.trim();
+  }
+
+  const authHeader = req.headers['authorization'];
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7).trim();
+    if (token.startsWith('am_live_') || (config.security.apiSecretKey && token === config.security.apiSecretKey)) {
+      return token;
+    }
+  }
+
+  return '';
+}
+
+/**
+ * Middleware WAJIB Access Key:
+ * Menolak request jika Access Key tidak disertakan, tidak valid, atau masa aktif paketnya sudah kadaluarsa.
+ */
+export const requireApiKey = async (
   req: ApiKeyRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const headerApiKey = req.headers['x-api-key'];
-  let providedKey = typeof headerApiKey === 'string' ? headerApiKey.trim() : '';
+  const providedKey = extractProvidedKey(req);
 
   if (!providedKey) {
-    const authHeader = req.headers['authorization'];
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7).trim();
-      if (token.startsWith('am_live_') || (config.security.apiSecretKey && token === config.security.apiSecretKey)) {
-        providedKey = token;
-      }
-    }
-  }
-
-  // Jika tidak menyertakan Access Key
-  if (!providedKey) {
-    // Jika sistem mewajibkan API Key (misal konfigurasi API_SECRET_KEY diaktifkan)
-    if (config.security.apiSecretKey) {
-      res.status(401).json({
-        success: false,
-        message:
-          'Unauthorized: Akses ditolak. Harap sertakan Access Key aktif pada header x-api-key atau Authorization: Bearer <access_key>.',
-      });
-      return;
-    }
-    // Jika tidak diwajibkan secara global, lewati
-    return next();
+    res.status(401).json({
+      success: false,
+      message:
+        'Unauthorized: Akses ditolak. Harap sertakan Access Key aktif pada header x-api-key atau Authorization: Bearer <access_key>. Dapatkan Access Key dengan berlangganan paket di web dashboard.',
+    });
+    return;
   }
 
   // Validasi kunci (apakah master key atau user access key dengan paket aktif)
@@ -46,7 +53,7 @@ export const apiKeyAuth = async (
   if (!validation.valid) {
     res.status(403).json({
       success: false,
-      message: validation.error || 'Forbidden: Access Key tidak valid atau telah kadaluarsa.',
+      message: validation.error || 'Forbidden: Access Key tidak valid atau telah kadaluarsa. Silakan perpanjang paket langganan Anda.',
       expiresAt: validation.expiresAtFormatted || undefined,
     });
     return;
@@ -57,3 +64,30 @@ export const apiKeyAuth = async (
 
   next();
 };
+
+/**
+ * Middleware OPSIONAL Access Key:
+ * Jika disertakan, divalidasi. Jika tidak disertakan, request tetap diperbolehkan (misal untuk statistik atau bantuan).
+ */
+export const optionalApiKey = async (
+  req: ApiKeyRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const providedKey = extractProvidedKey(req);
+
+  if (!providedKey) {
+    return next();
+  }
+
+  const validation = await container.validateApiKeyUseCase.execute(providedKey);
+  if (validation.valid) {
+    req.apiKeyUser = validation.user;
+    req.isAdmin = validation.isAdmin;
+  }
+
+  next();
+};
+
+// Default export untuk backward-compatibility
+export const apiKeyAuth = requireApiKey;

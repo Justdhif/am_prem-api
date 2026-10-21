@@ -6,7 +6,7 @@ import {
   verifyLimiter,
   commandLimiter,
 } from '../middlewares/rateLimiter.js';
-import { apiKeyAuth } from '../middlewares/apiKeyAuth.js';
+import { requireApiKey, optionalApiKey } from '../middlewares/apiKeyAuth.js';
 import {
   sendLinkSchema,
   verifyMagicLinkSchema,
@@ -15,53 +15,55 @@ import {
 
 const router = Router();
 
-// Middleware autentikasi API Key (jika disetel di environment variables)
-router.use(apiKeyAuth);
-
-// Kirim Magic Link ke Email (dilindungi rate limiter & validasi)
+// Kirim Magic Link ke Email (WAJIB ACCESS KEY & RATE LIMITER)
 router.post(
   '/send-link',
+  requireApiKey,
   sendLinkLimiter,
   validateBody(sendLinkSchema),
   alightMotionController.sendLink.bind(alightMotionController)
 );
 
-// Alias untuk send-link
+// Alias untuk send-link (WAJIB ACCESS KEY & RATE LIMITER)
 router.post(
   '/request-link',
+  requireApiKey,
   sendLinkLimiter,
   validateBody(sendLinkSchema),
   alightMotionController.sendLink.bind(alightMotionController)
 );
 
-// Verifikasi Magic Link & Aktivasi Lisensi Pro (dilindungi rate limiter & validasi)
+// Verifikasi Magic Link & Aktivasi Lisensi Pro (WAJIB ACCESS KEY & RATE LIMITER)
 router.post(
   '/verify',
+  requireApiKey,
   verifyLimiter,
   validateBody(verifyMagicLinkSchema),
   alightMotionController.verifyLink.bind(alightMotionController)
 );
 
-// Alias untuk verify
+// Alias untuk verify (WAJIB ACCESS KEY & RATE LIMITER)
 router.post(
   '/verify-link',
+  requireApiKey,
   verifyLimiter,
   validateBody(verifyMagicLinkSchema),
   alightMotionController.verifyLink.bind(alightMotionController)
 );
 
-// Endpoint bot command handler
+// Endpoint bot command handler (WAJIB ACCESS KEY & RATE LIMITER)
 router.post(
   '/command',
+  requireApiKey,
   commandLimiter,
   validateBody(commandSchema),
   alightMotionController.handleCommand.bind(alightMotionController)
 );
 
-// Ambil Statistik Aktivasi
-router.get('/stats', alightMotionController.getStats.bind(alightMotionController));
+// Ambil Statistik Aktivasi (Akses Publik / Key Opsional)
+router.get('/stats', optionalApiKey, alightMotionController.getStats.bind(alightMotionController));
 
-// Panduan Penggunaan API
-router.get('/help', alightMotionController.getHelp.bind(alightMotionController));
+// Panduan Penggunaan API (Akses Publik / Key Opsional)
+router.get('/help', optionalApiKey, alightMotionController.getHelp.bind(alightMotionController));
 
 export default router;

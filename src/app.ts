@@ -2,12 +2,10 @@ import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import swaggerUi from 'swagger-ui-express';
 import routes from './presentation/routes/index.js';
 import { config } from './infrastructure/config/index.js';
 import { generalLimiter } from './presentation/middlewares/rateLimiter.js';
 import { errorHandler, notFoundHandler } from './presentation/middlewares/errorHandler.js';
-import { swaggerSpec } from './presentation/docs/swaggerSpec.js';
 import { renderDashboardHtml } from './presentation/views/dashboardHtml.js';
 
 export function createApp(): Application {
@@ -19,7 +17,7 @@ export function createApp(): Application {
   // Keamanan HTTP Headers dengan Helmet
   app.use(
     helmet({
-      contentSecurityPolicy: false, // Nonaktifkan CSP agar Swagger UI CDN dapat di-render lancar
+      contentSecurityPolicy: false,
       crossOriginEmbedderPolicy: false,
     })
   );
@@ -47,33 +45,6 @@ export function createApp(): Application {
   // Terapkan rate limiter umum untuk semua rute
   app.use(generalLimiter);
 
-  // ---------------------------------------------------------------------------
-  // Swagger UI Documentation (Aktif di SEMUA environment termasuk PRODUCTION)
-  // Menggunakan CDN CSS & JS agar tahan banting di lingkungan serverless seperti Vercel
-  // ---------------------------------------------------------------------------
-  const swaggerUiOptions = {
-    customCssUrl: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui.min.css',
-    customJs: [
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-bundle.min.js',
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-standalone-preset.min.js',
-    ],
-    customSiteTitle: 'Alight Motion Pro VIP API by Justdhif - Swagger Docs',
-  };
-
-  // Endpoint raw OpenAPI JSON spec
-  app.get('/docs/json', (_req: Request, res: Response) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.json(swaggerSpec);
-  });
-  app.get('/api-docs.json', (_req: Request, res: Response) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.json(swaggerSpec);
-  });
-
-  // Swagger UI Routes
-  app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
-
   // Health check endpoint (bebas auth & rate limiter)
   app.get('/health', (_req: Request, res: Response) => {
     res.status(200).json({
@@ -85,7 +56,7 @@ export function createApp(): Application {
     });
   });
 
-  // Web Dashboard Route
+  // Web Dashboard & Generator Route
   app.get('/dashboard', (_req: Request, res: Response) => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(renderDashboardHtml());
@@ -103,29 +74,22 @@ export function createApp(): Application {
     }
 
     res.status(200).json({
-      name: 'Alight Motion Premium API by Justdhif',
+      name: 'Alight Motion Premium Generator & API by Justdhif',
       version: '1.0.0',
       author: 'Justdhif',
       repository: 'https://github.com/Justdhif/am_prem-api',
-      description: 'TypeScript REST API Service for Alight Motion Pro VIP Activation & Magic Link Verification',
+      description: 'Web Generator & TypeScript REST API Service for Alight Motion Pro VIP Activation & Verification',
       architecture: 'Clean Architecture (Domain, Application, Infrastructure, Presentation)',
       environment: config.nodeEnv,
       security: {
         rateLimiting: 'Active',
         payloadLimit: '10kb',
         helmetHeaders: 'Active',
-        apiKeyProtected: Boolean(config.security.apiSecretKey),
+        apiKeyProtected: 'All VIP generation endpoints guarded by active expiring Access Keys',
       },
-      dashboard: '/dashboard',
-      documentation: {
-        swaggerUi: '/docs',
-        swaggerJson: '/docs/json',
-        manualGuide: '/api/am/help',
-      },
+      webApp: '/dashboard',
       endpoints: {
         dashboard: 'GET /dashboard',
-        swaggerDocs: 'GET /docs',
-        swaggerJson: 'GET /docs/json',
         health: 'GET /health',
         auth: {
           register: 'POST /api/auth/register',
@@ -138,9 +102,9 @@ export function createApp(): Application {
           regenerateKey: 'POST /api/billing/regenerate-key',
         },
         alightMotion: {
-          sendLink: 'POST /api/am/send-link',
-          verifyLink: 'POST /api/am/verify',
-          command: 'POST /api/am/command',
+          sendLink: 'POST /api/am/send-link (Requires x-api-key)',
+          verifyLink: 'POST /api/am/verify (Requires x-api-key)',
+          command: 'POST /api/am/command (Requires x-api-key)',
           stats: 'GET /api/am/stats',
           help: 'GET /api/am/help',
         },
@@ -148,13 +112,13 @@ export function createApp(): Application {
     });
   });
 
-  // Mount API routes under /api
+  // Pasang rute API utama
   app.use('/api', routes);
 
-  // Fallback 404 handler
+  // 404 Handler untuk route yang tidak ditemukan
   app.use(notFoundHandler);
 
-  // Global error handler
+  // Centralized Error Handler (dengan sanitasi kredensial)
   app.use(errorHandler);
 
   return app;

@@ -69,8 +69,8 @@ async function runTests() {
   assert(statsDto.formattedText.includes('STATISTIK ALIGHT MOTION PRO'));
   console.log('✅ Stats passed');
 
-  // Test 6: Express App Integration
-  console.log('\nTest 6: Express API endpoints');
+  // Test 6: Express App Integration & Access Key Security Gate
+  console.log('\nTest 6: Express API endpoints & Access Key Gate');
   const app = createApp();
   const testPort = 3999;
   const server: Server = await new Promise((resolve) => {
@@ -85,18 +85,7 @@ async function runTests() {
     assert.strictEqual(healthRes.status, 200);
     assert.strictEqual(healthRes.data.status, 'ok');
 
-    // GET /docs/json (Swagger OpenAPI Spec)
-    const swaggerJsonRes = await axios.get(`${baseUrl}/docs/json`);
-    assert.strictEqual(swaggerJsonRes.status, 200);
-    assert.strictEqual(swaggerJsonRes.data.openapi, '3.0.3');
-    assert(swaggerJsonRes.data.info.title.includes('Justdhif'));
-
-    // GET /docs/ (Swagger UI HTML)
-    const swaggerUiRes = await axios.get(`${baseUrl}/docs/`);
-    assert.strictEqual(swaggerUiRes.status, 200);
-    assert(swaggerUiRes.data.includes('swagger'));
-
-    // GET /
+    // GET / (Welcome JSON)
     const rootRes = await axios.get(`${baseUrl}/`);
     assert.strictEqual(rootRes.status, 200);
     assert.strictEqual(rootRes.data.author, 'Justdhif');
@@ -106,74 +95,68 @@ async function runTests() {
       'Clean Architecture (Domain, Application, Infrastructure, Presentation)'
     );
 
-    // GET /api/am/help
+    // Web UI Test: GET /dashboard (Web Generator)
+    const dashboardRes = await axios.get(`${baseUrl}/dashboard`);
+    assert.strictEqual(dashboardRes.status, 200);
+    assert(dashboardRes.data.includes('Web Generator'));
+    assert(dashboardRes.data.includes('by Justdhif'));
+
+    // GET /api/am/help (Public)
     const helpRes = await axios.get(`${baseUrl}/api/am/help`);
     assert.strictEqual(helpRes.status, 200);
     assert(helpRes.data.formattedText.includes('PANDUAN ALIGHT MOTION PRO'));
 
-    // GET /api/am/stats
+    // GET /api/am/stats (Public)
     const statsRes = await axios.get(`${baseUrl}/api/am/stats`);
     assert.strictEqual(statsRes.status, 200);
     assert(statsRes.data.formattedText.includes('STATISTIK ALIGHT MOTION PRO'));
 
-    // POST /api/am/command (!amhelp)
-    const cmdHelpRes = await axios.post(`${baseUrl}/api/am/command`, {
-      text: '!amhelp',
-    });
-    assert.strictEqual(cmdHelpRes.status, 200);
-    assert.strictEqual(cmdHelpRes.data.command, 'amhelp');
-    assert(cmdHelpRes.data.replyText.includes('PANDUAN'));
-
-    // POST /api/am/command (!amstats)
-    const cmdStatsRes = await axios.post(`${baseUrl}/api/am/command`, {
-      text: '!amstats',
-    });
-    assert.strictEqual(cmdStatsRes.status, 200);
-    assert.strictEqual(cmdStatsRes.data.command, 'amstats');
-    assert(cmdStatsRes.data.replyText.includes('STATISTIK'));
-
-    // POST /api/am/command (!amprem without email) -> 400 with helpful format
+    // ACCESS KEY PROTECTION GATE TESTS:
+    // Calling /send-link without access key -> 401 Unauthorized
     try {
-      await axios.post(`${baseUrl}/api/am/command`, { text: '!amprem' });
-      assert.fail('Should have thrown 400');
+      await axios.post(`${baseUrl}/api/am/send-link`, { email: 'test@gmail.com' });
+      assert.fail('Should have rejected with 401 Unauthorized');
     } catch (err: any) {
-      assert.strictEqual(err.response?.status, 400);
-      assert(err.response?.data?.replyText.includes('Format Belum Lengkap'));
+      assert.strictEqual(err.response?.status, 401);
+      assert(err.response?.data?.message.includes('Akses ditolak'));
     }
 
-    // POST /api/am/verify without email and no session -> 400 with format guide
+    // Calling /verify without access key -> 401 Unauthorized
     try {
-      await axios.post(`${baseUrl}/api/am/verify`, {
-        link: 'https://alightcreative.com/?oobCode=123',
-      });
-      assert.fail('Should have thrown 400');
+      await axios.post(`${baseUrl}/api/am/verify`, { link: 'https://alightcreative.com/?oobCode=123' });
+      assert.fail('Should have rejected with 401 Unauthorized');
     } catch (err: any) {
-      assert.strictEqual(err.response?.status, 400);
-      assert(err.response?.data?.message.includes('belum lengkap'));
+      assert.strictEqual(err.response?.status, 401);
+      assert(err.response?.data?.message.includes('Akses ditolak'));
+    }
+
+    // Calling /command without access key -> 401 Unauthorized
+    try {
+      await axios.post(`${baseUrl}/api/am/command`, { text: '!amhelp' });
+      assert.fail('Should have rejected with 401 Unauthorized');
+    } catch (err: any) {
+      assert.strictEqual(err.response?.status, 401);
+      assert(err.response?.data?.message.includes('Akses ditolak'));
+    }
+
+    // Calling with invalid access key -> 403 Forbidden
+    try {
+      await axios.post(
+        `${baseUrl}/api/am/command`,
+        { text: '!amhelp' },
+        { headers: { 'x-api-key': 'am_live_invalid_key_12345' } }
+      );
+      assert.fail('Should have rejected with 403 Forbidden');
+    } catch (err: any) {
+      assert.strictEqual(err.response?.status, 403);
+      assert(err.response?.data?.message.includes('tidak valid'));
     }
 
     // Security Test: Check server signature masking
     assert.strictEqual(healthRes.headers['x-powered-by'], undefined);
 
-    // Security Test: Input validation rejects oversized email
-    try {
-      await axios.post(`${baseUrl}/api/am/send-link`, {
-        email: 'a'.repeat(150) + '@gmail.com',
-      });
-      assert.fail('Should have thrown 400 for oversized email');
-    } catch (err: any) {
-      assert.strictEqual(err.response?.status, 400);
-      assert(err.response?.data?.message.includes('terlalu panjang'));
-    }
-
-    // Web UI Test: GET /dashboard
-    const dashboardRes = await axios.get(`${baseUrl}/dashboard`);
-    assert.strictEqual(dashboardRes.status, 200);
-    assert(dashboardRes.data.includes('Alight Motion Pro VIP API'));
-    assert(dashboardRes.data.includes('by Justdhif'));
-
     // Auth & Billing SaaS Tests:
-    console.log('\nTest 7: Auth & Billing SaaS features');
+    console.log('\nTest 7: Auth & Billing SaaS with active Access Key');
     // 7.1 Register
     const regRes = await axios.post(`${baseUrl}/api/auth/register`, {
       username: 'testuser_' + Date.now(),
@@ -186,19 +169,32 @@ async function runTests() {
     const userToken = regRes.data.token;
     const initialApiKey = regRes.data.data.apiKey;
 
-    // 7.2 Get Me
+    // 7.2 Calling generator BEFORE subscribing (status 'none') -> 403 Forbidden
+    try {
+      await axios.post(
+        `${baseUrl}/api/am/command`,
+        { text: '!amhelp' },
+        { headers: { 'x-api-key': initialApiKey } }
+      );
+      assert.fail('Should have rejected unsubscribed key with 403 Forbidden');
+    } catch (err: any) {
+      assert.strictEqual(err.response?.status, 403);
+      assert(err.response?.data?.message.includes('belum memiliki paket langganan aktif'));
+    }
+
+    // 7.3 Get Me
     const meRes = await axios.get(`${baseUrl}/api/auth/me`, {
       headers: { Authorization: 'Bearer ' + userToken },
     });
     assert.strictEqual(meRes.status, 200);
     assert.strictEqual(meRes.data.data.status, 'none');
 
-    // 7.3 Get Plans
+    // 7.4 Get Plans
     const plansRes = await axios.get(`${baseUrl}/api/billing/plans`);
     assert.strictEqual(plansRes.status, 200);
     assert.strictEqual(plansRes.data.data.length, 3);
 
-    // 7.4 Subscribe to Monthly Plan
+    // 7.5 Subscribe to Monthly Plan
     const subRes = await axios.post(
       `${baseUrl}/api/billing/subscribe`,
       { plan: 'monthly' },
@@ -209,24 +205,82 @@ async function runTests() {
     assert.strictEqual(subRes.data.data.status, 'active');
     assert(subRes.data.data.daysRemaining > 0);
 
-    // 7.5 Test API Call with User's Personal Access Key
-    const statsWithKeyRes = await axios.get(`${baseUrl}/api/am/stats`, {
-      headers: { 'x-api-key': initialApiKey },
-    });
-    assert.strictEqual(statsWithKeyRes.status, 200);
+    // 7.6 Calling generator with active subscribed Access Key -> SUCCESS!
+    const cmdHelpRes = await axios.post(
+      `${baseUrl}/api/am/command`,
+      { text: '!amhelp' },
+      { headers: { 'x-api-key': initialApiKey } }
+    );
+    assert.strictEqual(cmdHelpRes.status, 200);
+    assert.strictEqual(cmdHelpRes.data.command, 'amhelp');
+    assert(cmdHelpRes.data.replyText.includes('PANDUAN'));
 
-    // 7.6 Regenerate Access Key
+    const cmdStatsRes = await axios.post(
+      `${baseUrl}/api/am/command`,
+      { text: '!amstats' },
+      { headers: { 'x-api-key': initialApiKey } }
+    );
+    assert.strictEqual(cmdStatsRes.status, 200);
+    assert.strictEqual(cmdStatsRes.data.command, 'amstats');
+    assert(cmdStatsRes.data.replyText.includes('STATISTIK'));
+
+    // POST /api/am/command (!amprem without email) -> 400 with helpful format
+    try {
+      await axios.post(
+        `${baseUrl}/api/am/command`,
+        { text: '!amprem' },
+        { headers: { 'x-api-key': initialApiKey } }
+      );
+      assert.fail('Should have thrown 400');
+    } catch (err: any) {
+      assert.strictEqual(err.response?.status, 400);
+      assert(err.response?.data?.replyText.includes('Format Belum Lengkap'));
+    }
+
+    // Input validation rejects oversized email
+    try {
+      await axios.post(
+        `${baseUrl}/api/am/send-link`,
+        { email: 'a'.repeat(150) + '@gmail.com' },
+        { headers: { 'x-api-key': initialApiKey } }
+      );
+      assert.fail('Should have thrown 400 for oversized email');
+    } catch (err: any) {
+      assert.strictEqual(err.response?.status, 400);
+      assert(err.response?.data?.message.includes('terlalu panjang'));
+    }
+
+    // 7.7 Regenerate Access Key
     const regenRes = await axios.post(
       `${baseUrl}/api/billing/regenerate-key`,
       {},
       { headers: { Authorization: 'Bearer ' + userToken } }
     );
     assert.strictEqual(regenRes.status, 200);
-    assert.notStrictEqual(regenRes.data.data.apiKey, initialApiKey);
+    const newApiKey = regenRes.data.data.apiKey;
+    assert.notStrictEqual(newApiKey, initialApiKey);
 
-    console.log('✅ Auth & Billing SaaS tests passed');
+    // Old key is now rejected
+    try {
+      await axios.post(
+        `${baseUrl}/api/am/command`,
+        { text: '!amhelp' },
+        { headers: { 'x-api-key': initialApiKey } }
+      );
+      assert.fail('Old key should have been rejected');
+    } catch (err: any) {
+      assert.strictEqual(err.response?.status, 403);
+    }
 
-    console.log('✅ Express API endpoints passed');
+    // New key works smoothly!
+    const newKeyRes = await axios.post(
+      `${baseUrl}/api/am/command`,
+      { text: '!amhelp' },
+      { headers: { 'x-api-key': newApiKey } }
+    );
+    assert.strictEqual(newKeyRes.status, 200);
+
+    console.log('✅ Auth & Billing SaaS tests with active Access Key passed');
   } finally {
     server.close();
   }

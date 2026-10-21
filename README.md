@@ -151,20 +151,63 @@ Fitur yang tersedia langsung di Web Generator:
 
 ---
 
-### 3. Bot Command Adapter
+### 3. Cari Preset Alight Motion dari TikTok (Caption & Komentar)
+Memindai tautan preset Alight Motion (`alight.link`, Google Drive XML, MediaFire) dari caption dan komentar video TikTok secara otomatis.
+- **Method / Path:** `POST /api/am/preset/find` (alias: `POST /api/am/find-preset`)
+- **Headers:** `Content-Type: application/json`
+- **Request Body:**
+  ```json
+  {
+    "url": "https://vt.tiktok.com/ZSxxxxxxx/"
+  }
+  ```
+- **Response (200 OK):**
+  ```json
+  {
+    "success": true,
+    "message": "Berhasil menemukan 2 link preset Alight Motion dari video TikTok!",
+    "data": {
+      "totalPresetsFound": 2,
+      "totalCommentsScanned": 50,
+      "presets": [
+        {
+          "url": "https://alight.link/xxxxxx",
+          "type": "alight_link",
+          "source": "comment",
+          "label": "Alight Link (Official)",
+          "author": "creator_name",
+          "isCreator": true
+        },
+        {
+          "url": "https://drive.google.com/file/d/xxxxxx/view",
+          "type": "google_drive",
+          "source": "caption",
+          "label": "Google Drive (XML/Preset)",
+          "author": "creator_name",
+          "isCreator": true
+        }
+      ],
+      "formattedText": "*乂 TIKTOK ALIGHT MOTION PRESET FINDER 乂*\n..."
+    }
+  }
+  ```
+
+---
+
+### 4. Bot Command Adapter
 - **Method / Path:** `POST /api/am/command`
 - **Request Body:**
   ```json
   {
-    "text": "!amprem user@gmail.com",
+    "text": "!ampreset https://vt.tiktok.com/ZSxxxxxxx/",
     "senderId": "628123456789@s.whatsapp.net"
   }
   ```
-- **Response:** Mengembalikan respon pesan chat WhatsApp resmi ber-branding Justdhif.
+- **Response:** Mengembalikan respon pesan chat WhatsApp dengan daftar preset yang ditemukan.
 
 ---
 
-### 4. Statistik Aktivasi
+### 5. Statistik Aktivasi
 - **Method / Path:** `GET /api/am/stats`
 - **Response (200 OK):** Menampilkan total aktivasi keseluruhan dan aktivasi hari ini.
 

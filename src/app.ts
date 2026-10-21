@@ -101,6 +101,7 @@ export function createApp(): Application {
           sendLink: 'POST /api/am/send-link',
           verifyLink: 'POST /api/am/verify',
           command: 'POST /api/am/command',
+          findPreset: 'POST /api/am/preset/find',
           stats: 'GET /api/am/stats',
           help: 'GET /api/am/help',
         },

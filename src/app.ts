@@ -62,6 +62,12 @@ export function createApp(): Application {
     res.send(renderDashboardHtml());
   });
 
+  // Sajikan static public assets (misal logo.jpg)
+  app.use(express.static('public'));
+  app.get('/logo.jpg', (_req: Request, res: Response) => {
+    res.sendFile('public/logo.jpg', { root: process.cwd() });
+  });
+
   // Root welcome & info endpoint (HTML untuk browser, JSON untuk API client)
   app.get('/', (req: Request, res: Response) => {
     // Deteksi apakah request berasal dari navigasi browser yang meminta halaman HTML

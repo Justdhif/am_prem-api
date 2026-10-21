@@ -13,10 +13,7 @@ export const config = {
     : path.resolve(process.cwd(), 'data', 'stats.json'),
 
   database: {
-    url:
-      process.env.DATABASE_URL ||
-      process.env.POSTGRES_URL ||
-      'postgresql://neondb_owner:npg_y7TUMAVvtWz3@ep-round-night-b3dxsp8w-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require',
+    url: process.env.DATABASE_URL || process.env.POSTGRES_URL || '',
   },
 
   firebase: {

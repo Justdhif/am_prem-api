@@ -58,7 +58,7 @@ export function renderDashboardHtml(): string {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3.5">
         <!-- Logo Image -->
-        <div class="relative group cursor-pointer">
+        <div class="relative group cursor-pointer" onclick="switchTab('generator')">
           <img src="${LOGO_DATA_URI}" alt="Alight Motion Logo" class="w-10 h-10 rounded-xl object-cover shadow-lg shadow-[#00e599]/20 border border-[#00e599]/40 group-hover:scale-105 transition duration-200">
           <span class="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-[#00e599] border-2 border-[#0d121f] animate-pulse"></span>
         </div>
@@ -76,25 +76,12 @@ export function renderDashboardHtml(): string {
       </div>
 
       <!-- Navigation Tabs -->
-      <div class="hidden md:flex items-center space-x-1 bg-[#141c2e]/90 border border-gray-800 p-1 rounded-xl">
+      <div class="flex items-center space-x-1 bg-[#141c2e]/90 border border-gray-800 p-1 rounded-xl">
         <button onclick="switchTab('generator')" id="nav-generator" class="tab-btn px-4 py-1.5 text-sm font-semibold rounded-lg transition-all text-gray-950 bg-[#00e599] shadow-md shadow-[#00e599]/20">
           <i class="fa-solid fa-wand-magic-sparkles mr-2 text-xs"></i>Web Generator
         </button>
-        <button onclick="switchTab('billing')" id="nav-billing" class="tab-btn px-4 py-1.5 text-sm font-semibold rounded-lg transition-all text-gray-400 hover:text-white">
-          <i class="fa-solid fa-gem mr-2 text-xs"></i>Paket & Billing
-        </button>
-        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="tab-btn px-4 py-1.5 text-sm font-semibold rounded-lg transition-all text-gray-400 hover:text-white">
-          <i class="fa-solid fa-key mr-2 text-xs"></i>Access Key Saya
-        </button>
         <button onclick="switchTab('docs')" id="nav-docs" class="tab-btn px-4 py-1.5 text-sm font-semibold rounded-lg transition-all text-gray-400 hover:text-white">
           <i class="fa-solid fa-code mr-2 text-xs"></i>API Docs
-        </button>
-      </div>
-
-      <!-- User Auth State Button -->
-      <div id="auth-nav-container">
-        <button onclick="openAuthModal('login')" class="px-4 py-2 text-sm font-bold text-gray-950 bg-[#00e599] hover:bg-[#00c784] rounded-xl transition shadow-lg shadow-[#00e599]/25 flex items-center">
-          <i class="fa-solid fa-right-to-bracket mr-2"></i>Masuk / Daftar
         </button>
       </div>
     </div>
@@ -115,14 +102,14 @@ export function renderDashboardHtml(): string {
             Aktivasi Instan <span class="text-[#00e599]">Alight Motion Pro VIP</span> 1 Tahun
           </h1>
           <p class="text-gray-300 text-base sm:text-lg mb-6 leading-relaxed">
-            Platform web generator resmi untuk mengaktifkan lisensi Alight Motion VIP tanpa watermark dan full fitur pro. Terintegrasi dengan sistem <strong>Access Key berdurasi paket</strong> (Mingguan, Bulanan, Tahunan).
+            Platform web generator resmi untuk mengaktifkan lisensi Alight Motion VIP tanpa watermark dan full fitur pro secara gratis dan instan.
           </p>
           <div class="flex flex-wrap gap-3">
             <button onclick="switchTab('generator')" class="px-5 py-2.5 bg-gradient-to-r from-[#00e599] to-[#00b074] hover:from-[#00f2a5] hover:to-[#00c784] text-gray-950 font-bold rounded-xl transition shadow-lg shadow-[#00e599]/30 flex items-center">
-              <i class="fa-solid fa-wand-magic-sparkles mr-2 text-sm"></i>Buka Web Generator
+              <i class="fa-solid fa-wand-magic-sparkles mr-2 text-sm"></i>Mulai Aktivasi Sekarang
             </button>
-            <button onclick="switchTab('billing')" class="px-5 py-2.5 bg-gray-800/80 hover:bg-gray-800 border border-gray-700 text-white font-semibold rounded-xl transition flex items-center">
-              <i class="fa-solid fa-bag-shopping mr-2 text-[#00e599]"></i>Beli Access Key
+            <button onclick="switchTab('docs')" class="px-5 py-2.5 bg-gray-800/80 hover:bg-gray-800 border border-gray-700 text-white font-semibold rounded-xl transition flex items-center">
+              <i class="fa-solid fa-code mr-2 text-[#00e599]"></i>Dokumentasi API
             </button>
           </div>
         </div>
@@ -141,43 +128,8 @@ export function renderDashboardHtml(): string {
       </div>
     </div>
 
-    <!-- TAB 1: WEB GENERATOR (PROTECTED BY ACCESS KEY) -->
+    <!-- TAB 1: WEB GENERATOR -->
     <div id="tab-generator" class="tab-content space-y-8">
-
-      <!-- ACCESS KEY SECURITY GUARD BANNER -->
-      <div class="glass-card rounded-2xl p-5 border border-[#00e599]/30 bg-[#141c2e]/60" id="access-key-guard-card">
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div class="flex items-center space-x-3.5">
-            <div class="w-10 h-10 rounded-xl bg-[#00e599]/15 text-[#00e599] flex items-center justify-center border border-[#00e599]/30 text-lg">
-              <i class="fa-solid fa-shield-halved"></i>
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="text-sm font-bold text-white">Status Access Key Generator:</span>
-                <span id="guard-status-badge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                  Kunci Manual / Belum Login
-                </span>
-              </div>
-              <p class="text-xs text-gray-400 mt-0.5" id="guard-status-desc">
-                Generator ini dilindungi oleh Access Key. Masukkan kunci Anda di bawah atau login untuk menggunakan kunci akun otomatis.
-              </p>
-            </div>
-          </div>
-
-          <!-- Active Key Input / Display -->
-          <div class="flex items-center gap-2 w-full md:w-auto">
-            <div class="relative flex-1 md:w-72">
-              <input type="password" id="input-active-key" placeholder="Masukkan Access Key (am_live_...)" class="w-full bg-[#0d121f] border border-gray-700 focus:border-[#00e599] rounded-xl px-3.5 py-2 text-xs text-[#00e599] font-mono outline-none">
-              <button onclick="toggleGuardKeyVisibility()" class="absolute right-3 top-2.5 text-gray-400 hover:text-white text-xs">
-                <i id="guard-eye-icon" class="fa-regular fa-eye"></i>
-              </button>
-            </div>
-            <button onclick="applyManualKey()" class="px-4 py-2 bg-[#00e599] hover:bg-[#00c784] text-gray-950 rounded-xl text-xs font-bold transition shrink-0 shadow shadow-[#00e599]/20">
-              Pakai Kunci
-            </button>
-          </div>
-        </div>
-      </div>
 
       <!-- Stats Cards Header -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="stats-container">
@@ -382,189 +334,12 @@ export function renderDashboardHtml(): string {
 
     </div>
 
-    <!-- TAB 2: BILLING & PRICING PLANS -->
-    <div id="tab-billing" class="tab-content hidden space-y-8">
-      <div class="text-center max-w-2xl mx-auto mb-10">
-        <h2 class="text-3xl font-extrabold text-white mb-3">Pilihan Paket Langganan Access Key</h2>
-        <p class="text-gray-400 text-sm">
-          Setiap akun mendapatkan <strong>Access Key unik</strong> dengan masa aktif yang disesuaikan dengan durasi paket. Setelah durasi paket berakhir, Access Key akan otomatis expired dan dapat diaktifkan kembali dengan memperpanjang billing.
-        </p>
-      </div>
-
-      <!-- Pricing Cards Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="pricing-plans-grid">
-        <!-- Weekly -->
-        <div class="glass-card rounded-2xl p-6 border border-gray-800 flex flex-col justify-between hover:border-[#00e599]/50 transition">
-          <div>
-            <div class="text-xs uppercase font-bold text-gray-400 mb-1">Starter</div>
-            <h3 class="text-xl font-bold text-white mb-2">Paket Mingguan</h3>
-            <div class="flex items-baseline mb-4">
-              <span class="text-3xl font-extrabold text-white">Rp 15.000</span>
-              <span class="text-xs text-gray-400 ml-1.5">/ 7 Hari</span>
-            </div>
-            <p class="text-xs text-gray-400 mb-6">Cocok untuk kebutuhan aktivasi cepat atau proyek jangka pendek.</p>
-            <ul class="space-y-2.5 text-xs text-gray-300 mb-6">
-              <li class="flex items-center"><i class="fa-solid fa-check text-[#00e599] mr-2"></i>Access Key aktif 7 hari</li>
-              <li class="flex items-center"><i class="fa-solid fa-check text-[#00e599] mr-2"></i>Akses penuh Web Generator</li>
-              <li class="flex items-center"><i class="fa-solid fa-check text-[#00e599] mr-2"></i>Aktivasi Alight Motion VIP 1 Tahun</li>
-              <li class="flex items-center"><i class="fa-solid fa-check text-[#00e599] mr-2"></i>Integrasi Bot WhatsApp</li>
-            </ul>
-          </div>
-          <button onclick="handleSelectPlan('weekly')" class="w-full py-2.5 bg-gray-800 hover:bg-gray-700 text-white text-sm font-semibold rounded-xl border border-gray-700 transition">
-            Pilih Paket Mingguan
-          </button>
-        </div>
-
-        <!-- Monthly (Popular) -->
-        <div class="glass-card rounded-2xl p-6 border-2 border-[#00e599] bg-[#141c2e] relative flex flex-col justify-between shadow-2xl glow-mint">
-          <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#00e599] text-gray-950 font-black text-xs shadow-md">
-            Paling Populer ⭐
-          </div>
-          <div>
-            <div class="text-xs uppercase font-bold text-[#00e599] mb-1">Kreator & Bot Admin</div>
-            <h3 class="text-xl font-bold text-white mb-2">Paket Bulanan</h3>
-            <div class="flex items-baseline mb-4">
-              <span class="text-3xl font-extrabold text-white">Rp 45.000</span>
-              <span class="text-xs text-gray-400 ml-1.5">/ 30 Hari</span>
-            </div>
-            <p class="text-xs text-gray-300 mb-6">Paling populer untuk kreator, admin bot, dan reseller lisensi.</p>
-            <ul class="space-y-2.5 text-xs text-gray-200 mb-6">
-              <li class="flex items-center"><i class="fa-solid fa-check text-[#00e599] mr-2 font-bold"></i>Access Key aktif 30 hari</li>
-              <li class="flex items-center"><i class="fa-solid fa-check text-[#00e599] mr-2 font-bold"></i>Akses penuh Web Generator & API</li>
-              <li class="flex items-center"><i class="fa-solid fa-check text-[#00e599] mr-2 font-bold"></i>Prioritas Fast Gateway</li>
-              <li class="flex items-center"><i class="fa-solid fa-check text-[#00e599] mr-2 font-bold"></i>Aktivasi Alight Motion VIP 1 Tahun</li>
-              <li class="flex items-center"><i class="fa-solid fa-check text-[#00e599] mr-2 font-bold"></i>Hemat 25% dibanding mingguan</li>
-            </ul>
-          </div>
-          <button onclick="handleSelectPlan('monthly')" class="w-full py-2.5 bg-gradient-to-r from-[#00e599] to-[#00b074] hover:from-[#00f2a5] hover:to-[#00c784] text-gray-950 text-sm font-extrabold rounded-xl shadow-lg shadow-[#00e599]/30 transition">
-            Aktifkan Paket Bulanan
-          </button>
-        </div>
-
-        <!-- Yearly (Best Value) -->
-        <div class="glass-card rounded-2xl p-6 border border-gray-800 flex flex-col justify-between hover:border-cyan-500/50 transition">
-          <div>
-            <div class="text-xs uppercase font-bold text-cyan-400 mb-1">Bisnis / Reseller</div>
-            <h3 class="text-xl font-bold text-white mb-2">Paket Tahunan</h3>
-            <div class="flex items-baseline mb-4">
-              <span class="text-3xl font-extrabold text-white">Rp 150.000</span>
-              <span class="text-xs text-gray-400 ml-1.5">/ 365 Hari</span>
-            </div>
-            <p class="text-xs text-gray-400 mb-6">Solusi hemat maksimal untuk bisnis dan layanan bot skala besar.</p>
-            <ul class="space-y-2.5 text-xs text-gray-300 mb-6">
-              <li class="flex items-center"><i class="fa-solid fa-check text-cyan-400 mr-2"></i>Access Key aktif 365 hari (1 Tahun)</li>
-              <li class="flex items-center"><i class="fa-solid fa-check text-cyan-400 mr-2"></i>Bypass Rate Limit (Akses VIP)</li>
-              <li class="flex items-center"><i class="fa-solid fa-check text-cyan-400 mr-2"></i>Akses Penuh Generator & Endpoints</li>
-              <li class="flex items-center"><i class="fa-solid fa-check text-cyan-400 mr-2"></i>Hemat lebih dari 70%</li>
-            </ul>
-          </div>
-          <button onclick="handleSelectPlan('yearly')" class="w-full py-2.5 bg-gray-800 hover:bg-gray-700 text-white text-sm font-semibold rounded-xl border border-gray-700 transition">
-            Pilih Paket Tahunan
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 3: USER DASHBOARD / ACCESS KEY -->
-    <div id="tab-dashboard" class="tab-content hidden space-y-6">
-      <div id="dashboard-not-logged-in" class="text-center py-16 glass-card rounded-2xl border border-gray-800">
-        <div class="w-16 h-16 rounded-2xl bg-[#00e599]/15 text-[#00e599] flex items-center justify-center mx-auto mb-4 text-2xl">
-          <i class="fa-solid fa-lock"></i>
-        </div>
-        <h3 class="text-xl font-bold text-white mb-2">Silakan Masuk Terlebih Dahulu</h3>
-        <p class="text-gray-400 text-sm max-w-md mx-auto mb-6">
-          Masuk ke akun Anda untuk melihat Access Key pribadi, memantau sisa hari masa aktif paket, dan melakukan perpanjangan billing.
-        </p>
-        <button onclick="openAuthModal('login')" class="px-6 py-2.5 bg-[#00e599] hover:bg-[#00c784] text-gray-950 font-bold rounded-xl text-sm transition shadow-lg shadow-[#00e599]/25">
-          Masuk / Registrasi Akun
-        </button>
-      </div>
-
-      <div id="dashboard-logged-in" class="hidden space-y-6">
-        <!-- Account Info Card -->
-        <div class="glass-card rounded-2xl p-6 border border-gray-800">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-gray-800 gap-4">
-            <div class="flex items-center space-x-4">
-              <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#00e599] to-cyan-500 flex items-center justify-center text-xl font-black text-gray-950 shadow-md">
-                <span id="user-avatar-initial">U</span>
-              </div>
-              <div>
-                <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                  <span id="user-display-username">Username</span>
-                  <span id="user-role-badge" class="text-xs px-2 py-0.5 rounded-full bg-gray-800 text-gray-300 border border-gray-700 uppercase">User</span>
-                </h3>
-                <p id="user-display-email" class="text-xs text-gray-400">email@example.com</p>
-              </div>
-            </div>
-
-            <!-- Logout button -->
-            <button onclick="handleLogout()" class="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-xl text-xs font-semibold transition self-start sm:self-auto">
-              <i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i>Keluar
-            </button>
-          </div>
-
-          <!-- Subscription Status -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6">
-            <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800">
-              <span class="text-xs text-gray-400 block mb-1">Status Langganan</span>
-              <div id="user-plan-status" class="text-sm font-bold flex items-center">
-                <span class="w-2 h-2 rounded-full bg-gray-500 mr-2"></span> Belum Berlangganan
-              </div>
-            </div>
-
-            <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800">
-              <span class="text-xs text-gray-400 block mb-1">Paket Saat Ini</span>
-              <div id="user-plan-name" class="text-sm font-bold text-white">None</div>
-            </div>
-
-            <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800">
-              <span class="text-xs text-gray-400 block mb-1">Masa Berlaku Key</span>
-              <div id="user-plan-expires" class="text-sm font-bold text-[#00e599]">-</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Access Key Card -->
-        <div class="glass-card rounded-2xl p-6 border border-gray-800">
-          <div class="flex items-center justify-between mb-2">
-            <h4 class="font-bold text-white text-base flex items-center">
-              <i class="fa-solid fa-key text-[#00e599] mr-2"></i>Personal Access Key Anda
-            </h4>
-            <span class="text-xs text-gray-400">Gunakan di header: <code class="text-[#00e599]">x-api-key</code></span>
-          </div>
-          <p class="text-xs text-gray-400 mb-4">
-            Access Key ini terikat dengan akun Anda dan hanya aktif selama masa langganan masih berlaku.
-          </p>
-
-          <div class="flex flex-col sm:flex-row gap-2 mb-4">
-            <div class="relative flex-1">
-              <input type="password" id="user-access-key" readonly value="am_live_xxxxxxxxxxxxxxxx" class="w-full bg-[#0d121f] border border-gray-700 rounded-xl px-4 py-2.5 text-sm font-mono text-[#00e599] outline-none">
-              <button onclick="toggleKeyVisibility()" class="absolute right-3 top-2.5 text-gray-400 hover:text-white text-sm">
-                <i id="eye-icon" class="fa-regular fa-eye"></i>
-              </button>
-            </div>
-            <button onclick="copyAccessKey()" class="px-5 py-2.5 bg-[#00e599] hover:bg-[#00c784] text-gray-950 font-bold rounded-xl text-sm transition flex items-center justify-center shadow shadow-[#00e599]/20">
-              <i class="fa-regular fa-copy mr-2"></i>Salin Kunci
-            </button>
-            <button onclick="handleRegenerateKey()" class="px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 rounded-xl text-sm font-semibold transition flex items-center justify-center" title="Reset & Buat Kunci Baru">
-              <i class="fa-solid fa-arrows-rotate mr-1.5"></i>Reset Kunci
-            </button>
-          </div>
-
-          <div class="p-3 bg-[#0d121f] border border-[#00e599]/30 rounded-xl text-xs text-[#00e599] flex items-start">
-            <i class="fa-solid fa-circle-info mr-2 mt-0.5 text-[#00e599]"></i>
-            <span>Jika masa aktif paket habis, Access Key otomatis dinonaktifkan (expired) dan API akan menolak request sampai paket diperpanjang.</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 4: API DOCUMENTATION -->
+    <!-- TAB 2: API DOCUMENTATION -->
     <div id="tab-docs" class="tab-content hidden space-y-6">
       <div class="glass-card rounded-2xl p-6 border border-gray-800">
         <h3 class="text-xl font-bold text-white mb-2">Panduan Integrasi REST API Justdhif</h3>
         <p class="text-xs text-gray-400 mb-6">
-          Gunakan Access Key Anda pada header <code class="text-[#00e599]">x-api-key</code> atau <code class="text-[#00e599]">Authorization: Bearer &lt;key&gt;</code> untuk memanggil endpoint berikut dari script, aplikasi, atau bot WhatsApp Anda.
+          Panggil endpoint berikut dari script, aplikasi web/mobile, atau bot WhatsApp Anda.
         </p>
 
         <div class="space-y-4">
@@ -574,10 +349,9 @@ export function renderDashboardHtml(): string {
               <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#00e599]/20 text-[#00e599] border border-[#00e599]/30">POST</span>
               <code class="text-xs font-bold text-[#00e599]">/api/am/send-link</code>
             </div>
-            <p class="text-xs text-gray-400">Mengirim tautan verifikasi masuk Alight Motion ke email.</p>
+            <p class="text-xs text-gray-400">Mengirim tautan verifikasi masuk Alight Motion ke email target.</p>
             <pre class="bg-black/60 p-3 rounded-lg text-xs text-gray-300 overflow-x-auto"><code>curl -X POST https://your-domain.com/api/am/send-link \\
   -H "Content-Type: application/json" \\
-  -H "x-api-key: YOUR_ACCESS_KEY" \\
   -d '{"email": "user@gmail.com"}'</code></pre>
           </div>
 
@@ -590,7 +364,6 @@ export function renderDashboardHtml(): string {
             <p class="text-xs text-gray-400">Memverifikasi magic link dan mengaktifkan keanggotaan Alight Motion Pro VIP 1 Tahun.</p>
             <pre class="bg-black/60 p-3 rounded-lg text-xs text-gray-300 overflow-x-auto"><code>curl -X POST https://your-domain.com/api/am/verify \\
   -H "Content-Type: application/json" \\
-  -H "x-api-key: YOUR_ACCESS_KEY" \\
   -d '{"link": "https://alightcreative.com/?link=...&oobCode=xxxx", "email": "user@gmail.com"}'</code></pre>
           </div>
 
@@ -603,76 +376,22 @@ export function renderDashboardHtml(): string {
             <p class="text-xs text-gray-400">Adapter perintah bot WhatsApp langsung (contoh: <code class="text-[#00e599]">!amprem email@gmail.com</code>).</p>
             <pre class="bg-black/60 p-3 rounded-lg text-xs text-gray-300 overflow-x-auto"><code>curl -X POST https://your-domain.com/api/am/command \\
   -H "Content-Type: application/json" \\
-  -H "x-api-key: YOUR_ACCESS_KEY" \\
   -d '{"text": "!amprem user@gmail.com"}'</code></pre>
+          </div>
+
+          <!-- Endpoint 4 -->
+          <div class="p-4 bg-[#0d121f] rounded-xl border border-gray-800 space-y-2">
+            <div class="flex items-center space-x-2">
+              <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">GET</span>
+              <code class="text-xs font-bold text-cyan-300">/api/am/stats</code>
+            </div>
+            <p class="text-xs text-gray-400">Melihat statistik aktivasi total dan aktivasi harian.</p>
           </div>
         </div>
       </div>
     </div>
 
   </main>
-
-  <!-- AUTH MODAL (LOGIN / REGISTER) -->
-  <div id="auth-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm hidden p-4">
-    <div class="glass-card rounded-3xl p-6 sm:p-8 max-w-md w-full border border-[#00e599]/30 shadow-2xl relative glow-mint bg-[#141c2e]">
-      <button onclick="closeAuthModal()" class="absolute right-5 top-5 text-gray-400 hover:text-white">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-
-      <!-- Modal Brand Header -->
-      <div class="flex items-center space-x-3 mb-6">
-        <img src="${LOGO_DATA_URI}" alt="Logo" class="w-10 h-10 rounded-xl object-cover border border-[#00e599]/40">
-        <div>
-          <h4 class="font-extrabold text-white text-base leading-tight">Alight Motion VIP</h4>
-          <span class="text-xs text-gray-400">Autentikasi Akun &amp; Billing</span>
-        </div>
-      </div>
-
-      <!-- Modal Tabs -->
-      <div class="flex border-b border-gray-800 pb-3 mb-6 space-x-6">
-        <button onclick="setAuthTab('login')" id="modal-tab-login" class="text-sm font-bold text-white border-b-2 border-[#00e599] pb-2">
-          Masuk Akun
-        </button>
-        <button onclick="setAuthTab('register')" id="modal-tab-register" class="text-sm font-bold text-gray-400 hover:text-white pb-2">
-          Daftar Baru
-        </button>
-      </div>
-
-      <!-- Login Form -->
-      <form id="form-login" onsubmit="handleLoginSubmit(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1">Email atau Username</label>
-          <input type="text" id="login-identifier" required placeholder="user@gmail.com" class="w-full bg-[#0d121f] border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-[#00e599]">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1">Kata Sandi</label>
-          <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-[#0d121f] border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-[#00e599]">
-        </div>
-        <button type="submit" id="btn-login-submit" class="w-full py-2.5 bg-[#00e599] hover:bg-[#00c784] text-gray-950 font-bold rounded-xl text-sm transition shadow-lg shadow-[#00e599]/25">
-          Masuk Sekarang
-        </button>
-      </form>
-
-      <!-- Register Form -->
-      <form id="form-register" onsubmit="handleRegisterSubmit(event)" class="space-y-4 hidden">
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1">Username</label>
-          <input type="text" id="reg-username" required placeholder="username_kamu" class="w-full bg-[#0d121f] border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-[#00e599]">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1">Alamat Email</label>
-          <input type="email" id="reg-email" required placeholder="user@gmail.com" class="w-full bg-[#0d121f] border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-[#00e599]">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1">Kata Sandi (Min. 6 Karakter)</label>
-          <input type="password" id="reg-password" minlength="6" required placeholder="••••••••" class="w-full bg-[#0d121f] border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-[#00e599]">
-        </div>
-        <button type="submit" id="btn-reg-submit" class="w-full py-2.5 bg-gradient-to-r from-[#00e599] to-[#00b074] hover:from-[#00f2a5] hover:to-[#00c784] text-gray-950 font-bold rounded-xl text-sm transition shadow-lg shadow-[#00e599]/25">
-          Buat Akun & Dapatkan Access Key
-        </button>
-      </form>
-    </div>
-  </div>
 
   <!-- TOAST NOTIFICATION -->
   <div id="toast" class="fixed bottom-5 right-5 z-50 flex items-center space-x-3 px-4 py-3 rounded-2xl bg-[#141c2e] text-white border border-[#00e599]/30 shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0">
@@ -691,80 +410,6 @@ export function renderDashboardHtml(): string {
 
   <!-- CLIENT-SIDE SCRIPT -->
   <script>
-    let currentUser = null;
-    let token = localStorage.getItem('am_auth_token');
-    let manualApiKey = localStorage.getItem('am_manual_api_key') || '';
-
-    // Dapatkan Access Key aktif yang saat ini digunakan (baik dari akun login atau input manual)
-    function getEffectiveApiKey() {
-      if (currentUser?.apiKey) return currentUser.apiKey;
-      const inputVal = document.getElementById('input-active-key')?.value.trim();
-      if (inputVal) return inputVal;
-      return manualApiKey;
-    }
-
-    function updateGuardBanner() {
-      const badge = document.getElementById('guard-status-badge');
-      const desc = document.getElementById('guard-status-desc');
-      const keyInput = document.getElementById('input-active-key');
-
-      if (currentUser) {
-        if (currentUser.status === 'active') {
-          badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#00e599]/20 text-[#00e599] border border-[#00e599]/30';
-          badge.innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-[10px]"></i> Terhubung (' + currentUser.planName + ' - ' + currentUser.daysRemaining + ' Hari)';
-          desc.innerHTML = 'Generator aktif! Menggunakan Access Key resmi akun <strong>' + currentUser.username + '</strong>.';
-          if (keyInput) keyInput.value = currentUser.apiKey;
-        } else if (currentUser.status === 'expired') {
-          badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-500/20 text-red-300 border border-red-500/30';
-          badge.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1 text-[10px]"></i> Paket Expired';
-          desc.innerHTML = 'Masa aktif paket Anda telah habis. Harap <button onclick="switchTab(\\'billing\\')" class="text-[#00e599] underline font-semibold">perpanjang paket</button> untuk mengaktifkan generator kembali.';
-          if (keyInput) keyInput.value = currentUser.apiKey;
-        } else {
-          badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30';
-          badge.innerHTML = '<i class="fa-solid fa-clock mr-1 text-[10px]"></i> Belum Berlangganan';
-          desc.innerHTML = 'Akun Anda belum memiliki paket aktif. Silakan <button onclick="switchTab(\\'billing\\')" class="text-[#00e599] underline font-semibold">pilih paket</button> untuk mendapatkan akses generator.';
-          if (keyInput) keyInput.value = currentUser.apiKey;
-        }
-      } else {
-        const currentKey = getEffectiveApiKey();
-        if (currentKey) {
-          badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#00e599]/20 text-[#00e599] border border-[#00e599]/30';
-          badge.innerHTML = '<i class="fa-solid fa-key mr-1 text-[10px]"></i> Kunci Mandiri Terpasang';
-          desc.innerHTML = 'Menggunakan Access Key mandiri. Anda juga dapat <button onclick="openAuthModal(\\'login\\')" class="text-[#00e599] underline font-semibold">masuk / daftar akun</button>.';
-          if (keyInput) keyInput.value = currentKey;
-        } else {
-          badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30';
-          badge.innerHTML = '<i class="fa-solid fa-lock mr-1 text-[10px]"></i> Kunci Belum Ada';
-          desc.innerHTML = 'Generator ini dilindungi Access Key. Masukkan kunci Anda atau <button onclick="openAuthModal(\\'login\\')" class="text-[#00e599] underline font-semibold">buat akun baru</button> untuk berlangganan.';
-          if (keyInput) keyInput.value = '';
-        }
-      }
-    }
-
-    function applyManualKey() {
-      const val = document.getElementById('input-active-key').value.trim();
-      if (!val) {
-        showToast('Masukkan Access Key Anda terlebih dahulu!', 'error');
-        return;
-      }
-      manualApiKey = val;
-      localStorage.setItem('am_manual_api_key', val);
-      updateGuardBanner();
-      showToast('Access Key berhasil disimpan untuk generator!');
-    }
-
-    function toggleGuardKeyVisibility() {
-      const input = document.getElementById('input-active-key');
-      const icon = document.getElementById('guard-eye-icon');
-      if (input.type === 'password') {
-        input.type = 'text';
-        icon.className = 'fa-regular fa-eye-slash';
-      } else {
-        input.type = 'password';
-        icon.className = 'fa-regular fa-eye';
-      }
-    }
-
     // Tab Switching
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
@@ -780,11 +425,6 @@ export function renderDashboardHtml(): string {
         targetNav.classList.remove('text-gray-400');
         targetNav.classList.add('bg-[#00e599]', 'text-gray-950', 'shadow-md');
       }
-
-      if (tabId === 'dashboard') {
-        checkUserSession();
-      }
-      updateGuardBanner();
     }
 
     // Toast
@@ -806,242 +446,9 @@ export function renderDashboardHtml(): string {
       }, 3500);
     }
 
-    // Auth Modals
-    function openAuthModal(mode = 'login') {
-      setAuthTab(mode);
-      document.getElementById('auth-modal').classList.remove('hidden');
-    }
-    function closeAuthModal() {
-      document.getElementById('auth-modal').classList.add('hidden');
-    }
-    function setAuthTab(mode) {
-      const tabLog = document.getElementById('modal-tab-login');
-      const tabReg = document.getElementById('modal-tab-register');
-      const formLog = document.getElementById('form-login');
-      const formReg = document.getElementById('form-register');
-
-      if (mode === 'login') {
-        tabLog.className = 'text-sm font-bold text-white border-b-2 border-[#00e599] pb-2';
-        tabReg.className = 'text-sm font-bold text-gray-400 hover:text-white pb-2';
-        formLog.classList.remove('hidden');
-        formReg.classList.add('hidden');
-      } else {
-        tabReg.className = 'text-sm font-bold text-white border-b-2 border-[#00e599] pb-2';
-        tabLog.className = 'text-sm font-bold text-gray-400 hover:text-white pb-2';
-        formReg.classList.remove('hidden');
-        formLog.classList.add('hidden');
-      }
-    }
-
-    // Login Action
-    async function handleLoginSubmit(e) {
-      e.preventDefault();
-      const id = document.getElementById('login-identifier').value.trim();
-      const pw = document.getElementById('login-password').value;
-
-      try {
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ identifier: id, password: pw })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Login gagal');
-
-        localStorage.setItem('am_auth_token', data.token);
-        token = data.token;
-        currentUser = data.data;
-
-        closeAuthModal();
-        showToast('Login berhasil! Selamat datang ' + currentUser.username);
-        updateAuthNav();
-        updateGuardBanner();
-        checkUserSession();
-      } catch (err) {
-        showToast(err.message, 'error');
-      }
-    }
-
-    // Register Action
-    async function handleRegisterSubmit(e) {
-      e.preventDefault();
-      const un = document.getElementById('reg-username').value.trim();
-      const em = document.getElementById('reg-email').value.trim();
-      const pw = document.getElementById('reg-password').value;
-
-      try {
-        const res = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: un, email: em, password: pw })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Registrasi gagal');
-
-        localStorage.setItem('am_auth_token', data.token);
-        token = data.token;
-        currentUser = data.data;
-
-        closeAuthModal();
-        showToast('Akun berhasil dibuat! Silakan pilih paket langganan Anda.');
-        updateAuthNav();
-        updateGuardBanner();
-        switchTab('billing');
-      } catch (err) {
-        showToast(err.message, 'error');
-      }
-    }
-
-    // Session Check
-    async function checkUserSession() {
-      if (!token) {
-        document.getElementById('dashboard-not-logged-in').classList.remove('hidden');
-        document.getElementById('dashboard-logged-in').classList.add('hidden');
-        updateGuardBanner();
-        return;
-      }
-
-      try {
-        const res = await fetch('/api/auth/me', {
-          headers: { 'Authorization': 'Bearer ' + token }
-        });
-        const json = await res.json();
-        if (!res.ok) throw new Error();
-
-        currentUser = json.data;
-        renderUserDashboard(currentUser);
-        updateGuardBanner();
-      } catch {
-        localStorage.removeItem('am_auth_token');
-        token = null;
-        currentUser = null;
-        updateAuthNav();
-        updateGuardBanner();
-        document.getElementById('dashboard-not-logged-in').classList.remove('hidden');
-        document.getElementById('dashboard-logged-in').classList.add('hidden');
-      }
-    }
-
-    function renderUserDashboard(user) {
-      document.getElementById('dashboard-not-logged-in').classList.add('hidden');
-      document.getElementById('dashboard-logged-in').classList.remove('hidden');
-
-      document.getElementById('user-avatar-initial').innerText = user.username.charAt(0).toUpperCase();
-      document.getElementById('user-display-username').innerText = user.username;
-      document.getElementById('user-display-email').innerText = user.email;
-      document.getElementById('user-role-badge').innerText = user.role;
-      document.getElementById('user-access-key').value = user.apiKey;
-      document.getElementById('user-plan-name').innerText = user.planName;
-
-      const statusEl = document.getElementById('user-plan-status');
-      const expiresEl = document.getElementById('user-plan-expires');
-
-      if (user.status === 'active') {
-        statusEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-[#00e599] mr-2"></span> Aktif (' + user.daysRemaining + ' Hari Lagi)';
-        statusEl.className = 'text-sm font-bold text-[#00e599] flex items-center';
-        expiresEl.innerText = new Date(user.planExpiresAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
-      } else if (user.status === 'expired') {
-        statusEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-400 mr-2"></span> Expired (Kadaluarsa)';
-        statusEl.className = 'text-sm font-bold text-red-400 flex items-center';
-        expiresEl.innerText = 'Sudah Habis (Perpanjang)';
-      } else {
-        statusEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-gray-500 mr-2"></span> Belum Berlangganan';
-        statusEl.className = 'text-sm font-bold text-gray-400 flex items-center';
-        expiresEl.innerText = 'Pilih Paket Dulu';
-      }
-    }
-
-    function updateAuthNav() {
-      const container = document.getElementById('auth-nav-container');
-      if (token && currentUser) {
-        container.innerHTML = \`
-          <button onclick="switchTab('dashboard')" class="flex items-center space-x-2 px-3 py-1.5 bg-[#141c2e] hover:bg-gray-800 border border-gray-700 rounded-xl transition">
-            <div class="w-6 h-6 rounded-lg bg-[#00e599] text-gray-950 font-bold flex items-center justify-center text-xs">
-              \${currentUser.username.charAt(0).toUpperCase()}
-            </div>
-            <span class="text-xs font-bold text-gray-200">\${currentUser.username}</span>
-          </button>
-        \`;
-      } else {
-        container.innerHTML = \`
-          <button onclick="openAuthModal('login')" class="px-4 py-2 text-sm font-bold text-gray-950 bg-[#00e599] hover:bg-[#00c784] rounded-xl transition shadow-lg shadow-[#00e599]/25 flex items-center">
-            <i class="fa-solid fa-right-to-bracket mr-2"></i>Masuk / Daftar
-          </button>
-        \`;
-      }
-    }
-
-    function handleLogout() {
-      localStorage.removeItem('am_auth_token');
-      token = null;
-      currentUser = null;
-      updateAuthNav();
-      updateGuardBanner();
-      showToast('Anda telah keluar dari akun.');
-      switchTab('generator');
-    }
-
-    // Billing Subscribe Action
-    async function handleSelectPlan(planId) {
-      if (!token) {
-        showToast('Silakan masuk atau buat akun terlebih dahulu untuk memilih paket!', 'error');
-        openAuthModal('login');
-        return;
-      }
-
-      try {
-        const res = await fetch('/api/billing/subscribe', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + token
-          },
-          body: JSON.stringify({ plan: planId })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Gagal berlangganan');
-
-        currentUser = data.data;
-        showToast(data.message);
-        updateGuardBanner();
-        switchTab('generator');
-      } catch (err) {
-        showToast(err.message, 'error');
-      }
-    }
-
-    // Regenerate Key Action
-    async function handleRegenerateKey() {
-      if (!confirm('Apakah Anda yakin ingin membuat Access Key baru? Access Key lama akan langsung tidak berlaku.')) return;
-
-      try {
-        const res = await fetch('/api/billing/regenerate-key', {
-          method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + token }
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Gagal membuat kunci baru');
-
-        currentUser = data.data;
-        document.getElementById('user-access-key').value = currentUser.apiKey;
-        updateGuardBanner();
-        showToast('Access Key baru berhasil digenerate!');
-      } catch (err) {
-        showToast(err.message, 'error');
-      }
-    }
-
     // GENERATOR: Step 1 (Send Magic Link)
     async function handleSendLink(e) {
       e.preventDefault();
-      const apiKey = getEffectiveApiKey();
-
-      if (!apiKey) {
-        showToast('Akses Ditolak: Anda wajib memasukkan Access Key atau berlangganan paket!', 'error');
-        switchTab('billing');
-        return;
-      }
-
       const email = document.getElementById('input-send-email').value.trim();
       const btn = document.getElementById('btn-send-link');
       const boxContainer = document.getElementById('res-send-link-container');
@@ -1053,17 +460,10 @@ export function renderDashboardHtml(): string {
       try {
         const res = await fetch('/api/am/send-link', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': apiKey
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email })
         });
         const json = await res.json();
-
-        if (res.status === 401 || res.status === 403) {
-          throw new Error(json.message || 'Access Key tidak valid atau sudah kadaluarsa! Silakan perpanjang paket.');
-        }
 
         if (!res.ok) {
           throw new Error(json.message || 'Gagal mengirim magic link.');
@@ -1085,14 +485,6 @@ export function renderDashboardHtml(): string {
     // GENERATOR: Step 2 (Verify & Activate Pro VIP)
     async function handleVerifyLink(e) {
       e.preventDefault();
-      const apiKey = getEffectiveApiKey();
-
-      if (!apiKey) {
-        showToast('Akses Ditolak: Anda wajib memasukkan Access Key atau berlangganan paket!', 'error');
-        switchTab('billing');
-        return;
-      }
-
       const link = document.getElementById('input-verify-link').value.trim();
       const email = document.getElementById('input-verify-email').value.trim();
       const btn = document.getElementById('btn-verify');
@@ -1109,17 +501,10 @@ export function renderDashboardHtml(): string {
       try {
         const res = await fetch('/api/am/verify', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': apiKey
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
         const json = await res.json();
-
-        if (res.status === 401 || res.status === 403) {
-          throw new Error(json.message || 'Access Key tidak valid atau telah kadaluarsa. Silakan perpanjang paket.');
-        }
 
         boxContainer.classList.remove('hidden');
 
@@ -1150,14 +535,6 @@ export function renderDashboardHtml(): string {
 
     // BOT COMMAND RUNNER
     async function handleBotCommand() {
-      const apiKey = getEffectiveApiKey();
-
-      if (!apiKey) {
-        showToast('Akses Ditolak: Anda wajib memasukkan Access Key atau berlangganan paket!', 'error');
-        switchTab('billing');
-        return;
-      }
-
       const text = document.getElementById('input-bot-command').value.trim();
       const preview = document.getElementById('bot-chat-preview');
 
@@ -1166,20 +543,10 @@ export function renderDashboardHtml(): string {
       try {
         const res = await fetch('/api/am/command', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': apiKey
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text, senderId: 'web_user' })
         });
         const json = await res.json();
-
-        if (res.status === 401 || res.status === 403) {
-          preview.innerText = 'Akses Ditolak: ' + (json.message || 'Access Key tidak valid atau expired.');
-          showToast(json.message || 'Access Key tidak valid', 'error');
-          return;
-        }
-
         preview.innerText = json.replyText || json.message || JSON.stringify(json, null, 2);
       } catch (err) {
         preview.innerText = 'Error: ' + err.message;
@@ -1204,24 +571,6 @@ export function renderDashboardHtml(): string {
       }
     }
 
-    function toggleKeyVisibility() {
-      const input = document.getElementById('user-access-key');
-      const icon = document.getElementById('eye-icon');
-      if (input.type === 'password') {
-        input.type = 'text';
-        icon.className = 'fa-regular fa-eye-slash';
-      } else {
-        input.type = 'password';
-        icon.className = 'fa-regular fa-eye';
-      }
-    }
-
-    function copyAccessKey() {
-      const input = document.getElementById('user-access-key');
-      navigator.clipboard.writeText(input.value);
-      showToast('Access Key berhasil disalin ke clipboard!');
-    }
-
     function copyElementText(id) {
       const el = document.getElementById(id);
       navigator.clipboard.writeText(el.innerText);
@@ -1231,15 +580,6 @@ export function renderDashboardHtml(): string {
     // Init
     window.addEventListener('DOMContentLoaded', () => {
       fetchStats();
-      if (manualApiKey) {
-        const keyInput = document.getElementById('input-active-key');
-        if (keyInput) keyInput.value = manualApiKey;
-      }
-      if (token) {
-        checkUserSession();
-      } else {
-        updateGuardBanner();
-      }
     });
   </script>
 </body>

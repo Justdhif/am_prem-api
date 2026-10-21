@@ -11,11 +11,6 @@ export const config = {
     : process.env.VERCEL
     ? path.resolve('/tmp', 'stats.json')
     : path.resolve(process.cwd(), 'data', 'stats.json'),
-  usersFilePath: process.env.USERS_FILE_PATH
-    ? path.resolve(process.cwd(), process.env.USERS_FILE_PATH)
-    : process.env.VERCEL
-    ? path.resolve('/tmp', 'users.json')
-    : path.resolve(process.cwd(), 'data', 'users.json'),
 
   firebase: {
     apiKey: process.env.FIREBASE_API_KEY || 'AIzaSyDtG1AU22ErnQD60AzBAcaknySiz9_CEq0',

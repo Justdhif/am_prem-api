@@ -81,7 +81,14 @@ export class FileStatsRepository implements IStatsRepository {
     }
   }
 
-  public getStats(): StatsData {
+  public syncWithValues(total: number, today: number): void {
+    this.memoryStats.totalPremium = total;
+    this.memoryStats.todayPremium = today;
+    this.memoryStats.lastDate = this.getTodayDateString();
+    this.saveStats(this.memoryStats);
+  }
+
+  public async getStats(): Promise<StatsData> {
     const current = this.loadStats();
     return {
       total: current.totalPremium ?? this.memoryStats.totalPremium ?? 0,
@@ -89,7 +96,7 @@ export class FileStatsRepository implements IStatsRepository {
     };
   }
 
-  public incrementStats(): StatsData {
+  public async incrementStats(): Promise<StatsData> {
     const current = this.loadStats();
     current.totalPremium = (current.totalPremium ?? this.memoryStats.totalPremium ?? 0) + 1;
     current.todayPremium = (current.todayPremium ?? this.memoryStats.todayPremium ?? 0) + 1;

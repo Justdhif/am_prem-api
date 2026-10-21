@@ -51,8 +51,8 @@ export class VerifyMagicLinkUseCase {
 
     // 3. Update stats repository
     const stats = licenseResult.ok
-      ? this.statsRepository.incrementStats()
-      : this.statsRepository.getStats();
+      ? await this.statsRepository.incrementStats()
+      : await this.statsRepository.getStats();
 
     // 4. Hitung masa aktif 1 tahun ke depan
     const now = new Date();

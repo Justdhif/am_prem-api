@@ -101,7 +101,7 @@ export class AlightMotionController {
   }
 
   public async getStats(_req: Request, res: Response): Promise<void> {
-    const stats = container.getStatsUseCase.execute();
+    const stats = await container.getStatsUseCase.execute();
     res.status(200).json({
       success: true,
       message: 'Statistik Alight Motion Pro',

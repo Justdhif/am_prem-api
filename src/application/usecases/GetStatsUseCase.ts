@@ -5,8 +5,8 @@ import { MessagePresenter } from '../../presentation/presenters/messagePresenter
 export class GetStatsUseCase {
   constructor(private readonly statsRepository: IStatsRepository) {}
 
-  public execute(): GetStatsOutputDto {
-    const stats = this.statsRepository.getStats();
+  public async execute(): Promise<GetStatsOutputDto> {
+    const stats = await this.statsRepository.getStats();
     const formattedText = MessagePresenter.formatStatsText(stats);
 
     return {

@@ -1,7 +1,7 @@
 import { FirebaseAuthGateway } from './external/firebaseAuthGateway.js';
 import { AlightGateway } from './external/alightGateway.js';
 import { TikTokGateway } from './external/tikTokGateway.js';
-import { FileStatsRepository } from './repositories/FileStatsRepository.js';
+import { PostgresStatsRepository } from './repositories/PostgresStatsRepository.js';
 import { InMemorySessionRepository } from './repositories/InMemorySessionRepository.js';
 
 import { SendVerificationLinkUseCase } from '../application/usecases/SendVerificationLinkUseCase.js';
@@ -16,8 +16,8 @@ export class Container {
   public readonly alightGateway = new AlightGateway();
   public readonly tikTokGateway = new TikTokGateway();
 
-  // Repositories
-  public readonly statsRepository = new FileStatsRepository();
+  // Repositories (PostgreSQL dengan fallback lokal)
+  public readonly statsRepository = new PostgresStatsRepository();
   public readonly sessionRepository = new InMemorySessionRepository();
 
   // Alight Motion Use Cases

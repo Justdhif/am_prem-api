@@ -63,7 +63,7 @@ async function runTests() {
 
   // Test 5: FileStatsRepository & GetStatsUseCase
   console.log('\nTest 5: FileStatsRepository & GetStatsUseCase');
-  const statsDto = container.getStatsUseCase.execute();
+  const statsDto = await container.getStatsUseCase.execute();
   assert(typeof statsDto.totalPremium === 'number');
   assert(typeof statsDto.todayPremium === 'number');
   assert(statsDto.formattedText.includes('STATISTIK ALIGHT MOTION PRO'));

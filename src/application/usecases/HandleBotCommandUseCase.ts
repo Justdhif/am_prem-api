@@ -35,7 +35,7 @@ export class HandleBotCommandUseCase {
 
     // 2. !amstats
     if (command === '!amstats') {
-      const stats = this.getStatsUseCase.execute();
+      const stats = await this.getStatsUseCase.execute();
       return {
         success: true,
         command: 'amstats',

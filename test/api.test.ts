@@ -166,6 +166,66 @@ async function runTests() {
       assert(err.response?.data?.message.includes('terlalu panjang'));
     }
 
+    // Web UI Test: GET /dashboard
+    const dashboardRes = await axios.get(`${baseUrl}/dashboard`);
+    assert.strictEqual(dashboardRes.status, 200);
+    assert(dashboardRes.data.includes('Alight Motion Pro VIP API'));
+    assert(dashboardRes.data.includes('by Justdhif'));
+
+    // Auth & Billing SaaS Tests:
+    console.log('\nTest 7: Auth & Billing SaaS features');
+    // 7.1 Register
+    const regRes = await axios.post(`${baseUrl}/api/auth/register`, {
+      username: 'testuser_' + Date.now(),
+      email: 'user_' + Date.now() + '@example.com',
+      password: 'securepassword123',
+    });
+    assert.strictEqual(regRes.status, 201);
+    assert(regRes.data.token);
+    assert(regRes.data.data.apiKey);
+    const userToken = regRes.data.token;
+    const initialApiKey = regRes.data.data.apiKey;
+
+    // 7.2 Get Me
+    const meRes = await axios.get(`${baseUrl}/api/auth/me`, {
+      headers: { Authorization: 'Bearer ' + userToken },
+    });
+    assert.strictEqual(meRes.status, 200);
+    assert.strictEqual(meRes.data.data.status, 'none');
+
+    // 7.3 Get Plans
+    const plansRes = await axios.get(`${baseUrl}/api/billing/plans`);
+    assert.strictEqual(plansRes.status, 200);
+    assert.strictEqual(plansRes.data.data.length, 3);
+
+    // 7.4 Subscribe to Monthly Plan
+    const subRes = await axios.post(
+      `${baseUrl}/api/billing/subscribe`,
+      { plan: 'monthly' },
+      { headers: { Authorization: 'Bearer ' + userToken } }
+    );
+    assert.strictEqual(subRes.status, 200);
+    assert.strictEqual(subRes.data.data.plan, 'monthly');
+    assert.strictEqual(subRes.data.data.status, 'active');
+    assert(subRes.data.data.daysRemaining > 0);
+
+    // 7.5 Test API Call with User's Personal Access Key
+    const statsWithKeyRes = await axios.get(`${baseUrl}/api/am/stats`, {
+      headers: { 'x-api-key': initialApiKey },
+    });
+    assert.strictEqual(statsWithKeyRes.status, 200);
+
+    // 7.6 Regenerate Access Key
+    const regenRes = await axios.post(
+      `${baseUrl}/api/billing/regenerate-key`,
+      {},
+      { headers: { Authorization: 'Bearer ' + userToken } }
+    );
+    assert.strictEqual(regenRes.status, 200);
+    assert.notStrictEqual(regenRes.data.data.apiKey, initialApiKey);
+
+    console.log('✅ Auth & Billing SaaS tests passed');
+
     console.log('✅ Express API endpoints passed');
   } finally {
     server.close();

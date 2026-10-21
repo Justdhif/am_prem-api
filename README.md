@@ -12,6 +12,8 @@ Project ini mengadopsi dan menyempurnakan seluruh alur logika dari modul Alight 
 - **Arsitektur:** Clean Architecture 4 Lapis (*Domain, Application, Infrastructure, Presentation*).
 - **Runtime:** Node.js (ESM / NodeNext) dengan TypeScript 5.
 - **Framework Web:** Express.js 4 dengan validasi skema berbasis Zod.
+- **Web UI & Playground:** Dashboard modern interaktif (`/` atau `/dashboard`) untuk mencoba API secara live, visualisasi data, dan manajemen billing.
+- **SaaS Billing & Access Key:** Sistem akun (Register/Login via JSON storage) dengan pilihan paket Mingguan, Bulanan, dan Tahunan untuk mengaktifkan Access Key pribadi.
 - **Dokumentasi Interaktif:** Swagger UI OpenAPI 3.0 aktif di semua environment (`/docs`).
 - **Deployability:** Siap dideploy ke **Vercel** (Serverless) maupun server VPS/Docker/PaaS konvensional.
 - **Testing:** Dilengkapi suite pengujian otomatis (`test/api.test.ts`) yang mencakup unit logic, repositories, dan endpoint HTTP Express.
@@ -127,6 +129,17 @@ API ini telah diperkuat dengan berbagai lapisan pengamanan berstandar industri:
    - Middleware `errorHandler` secara otomatis menyamarkan (*redact*) API key, token rahasia, maupun URL internal agar tidak bocor ke client saat terjadi error.
 6. **Konfigurasi CORS Fleksibel:**
    - Whitelist domain dapat diatur via variabel `CORS_ORIGIN` di `.env`.
+
+---
+
+## 💻 Web Dashboard & Playground
+
+API ini dilengkapi tampilan Web Dashboard interaktif yang dapat diakses langsung melalui browser di `/` atau `/dashboard`:
+
+1. **Live Playground:** Menguji pengiriman link (`/send-link`), verifikasi (`/verify`), simulasi chat WhatsApp (`/command`), dan melihat statistik live tanpa Postman.
+2. **SaaS Billing & Paket:** Memilih paket langganan (Mingguan, Bulanan, Tahunan) untuk mengaktifkan Access Key.
+3. **User Dashboard:** Memantau status langganan, sisa hari aktif, menyalin Personal Access Key (`am_live_...`), dan mereset kunci.
+4. **JSON-based Storage:** Akun dan langganan disimpan rapi di `data/users.json` (atau `/tmp/users.json` di Vercel) tanpa perlu konfigurasi database eksternal.
 
 ---
 

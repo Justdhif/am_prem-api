@@ -1,56 +1,59 @@
 import { Request, Response, NextFunction } from 'express';
-import crypto from 'crypto';
+import { container } from '../../infrastructure/container.js';
 import { config } from '../../infrastructure/config/index.js';
 
-export const apiKeyAuth = (req: Request, res: Response, next: NextFunction): void => {
-  const configuredKey = config.security.apiSecretKey;
+export interface ApiKeyRequest extends Request {
+  apiKeyUser?: any;
+  isAdmin?: boolean;
+}
 
-  // Jika API_SECRET_KEY tidak disetel di .env, lewati proteksi (mode publik)
-  if (!configuredKey) {
-    return next();
-  }
-
-  // Ambil API key dari header x-api-key atau Authorization: Bearer <key>
+export const apiKeyAuth = async (
+  req: ApiKeyRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   const headerApiKey = req.headers['x-api-key'];
   let providedKey = typeof headerApiKey === 'string' ? headerApiKey.trim() : '';
 
   if (!providedKey) {
     const authHeader = req.headers['authorization'];
     if (authHeader && authHeader.startsWith('Bearer ')) {
-      providedKey = authHeader.substring(7).trim();
+      const token = authHeader.substring(7).trim();
+      if (token.startsWith('am_live_') || (config.security.apiSecretKey && token === config.security.apiSecretKey)) {
+        providedKey = token;
+      }
     }
   }
 
+  // Jika tidak menyertakan Access Key
   if (!providedKey) {
-    res.status(401).json({
-      success: false,
-      message: 'Unauthorized: Akses ditolak. Harap sertakan API Key pada header x-api-key atau Authorization.',
-    });
-    return;
-  }
-
-  // Gunakan timingSafeEqual untuk mencegah timing attack
-  try {
-    const providedBuffer = Buffer.from(providedKey);
-    const configuredBuffer = Buffer.from(configuredKey);
-
-    if (
-      providedBuffer.length !== configuredBuffer.length ||
-      !crypto.timingSafeEqual(providedBuffer, configuredBuffer)
-    ) {
-      res.status(403).json({
+    // Jika sistem mewajibkan API Key (misal konfigurasi API_SECRET_KEY diaktifkan)
+    if (config.security.apiSecretKey) {
+      res.status(401).json({
         success: false,
-        message: 'Forbidden: API Key yang Anda gunakan tidak valid.',
+        message:
+          'Unauthorized: Akses ditolak. Harap sertakan Access Key aktif pada header x-api-key atau Authorization: Bearer <access_key>.',
       });
       return;
     }
-  } catch {
+    // Jika tidak diwajibkan secara global, lewati
+    return next();
+  }
+
+  // Validasi kunci (apakah master key atau user access key dengan paket aktif)
+  const validation = await container.validateApiKeyUseCase.execute(providedKey);
+
+  if (!validation.valid) {
     res.status(403).json({
       success: false,
-      message: 'Forbidden: Verifikasi API Key gagal.',
+      message: validation.error || 'Forbidden: Access Key tidak valid atau telah kadaluarsa.',
+      expiresAt: validation.expiresAtFormatted || undefined,
     });
     return;
   }
+
+  req.apiKeyUser = validation.user;
+  req.isAdmin = validation.isAdmin;
 
   next();
 };

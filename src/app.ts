@@ -8,6 +8,7 @@ import { config } from './infrastructure/config/index.js';
 import { generalLimiter } from './presentation/middlewares/rateLimiter.js';
 import { errorHandler, notFoundHandler } from './presentation/middlewares/errorHandler.js';
 import { swaggerSpec } from './presentation/docs/swaggerSpec.js';
+import { renderDashboardHtml } from './presentation/views/dashboardHtml.js';
 
 export function createApp(): Application {
   const app: Application = express();
@@ -84,8 +85,23 @@ export function createApp(): Application {
     });
   });
 
-  // Root welcome & info endpoint
-  app.get('/', (_req: Request, res: Response) => {
+  // Web Dashboard Route
+  app.get('/dashboard', (_req: Request, res: Response) => {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.send(renderDashboardHtml());
+  });
+
+  // Root welcome & info endpoint (HTML untuk browser, JSON untuk API client)
+  app.get('/', (req: Request, res: Response) => {
+    // Deteksi apakah request berasal dari navigasi browser yang meminta halaman HTML
+    const isBrowserHtmlRequest = req.headers['accept']?.includes('text/html');
+
+    if (isBrowserHtmlRequest && !req.xhr) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.send(renderDashboardHtml());
+      return;
+    }
+
     res.status(200).json({
       name: 'Alight Motion Premium API by Justdhif',
       version: '1.0.0',
@@ -100,20 +116,34 @@ export function createApp(): Application {
         helmetHeaders: 'Active',
         apiKeyProtected: Boolean(config.security.apiSecretKey),
       },
+      dashboard: '/dashboard',
       documentation: {
         swaggerUi: '/docs',
         swaggerJson: '/docs/json',
         manualGuide: '/api/am/help',
       },
       endpoints: {
+        dashboard: 'GET /dashboard',
         swaggerDocs: 'GET /docs',
         swaggerJson: 'GET /docs/json',
         health: 'GET /health',
-        sendLink: 'POST /api/am/send-link',
-        verifyLink: 'POST /api/am/verify',
-        command: 'POST /api/am/command',
-        stats: 'GET /api/am/stats',
-        help: 'GET /api/am/help',
+        auth: {
+          register: 'POST /api/auth/register',
+          login: 'POST /api/auth/login',
+          me: 'GET /api/auth/me',
+        },
+        billing: {
+          plans: 'GET /api/billing/plans',
+          subscribe: 'POST /api/billing/subscribe',
+          regenerateKey: 'POST /api/billing/regenerate-key',
+        },
+        alightMotion: {
+          sendLink: 'POST /api/am/send-link',
+          verifyLink: 'POST /api/am/verify',
+          command: 'POST /api/am/command',
+          stats: 'GET /api/am/stats',
+          help: 'GET /api/am/help',
+        },
       },
     });
   });

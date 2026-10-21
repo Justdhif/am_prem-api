@@ -61,6 +61,9 @@ export const swaggerSpec = {
               schema: {
                 $ref: '#/components/schemas/SendLinkRequest',
               },
+              example: {
+                email: 'user@gmail.com',
+              },
             },
           },
         },
@@ -104,6 +107,9 @@ export const swaggerSpec = {
               schema: {
                 $ref: '#/components/schemas/VerifyRequest',
               },
+              example: {
+                link: 'https://alightcreative.com/?link=...&oobCode=xxxx',
+              },
             },
           },
         },
@@ -146,6 +152,9 @@ export const swaggerSpec = {
             'application/json': {
               schema: {
                 $ref: '#/components/schemas/CommandRequest',
+              },
+              example: {
+                text: '!amprem user@gmail.com',
               },
             },
           },
@@ -226,22 +235,23 @@ export const swaggerSpec = {
       SendLinkRequest: {
         type: 'object',
         required: ['email'],
+        example: {
+          email: 'user@gmail.com',
+        },
         properties: {
           email: {
             type: 'string',
             format: 'email',
             example: 'user@gmail.com',
-            description: 'Alamat email target yang akan menerima magic link',
+            description: 'Alamat email target yang akan menerima magic link (Wajib)',
           },
           sessionId: {
             type: 'string',
-            example: 'sess_123456',
-            description: 'ID sesi opsional untuk mengikat alur verifikasi',
+            description: 'Opsional: ID sesi kustom jika ingin melacak sesi sendiri',
           },
           senderId: {
             type: 'string',
-            example: '628123456789@s.whatsapp.net',
-            description: 'ID pengirim/bot opsional',
+            description: 'Opsional: ID pengguna bot / pengirim pesan',
           },
         },
       },
@@ -268,22 +278,23 @@ export const swaggerSpec = {
       VerifyRequest: {
         type: 'object',
         required: ['link'],
+        example: {
+          link: 'https://alightcreative.com/?link=...&oobCode=xxxx',
+        },
         properties: {
           link: {
             type: 'string',
             example: 'https://alightcreative.com/?link=...&oobCode=xxxx',
-            description: 'Tautan dari tombol "Sign in to Alight Motion" di email',
+            description: 'Tautan dari tombol "Sign in to Alight Motion" di email (Wajib)',
           },
           email: {
             type: 'string',
             format: 'email',
-            example: 'user@gmail.com',
-            description: 'Email (opsional jika sudah session-tracked dari send-link)',
+            description: 'Opsional: Email target jika ingin ditulis eksplisit',
           },
           sessionId: {
             type: 'string',
-            example: 'am_sess_xxxxxx',
-            description: 'ID sesi dari response send-link',
+            description: 'Opsional: ID sesi dari response send-link',
           },
         },
       },

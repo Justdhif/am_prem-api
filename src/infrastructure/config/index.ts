@@ -35,4 +35,13 @@ export const config = {
     dalvikUserAgent: 'dalvik/2.1.0 (linux; u; android 15; 23127pn0cc build/bp1a.250505.005)',
     okhttpUserAgent: 'okhttp/3.12.1',
   },
+
+  security: {
+    apiSecretKey: process.env.API_SECRET_KEY || '',
+    corsOrigin: process.env.CORS_ORIGIN || '*',
+    rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10), // 15 menit
+    rateLimitMax: parseInt(process.env.RATE_LIMIT_MAX || '100', 10), // 100 requests per 15 menit
+    sendLinkLimitMax: parseInt(process.env.SEND_LINK_LIMIT_MAX || '5', 10), // 5 requests per window
+    verifyLimitMax: parseInt(process.env.VERIFY_LIMIT_MAX || '10', 10), // 10 requests per window
+  },
 };

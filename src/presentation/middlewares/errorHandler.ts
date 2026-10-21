@@ -1,4 +1,25 @@
 import { Request, Response, NextFunction } from 'express';
+import { config } from '../../infrastructure/config/index.js';
+
+/**
+ * Membersihkan pesan error dari kemungkinan bocornya API key atau endpoint internal
+ */
+const sanitizeErrorMessage = (msg: string): string => {
+  if (!msg || typeof msg !== 'string') return 'Internal Server Error';
+
+  let sanitized = msg;
+  if (config.firebase.apiKey) {
+    sanitized = sanitized.split(config.firebase.apiKey).join('[REDACTED_API_KEY]');
+  }
+  if (config.alightMotion.purchaseToken) {
+    sanitized = sanitized.split(config.alightMotion.purchaseToken).join('[REDACTED_TOKEN]');
+  }
+  if (config.firebase.instanceIdToken) {
+    sanitized = sanitized.split(config.firebase.instanceIdToken).join('[REDACTED_TOKEN]');
+  }
+
+  return sanitized;
+};
 
 export const errorHandler = (
   err: any,
@@ -6,15 +27,17 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction
 ): void => {
+  // Log error di console server untuk debugging
   console.error('[Unhandled Error]', err);
 
   const statusCode = err.statusCode || err.status || 500;
-  const message = err.message || 'Internal Server Error';
+  const rawMessage = err.message || 'Internal Server Error';
+  const safeMessage = sanitizeErrorMessage(rawMessage);
 
   res.status(statusCode).json({
     success: false,
-    message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    message: safeMessage,
+    ...(config.nodeEnv === 'development' && { stack: err.stack }),
   });
 };
 

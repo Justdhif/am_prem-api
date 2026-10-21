@@ -101,6 +101,33 @@ Setiap request ke Google Identity Toolkit dan Cloud Function Alight Creative men
 
 ---
 
+## 🛡️ Fitur Keamanan (Security Hardening)
+
+API ini telah diperkuat dengan berbagai lapisan pengamanan berstandar industri:
+
+1. **Multi-tier Rate Limiting (`express-rate-limit`):**
+   - **General Limiter:** Maksimal 100 request / 15 menit per IP untuk melindungi seluruh API dari flooding.
+   - **Send-Link Limiter:** Maksimal 5 request / 5 menit per IP untuk mencegah spam pengiriman email dan kehabisan kuota Firebase.
+   - **Verify Limiter:** Maksimal 10 request / 5 menit per IP untuk mencegah serangan brute-force terhadap token *oobCode*.
+   - **Bot Command Limiter:** Maksimal 15 request / 1 menit per IP.
+2. **Proteksi API Key (Opsional):**
+   - Mendukung autentikasi via `x-api-key` atau `Authorization: Bearer <key>`.
+   - Cukup set `API_SECRET_KEY=kunci_rahasia_anda` di `.env` jika ingin API hanya dapat diakses oleh aplikasi Anda.
+   - Menggunakan perbandingan `crypto.timingSafeEqual` untuk mencegah *timing attacks*.
+   - Jika `API_SECRET_KEY` dikosongkan, API beroperasi secara publik.
+3. **Pembatasan Ukuran Request Body (Anti-DoS):**
+   - Body parser dibatasi maksimum `10kb` (`express.json({ limit: '10kb' })`), mencegah serangan Denial of Service melalui payload JSON raksasa.
+4. **Validasi & Sanitasi Input Ketat (Zod):**
+   - Membatasi panjang string (email max 100 chars, link max 2048 chars, text max 500 chars).
+   - Menolak null bytes (`\0`) dan karakter kontrol berbahaya.
+5. **Penyembunyian Server Signature & Error Masking:**
+   - Header `X-Powered-By: Express` dinonaktifkan.
+   - Middleware `errorHandler` secara otomatis menyamarkan (*redact*) API key, token rahasia, maupun URL internal agar tidak bocor ke client saat terjadi error.
+6. **Konfigurasi CORS Fleksibel:**
+   - Whitelist domain dapat diatur via variabel `CORS_ORIGIN` di `.env`.
+
+---
+
 ## 📡 Daftar Endpoint API
 
 Semua endpoint utama berada di bawah prefix `/api/am`.

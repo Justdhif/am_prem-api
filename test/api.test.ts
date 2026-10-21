@@ -140,6 +140,20 @@ async function runTests() {
       assert(err.response?.data?.message.includes('belum lengkap'));
     }
 
+    // Security Test: Check server signature masking
+    assert.strictEqual(healthRes.headers['x-powered-by'], undefined);
+
+    // Security Test: Input validation rejects oversized email
+    try {
+      await axios.post(`${baseUrl}/api/am/send-link`, {
+        email: 'a'.repeat(150) + '@gmail.com',
+      });
+      assert.fail('Should have thrown 400 for oversized email');
+    } catch (err: any) {
+      assert.strictEqual(err.response?.status, 400);
+      assert(err.response?.data?.message.includes('terlalu panjang'));
+    }
+
     console.log('✅ Express API endpoints passed');
   } finally {
     server.close();

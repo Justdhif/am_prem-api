@@ -2,6 +2,12 @@ import { Router } from 'express';
 import { alightMotionController } from '../controllers/alightMotion.controller.js';
 import { validateBody } from '../middlewares/validateRequest.js';
 import {
+  sendLinkLimiter,
+  verifyLimiter,
+  commandLimiter,
+} from '../middlewares/rateLimiter.js';
+import { apiKeyAuth } from '../middlewares/apiKeyAuth.js';
+import {
   sendLinkSchema,
   verifyMagicLinkSchema,
   commandSchema,
@@ -9,9 +15,13 @@ import {
 
 const router = Router();
 
-// Kirim Magic Link ke Email
+// Middleware autentikasi API Key (jika disetel di environment variables)
+router.use(apiKeyAuth);
+
+// Kirim Magic Link ke Email (dilindungi rate limiter & validasi)
 router.post(
   '/send-link',
+  sendLinkLimiter,
   validateBody(sendLinkSchema),
   alightMotionController.sendLink.bind(alightMotionController)
 );
@@ -19,13 +29,15 @@ router.post(
 // Alias untuk send-link
 router.post(
   '/request-link',
+  sendLinkLimiter,
   validateBody(sendLinkSchema),
   alightMotionController.sendLink.bind(alightMotionController)
 );
 
-// Verifikasi Magic Link & Aktivasi Lisensi Pro
+// Verifikasi Magic Link & Aktivasi Lisensi Pro (dilindungi rate limiter & validasi)
 router.post(
   '/verify',
+  verifyLimiter,
   validateBody(verifyMagicLinkSchema),
   alightMotionController.verifyLink.bind(alightMotionController)
 );
@@ -33,13 +45,15 @@ router.post(
 // Alias untuk verify
 router.post(
   '/verify-link',
+  verifyLimiter,
   validateBody(verifyMagicLinkSchema),
   alightMotionController.verifyLink.bind(alightMotionController)
 );
 
-// Endpoint bot command handler (kompatibel penuh dengan WhatsApp bot di justbot_v2)
+// Endpoint bot command handler
 router.post(
   '/command',
+  commandLimiter,
   validateBody(commandSchema),
   alightMotionController.handleCommand.bind(alightMotionController)
 );

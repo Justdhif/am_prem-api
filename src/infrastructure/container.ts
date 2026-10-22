@@ -2,6 +2,7 @@ import { FirebaseAuthGateway } from './external/firebaseAuthGateway.js';
 import { AlightGateway } from './external/alightGateway.js';
 import { TikTokGateway } from './external/tikTokGateway.js';
 import { PostgresStatsRepository } from './repositories/PostgresStatsRepository.js';
+import { PostgresCommentRepository } from './repositories/PostgresCommentRepository.js';
 import { InMemorySessionRepository } from './repositories/InMemorySessionRepository.js';
 
 import { SendVerificationLinkUseCase } from '../application/usecases/SendVerificationLinkUseCase.js';
@@ -9,6 +10,8 @@ import { VerifyMagicLinkUseCase } from '../application/usecases/VerifyMagicLinkU
 import { GetStatsUseCase } from '../application/usecases/GetStatsUseCase.js';
 import { HandleBotCommandUseCase } from '../application/usecases/HandleBotCommandUseCase.js';
 import { FindAlightPresetUseCase } from '../application/usecases/FindAlightPresetUseCase.js';
+import { AddCommentUseCase } from '../application/usecases/AddCommentUseCase.js';
+import { GetCommentsUseCase } from '../application/usecases/GetCommentsUseCase.js';
 
 export class Container {
   // Gateways
@@ -18,6 +21,7 @@ export class Container {
 
   // Repositories (PostgreSQL dengan fallback lokal)
   public readonly statsRepository = new PostgresStatsRepository();
+  public readonly commentRepository = new PostgresCommentRepository();
   public readonly sessionRepository = new InMemorySessionRepository();
 
   // Alight Motion Use Cases
@@ -45,6 +49,10 @@ export class Container {
     this.firebaseAuthGateway,
     this.sessionRepository
   );
+
+  // Comments Use Cases
+  public readonly addCommentUseCase = new AddCommentUseCase(this.commentRepository);
+  public readonly getCommentsUseCase = new GetCommentsUseCase(this.commentRepository);
 }
 
 export const container = new Container();

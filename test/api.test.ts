@@ -98,7 +98,7 @@ async function runTests() {
     // Web UI Test: GET /dashboard (Documentation Only)
     const dashboardRes = await axios.get(`${baseUrl}/dashboard`);
     assert.strictEqual(dashboardRes.status, 200);
-    assert(dashboardRes.data.includes('Alight Motion VIP'));
+    assert(dashboardRes.data.includes('Alight Motion Pro'));
     assert(dashboardRes.data.includes('Dokumentasi'));
     assert(dashboardRes.data.includes('by Justdhif'));
 
@@ -229,6 +229,61 @@ async function runTests() {
       assert(err.response?.data?.replyText.includes('Belum Lengkap'));
     }
     console.log('✅ TikTok Preset Finder passed');
+
+    // Test 8: Comment Section & Threaded Replies
+    console.log('\nTest 8: Comment Section & Threaded Replies');
+    // POST /api/comments (Parent comment)
+    const parentCommentRes = await axios.post(`${baseUrl}/api/comments`, {
+      name: 'Dhif Testing',
+      content: 'Halo ini komentar pertama!',
+      isAnonymous: false,
+    });
+    assert.strictEqual(parentCommentRes.status, 201);
+    assert.strictEqual(parentCommentRes.data.success, true);
+    assert.strictEqual(parentCommentRes.data.data.name, 'Dhif Testing');
+    const parentId = parentCommentRes.data.data.id;
+
+    // POST /api/comments (Reply as Anonymous)
+    const replyRes = await axios.post(`${baseUrl}/api/comments`, {
+      parentId: parentId,
+      name: 'Budi',
+      content: 'Halo juga dari anonim!',
+      isAnonymous: true,
+    });
+    assert.strictEqual(replyRes.status, 201);
+    assert.strictEqual(replyRes.data.data.name, 'Anonim');
+    assert.strictEqual(replyRes.data.data.isAnonymous, true);
+    assert.strictEqual(replyRes.data.data.parentId, parentId);
+    const replyId = replyRes.data.data.id;
+
+    // POST /api/comments (Nested reply to the reply)
+    const nestedReplyRes = await axios.post(`${baseUrl}/api/comments`, {
+      parentId: replyId,
+      name: 'Creator',
+      content: 'Terima kasih sudah membalas!',
+      isAnonymous: false,
+    });
+    assert.strictEqual(nestedReplyRes.status, 201);
+    assert.strictEqual(nestedReplyRes.data.data.parentId, replyId);
+
+    // GET /api/comments -> tree structure verification
+    const getCommentsRes = await axios.get(`${baseUrl}/api/comments`);
+    assert.strictEqual(getCommentsRes.status, 200);
+    assert(getCommentsRes.data.totalComments >= 3);
+    const foundParent = getCommentsRes.data.comments.find((c: any) => c.id === parentId);
+    assert(foundParent, 'Parent comment should be in tree');
+    assert.strictEqual(foundParent.replies.length >= 1, true);
+    assert.strictEqual(foundParent.replies[0].id, replyId);
+    assert.strictEqual(foundParent.replies[0].replies.length >= 1, true);
+
+    // POST /api/comments validation: empty content should fail
+    try {
+      await axios.post(`${baseUrl}/api/comments`, { content: '   ' });
+      assert.fail('Should have failed for empty content');
+    } catch (err: any) {
+      assert.strictEqual(err.response?.status, 400);
+    }
+    console.log('✅ Comment Section & Threaded Replies passed');
 
     console.log('✅ Express API endpoints & Web Generator passed');
   } finally {

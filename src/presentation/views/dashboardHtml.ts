@@ -545,7 +545,6 @@ export function renderDashboardHtml(
                     class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full resize-none break-all whitespace-pre-wrap no-scrollbar leading-relaxed"
                     style="min-height: 24px; max-height: 140px;"></textarea>
                 </div>
-                <p class="text-[10px] text-gray-500 mt-1">Link panjang otomatis break-line &amp; auto-expand menyesuaikan isi teks.</p>
               </div>
 
               <div class="flex items-center justify-between gap-2 pt-1 flex-wrap">
@@ -614,7 +613,6 @@ export function renderDashboardHtml(
                     class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full resize-none break-all whitespace-pre-wrap no-scrollbar leading-relaxed"
                     style="min-height: 24px; max-height: 140px;"></textarea>
                 </div>
-                <p class="text-[10px] text-gray-500 mt-1">Link TikTok otomatis break-line &amp; auto-expand.</p>
               </div>
 
               <div class="flex items-center justify-between gap-2 pt-1 flex-wrap">

@@ -170,6 +170,22 @@ export function renderDashboardHtml(
       </div>
     </div>
 
+    <!-- MAIN NAVIGATION TABS (DOCS vs PLAYGROUND) -->
+    <div class="flex items-center space-x-2 border-b border-gray-800 pb-3">
+      <button type="button" id="main-tab-docs-btn" onclick="switchMainTab('docs')"
+        class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center space-x-2 bg-[#00e599] text-gray-950 shadow-md shadow-[#00e599]/20">
+        <i class="fa-solid fa-book-bookmark text-xs sm:text-sm"></i>
+        <span>Docs</span>
+      </button>
+      <button type="button" id="main-tab-playground-btn" onclick="switchMainTab('playground')"
+        class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center space-x-2 text-gray-400 hover:text-white hover:bg-gray-800/80">
+        <i class="fa-solid fa-flask text-xs sm:text-sm"></i>
+        <span>Playground</span>
+      </button>
+    </div>
+
+    <!-- MAIN TAB 1: DOCS CONTAINER -->
+    <div id="main-tab-content-docs" class="space-y-6 sm:space-y-8">
     <!-- HOW IT WORKS (ALUR 2 LANGKAH) -->
     <div class="doc-card p-5 sm:p-6 space-y-4">
       <h2 class="text-lg font-bold text-white flex items-center">
@@ -398,71 +414,79 @@ export function renderDashboardHtml(
         </div>
       </section>
 
-      <!-- INTERACTIVE API PLAYGROUND -->
-      <section class="doc-card p-5 sm:p-7 space-y-5 border-[#00e599]/30 relative overflow-hidden" id="api-playground">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-gray-800">
-          <div class="flex items-center space-x-2.5">
-            <div class="w-8 h-8 rounded-lg bg-[#00e599]/15 text-[#00e599] flex items-center justify-center text-sm">
-              <i class="fa-solid fa-flask"></i>
-            </div>
-            <div>
-              <h2 class="text-base sm:text-lg font-bold text-white flex items-center">
-                Interactive API Playground
-                <span class="ml-2 text-[10px] px-2 py-0.5 rounded-full bg-[#00e599]/20 text-[#00e599] font-semibold border border-[#00e599]/30">Live Test</span>
-              </h2>
-              <p class="text-xs text-gray-400">Uji coba langsung endpoint pengiriman link dan verifikasi lisensi di browser.</p>
-            </div>
+    </div>
+    <!-- END OF TAB 1: DOCS CONTAINER -->
+
+    <!-- MAIN TAB 2: PLAYGROUND CONTAINER (2 CARDS) -->
+    <div id="main-tab-content-playground" class="hidden space-y-6">
+      <div class="p-4 rounded-xl bg-[#00e599]/10 border border-[#00e599]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-gray-300">
+        <div class="flex items-center space-x-2.5">
+          <i class="fa-solid fa-flask text-base text-[#00e599] shrink-0"></i>
+          <div>
+            <span class="font-bold text-white block">API Playground Tester</span>
+            <span class="text-gray-400 text-[11px]">Uji coba langsung endpoint pengiriman link dan verifikasi lisensi Pro Alight Motion.</span>
           </div>
         </div>
+      </div>
 
-        <!-- Playground Tabs -->
-        <div class="flex items-center space-x-2 border-b border-gray-800 pb-2">
-          <button type="button" id="tab-btn-sendlink" onclick="switchPlaygroundTab('sendlink')"
-            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 bg-[#00e599] text-gray-950 shadow-md shadow-[#00e599]/20">
-            <i class="fa-regular fa-paper-plane text-xs"></i>
-            <span>1. Send Magic Link</span>
-          </button>
-          <button type="button" id="tab-btn-verify" onclick="switchPlaygroundTab('verify')"
-            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 text-gray-400 hover:text-white hover:bg-gray-800/80">
-            <i class="fa-solid fa-shield-halved text-xs"></i>
-            <span>2. Verify &amp; Activate</span>
-          </button>
-        </div>
+      <!-- 2 Cards Layout: Card 1 (Kirim Link) & Card 2 (Verify Link) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
-        <!-- Form 1: Send Magic Link -->
-        <div id="playground-sendlink-panel" class="space-y-4">
-          <form onsubmit="runPlaygroundSendLink(event)" class="space-y-3">
-            <div>
-              <label class="block text-xs font-semibold text-gray-300 mb-1.5">
-                Target Email <span class="text-[#00e599]">*</span>
-              </label>
-              <div class="flex items-center bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
-                <i class="fa-regular fa-envelope text-gray-500 mr-2.5 text-xs"></i>
-                <input type="email" id="pg-sendlink-email" required placeholder="user@gmail.com"
-                  class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full">
+        <!-- CARD 1: KIRIM MAGIC LINK -->
+        <section class="doc-card p-5 sm:p-6 space-y-4 border-[#00e599]/30 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-gray-800">
+              <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 rounded-lg bg-blue-500/15 text-blue-400 flex items-center justify-center text-sm">
+                  <i class="fa-regular fa-paper-plane"></i>
+                </div>
+                <div>
+                  <h3 class="text-sm sm:text-base font-bold text-white">1. Kirim Magic Link</h3>
+                  <div class="flex items-center space-x-2 mt-0.5">
+                    <span class="badge-method bg-blue-500/20 text-blue-400 border border-blue-500/30">POST</span>
+                    <code class="text-[11px] text-gray-400">/api/am/send-link</code>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div class="flex items-center justify-between gap-2 pt-1 flex-wrap">
-              <div class="flex items-center space-x-2">
-                <button type="submit" id="pg-sendlink-submit"
-                  class="px-4 py-2 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 disabled:opacity-50">
-                  <i class="fa-solid fa-paper-plane"></i>
-                  <span>Kirim Request (POST)</span>
-                </button>
-                <button type="button" onclick="fillSampleSendLink()"
-                  class="px-3 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition active:scale-95">
-                  Contoh Data
+            <p class="text-xs text-gray-400 leading-relaxed">
+              Kirim tautan login/aktivasi Alight Motion ke alamat email target pengguna.
+            </p>
+
+            <form onsubmit="runPlaygroundSendLink(event)" class="space-y-3">
+              <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1.5">
+                  Target Email <span class="text-[#00e599]">*</span>
+                </label>
+                <div class="flex items-center bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                  <i class="fa-regular fa-envelope text-gray-500 mr-2.5 text-xs"></i>
+                  <input type="email" id="pg-sendlink-email" required placeholder="user@gmail.com"
+                    class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full">
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between gap-2 pt-1 flex-wrap">
+                <div class="flex items-center space-x-2">
+                  <button type="submit" id="pg-sendlink-submit"
+                    class="px-3.5 py-2 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 disabled:opacity-50">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>Kirim Request (POST)</span>
+                  </button>
+                  <button type="button" onclick="fillSampleSendLink()"
+                    class="px-3 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition active:scale-95">
+                    Contoh
+                  </button>
+                </div>
+                <button type="button" onclick="resetPlaygroundSendLink()" class="text-xs text-gray-500 hover:text-white transition">
+                  Reset
                 </button>
               </div>
-              <button type="button" onclick="resetPlaygroundSendLink()" class="text-xs text-gray-500 hover:text-white transition">
-                Reset
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
 
           <!-- Response Viewer -->
-          <div id="pg-sendlink-result" class="hidden space-y-2 pt-2 border-t border-gray-800/80">
+          <div id="pg-sendlink-result" class="hidden space-y-2 pt-3 border-t border-gray-800/80 mt-2">
             <div class="flex items-center justify-between text-xs">
               <div class="flex items-center space-x-2">
                 <span class="text-gray-400">Response Status:</span>
@@ -470,55 +494,79 @@ export function renderDashboardHtml(
               </div>
               <span id="pg-sendlink-time" class="text-gray-500 font-mono text-[11px]">0 ms</span>
             </div>
-            <pre class="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs overflow-x-auto border border-gray-800 font-mono text-gray-300 max-h-64"><code id="pg-sendlink-output">{}</code></pre>
+            <pre class="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs overflow-x-auto border border-gray-800 font-mono text-gray-300 max-h-56"><code id="pg-sendlink-output">{}</code></pre>
           </div>
-        </div>
+        </section>
 
-        <!-- Form 2: Verify & Activate Pro -->
-        <div id="playground-verify-panel" class="hidden space-y-4">
-          <form onsubmit="runPlaygroundVerify(event)" class="space-y-3">
-            <div>
-              <label class="block text-xs font-semibold text-gray-300 mb-1.5">
-                Target Email <span class="text-[#00e599]">*</span>
-              </label>
-              <div class="flex items-center bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
-                <i class="fa-regular fa-envelope text-gray-500 mr-2.5 text-xs"></i>
-                <input type="email" id="pg-verify-email" required placeholder="user@gmail.com"
-                  class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-gray-300 mb-1.5">
-                Magic Link / OOB Code dari Email <span class="text-[#00e599]">*</span>
-              </label>
-              <div class="flex items-center bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
-                <i class="fa-solid fa-link text-gray-500 mr-2.5 text-xs"></i>
-                <input type="text" id="pg-verify-link" required placeholder="https://alightcreative.com/?link=... atau oobCode"
-                  class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full">
-              </div>
-            </div>
-
-            <div class="flex items-center justify-between gap-2 pt-1 flex-wrap">
-              <div class="flex items-center space-x-2">
-                <button type="submit" id="pg-verify-submit"
-                  class="px-4 py-2 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 disabled:opacity-50">
+        <!-- CARD 2: VERIFIKASI & AKTIVASI PRO -->
+        <section class="doc-card p-5 sm:p-6 space-y-4 border-[#00e599]/30 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-gray-800">
+              <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/15 text-[#00e599] flex items-center justify-center text-sm">
                   <i class="fa-solid fa-shield-halved"></i>
-                  <span>Verifikasi &amp; Aktivasi (POST)</span>
-                </button>
-                <button type="button" onclick="fillSampleVerify()"
-                  class="px-3 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition active:scale-95">
-                  Contoh Data
+                </div>
+                <div>
+                  <h3 class="text-sm sm:text-base font-bold text-white">2. Verifikasi &amp; Aktivasi Pro</h3>
+                  <div class="flex items-center space-x-2 mt-0.5">
+                    <span class="badge-method bg-emerald-500/20 text-[#00e599] border border-emerald-500/30">POST</span>
+                    <code class="text-[11px] text-gray-400">/api/am/verify</code>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-xs text-gray-400 leading-relaxed">
+              Verifikasi link email dan otomatis aktivasi langganan Alight Motion Pro 1 Tahun.
+            </p>
+
+            <form onsubmit="runPlaygroundVerify(event)" class="space-y-3">
+              <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1.5">
+                  Target Email <span class="text-[#00e599]">*</span>
+                </label>
+                <div class="flex items-center bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                  <i class="fa-regular fa-envelope text-gray-500 mr-2.5 text-xs"></i>
+                  <input type="email" id="pg-verify-email" required placeholder="user@gmail.com"
+                    class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1.5">
+                  Magic Link / OOB Code dari Email <span class="text-[#00e599]">*</span>
+                </label>
+                <div class="flex items-start bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                  <i class="fa-solid fa-link text-gray-500 mr-2.5 mt-1 text-xs shrink-0"></i>
+                  <textarea id="pg-verify-link" required rows="1" placeholder="https://alightcreative.com/?link=... atau oobCode"
+                    oninput="handleLinkTextareaInput(this)"
+                    class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full resize-none break-all whitespace-pre-wrap no-scrollbar leading-relaxed"
+                    style="min-height: 24px; max-height: 140px;"></textarea>
+                </div>
+                <p class="text-[10px] text-gray-500 mt-1">Link panjang otomatis break-line &amp; auto-expand menyesuaikan isi teks.</p>
+              </div>
+
+              <div class="flex items-center justify-between gap-2 pt-1 flex-wrap">
+                <div class="flex items-center space-x-2">
+                  <button type="submit" id="pg-verify-submit"
+                    class="px-3.5 py-2 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 disabled:opacity-50">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Verifikasi (POST)</span>
+                  </button>
+                  <button type="button" onclick="fillSampleVerify()"
+                    class="px-3 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition active:scale-95">
+                    Contoh
+                  </button>
+                </div>
+                <button type="button" onclick="resetPlaygroundVerify()" class="text-xs text-gray-500 hover:text-white transition">
+                  Reset
                 </button>
               </div>
-              <button type="button" onclick="resetPlaygroundVerify()" class="text-xs text-gray-500 hover:text-white transition">
-                Reset
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
 
           <!-- Response Viewer -->
-          <div id="pg-verify-result" class="hidden space-y-2 pt-2 border-t border-gray-800/80">
+          <div id="pg-verify-result" class="hidden space-y-2 pt-3 border-t border-gray-800/80 mt-2">
             <div class="flex items-center justify-between text-xs">
               <div class="flex items-center space-x-2">
                 <span class="text-gray-400">Response Status:</span>
@@ -526,10 +574,13 @@ export function renderDashboardHtml(
               </div>
               <span id="pg-verify-time" class="text-gray-500 font-mono text-[11px]">0 ms</span>
             </div>
-            <pre class="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs overflow-x-auto border border-gray-800 font-mono text-gray-300 max-h-64"><code id="pg-verify-output">{}</code></pre>
+            <pre class="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs overflow-x-auto border border-gray-800 font-mono text-gray-300 max-h-56"><code id="pg-verify-output">{}</code></pre>
           </div>
-        </div>
-      </section>
+        </section>
+
+      </div>
+    </div>
+    <!-- END OF TAB 2: PLAYGROUND CONTAINER -->
 
       <!-- PANDUAN BANTUAN & PANDUAN PENGGUNAAN (HELP CENTER DI WEB UI) -->
       <section class="doc-card p-5 sm:p-6 space-y-5" id="help-center">
@@ -756,6 +807,33 @@ export function renderDashboardHtml(
       }, 2500);
     }
 
+    // --- Main Tab Switching (Docs vs Playground) ---
+    function switchMainTab(tab) {
+      var docsBtn = document.getElementById('main-tab-docs-btn');
+      var pgBtn = document.getElementById('main-tab-playground-btn');
+      var docsContent = document.getElementById('main-tab-content-docs');
+      var pgContent = document.getElementById('main-tab-content-playground');
+
+      if (tab === 'docs') {
+        if (docsBtn) docsBtn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center space-x-2 bg-[#00e599] text-gray-950 shadow-md shadow-[#00e599]/20';
+        if (pgBtn) pgBtn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center space-x-2 text-gray-400 hover:text-white hover:bg-gray-800/80';
+        if (docsContent) docsContent.classList.remove('hidden');
+        if (pgContent) pgContent.classList.add('hidden');
+      } else {
+        if (docsBtn) docsBtn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center space-x-2 text-gray-400 hover:text-white hover:bg-gray-800/80';
+        if (pgBtn) pgBtn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center space-x-2 bg-[#00e599] text-gray-950 shadow-md shadow-[#00e599]/20';
+        if (docsContent) docsContent.classList.add('hidden');
+        if (pgContent) pgContent.classList.remove('hidden');
+      }
+    }
+
+    // Auto-expanding textarea for verify link input
+    function handleLinkTextareaInput(el) {
+      if (!el) return;
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+    }
+
     // --- Interactive API Playground Logic ---
     function switchPlaygroundTab(tab) {
       var sendBtn = document.getElementById('tab-btn-sendlink');
@@ -848,7 +926,10 @@ export function renderDashboardHtml(
       var emailInput = document.getElementById('pg-verify-email');
       var linkInput = document.getElementById('pg-verify-link');
       if (emailInput) emailInput.value = 'contoh.user@gmail.com';
-      if (linkInput) linkInput.value = 'https://alightcreative.com/?link=https%3A%2F%2Falightcreative.com%2F%3FoobCode%3Dsample_code_12345%26mode%3DsignIn';
+      if (linkInput) {
+        linkInput.value = 'https://alightcreative.com/?link=https%3A%2F%2Falightcreative.com%2F%3FoobCode%3Dsample_code_12345%26mode%3DsignIn';
+        handleLinkTextareaInput(linkInput);
+      }
     }
 
     function resetPlaygroundVerify() {
@@ -856,7 +937,10 @@ export function renderDashboardHtml(
       var linkInput = document.getElementById('pg-verify-link');
       var result = document.getElementById('pg-verify-result');
       if (emailInput) emailInput.value = '';
-      if (linkInput) linkInput.value = '';
+      if (linkInput) {
+        linkInput.value = '';
+        linkInput.style.height = 'auto';
+      }
       if (result) result.classList.add('hidden');
     }
 

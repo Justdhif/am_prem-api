@@ -432,7 +432,7 @@ export function renderDashboardHtml(
       </div>
 
       <!-- 2 Cards Layout: Card 1 (Kirim Link) & Card 2 (Verify Link) -->
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 items-start">
+      <div class="space-y-6">
 
         <!-- CARD 1: KIRIM MAGIC LINK -->
         <section class="doc-card p-5 sm:p-6 space-y-4 border-[#00e599]/30 flex flex-col justify-between">
@@ -473,7 +473,7 @@ export function renderDashboardHtml(
                   <button type="submit" id="pg-sendlink-submit"
                     class="px-3.5 py-2 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 disabled:opacity-50">
                     <i class="fa-solid fa-paper-plane"></i>
-                    <span>Kirim Request (POST)</span>
+                    <span>Kirim Request</span>
                   </button>
                   <button type="button" onclick="fillSampleSendLink()"
                     class="px-3 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition active:scale-95">
@@ -553,7 +553,7 @@ export function renderDashboardHtml(
                   <button type="submit" id="pg-verify-submit"
                     class="px-3.5 py-2 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 disabled:opacity-50">
                     <i class="fa-solid fa-shield-halved"></i>
-                    <span>Verifikasi (POST)</span>
+                    <span>Verifikasi</span>
                   </button>
                   <button type="button" onclick="fillSampleVerify()"
                     class="px-3 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition active:scale-95">
@@ -622,7 +622,7 @@ export function renderDashboardHtml(
                   <button type="submit" id="pg-preset-submit"
                     class="px-3.5 py-2 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 disabled:opacity-50">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <span>Cari Preset (POST)</span>
+                    <span>Cari Preset</span>
                   </button>
                   <button type="button" onclick="fillSamplePreset()"
                     class="px-3 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition active:scale-95">

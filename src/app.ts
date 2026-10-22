@@ -57,12 +57,15 @@ export function createApp(): Application {
     });
   });
 
-  // Web Dashboard & Generator Route (SSR dengan data stats terkini dari database)
+  // Web Dashboard & Generator Route (SSR dengan data stats & comments terkini dari database)
   app.get('/dashboard', async (_req: Request, res: Response) => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     try {
-      const stats = await container.statsRepository.getStats();
-      res.send(renderDashboardHtml(stats));
+      const [stats, commentsResult] = await Promise.all([
+        container.statsRepository.getStats().catch(() => undefined),
+        container.getCommentsUseCase.execute().catch(() => undefined),
+      ]);
+      res.send(renderDashboardHtml(stats, commentsResult?.comments));
     } catch {
       res.send(renderDashboardHtml());
     }
@@ -82,8 +85,11 @@ export function createApp(): Application {
     if (isBrowserHtmlRequest && !req.xhr) {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       try {
-        const stats = await container.statsRepository.getStats();
-        res.send(renderDashboardHtml(stats));
+        const [stats, commentsResult] = await Promise.all([
+          container.statsRepository.getStats().catch(() => undefined),
+          container.getCommentsUseCase.execute().catch(() => undefined),
+        ]);
+        res.send(renderDashboardHtml(stats, commentsResult?.comments));
       } catch {
         res.send(renderDashboardHtml());
       }

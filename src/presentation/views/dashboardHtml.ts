@@ -1,6 +1,63 @@
 import { LOGO_DATA_URI } from './logoAsset.js';
+import { CommentNode } from '../../domain/entities/Comment.js';
 
-export function renderDashboardHtml(initialStats?: { total: number; today: number }): string {
+
+function renderCommentNodeServerSide(comment: CommentNode): string {
+  const anonBadge = comment.isAnonymous
+    ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-normal border border-gray-700/60 ml-1.5">Anonim</span>'
+    : '';
+
+  const repliesHtml = (comment.replies && comment.replies.length > 0)
+    ? '<div class="mt-3 pl-3 sm:pl-4 space-y-3 border-l-2 border-gray-800/90">' +
+        comment.replies.map(renderCommentNodeServerSide).join('') +
+      '</div>'
+    : '';
+
+  const safeName = (comment.name || 'Anonim').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const safeContent = (comment.content || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const avatarUrl = comment.avatarUrl || 'https://ui-avatars.com/api/?name=Anonim&background=1f2b42&color=94a3b8&bold=true';
+
+  return `
+    <div id="comment-${comment.id}" class="bg-[#0d121f] p-3.5 sm:p-4 rounded-xl border border-gray-800/80 transition hover:border-gray-700">
+      <div class="flex items-start space-x-3">
+        <img src="${avatarUrl}" alt="Avatar" class="w-8 h-8 rounded-full border border-gray-700/60 object-cover shrink-0 mt-0.5">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center">
+              <span class="font-bold text-xs sm:text-sm text-white truncate">${safeName}</span>
+              ${anonBadge}
+            </div>
+            <span class="text-[10px] text-gray-500 font-medium">${comment.formattedTime || ''}</span>
+          </div>
+          <p class="text-xs text-gray-300 mt-1.5 leading-relaxed break-words whitespace-pre-line">${safeContent}</p>
+          <div class="mt-2.5 flex items-center space-x-3">
+            <button type="button" onclick="toggleReplyForm('${comment.id}')" class="text-[11px] font-semibold text-[#00e599] hover:text-[#1affaa] transition inline-flex items-center space-x-1">
+              <i class="fa-solid fa-reply text-[10px]"></i>
+              <span>Balas</span>
+            </button>
+          </div>
+          <div id="reply-box-${comment.id}" class="hidden mt-3 pt-3 border-t border-gray-800/80 space-y-2.5">
+            <div class="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">
+              <input type="text" id="reply-name-${comment.id}" placeholder="Nama kamu..." maxlength="50" class="w-full sm:w-1/2 bg-[#131927] border border-gray-700/80 rounded-lg px-2.5 py-1 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition">
+              <label class="flex items-center space-x-1.5 cursor-pointer select-none">
+                <input type="checkbox" id="reply-anon-${comment.id}" onchange="toggleAnonymous('reply-name-${comment.id}', this.checked)" class="rounded bg-gray-800 border-gray-700 text-[#00e599] focus:ring-0">
+                <span class="text-[11px] text-gray-400">Anonim</span>
+              </label>
+            </div>
+            <textarea id="reply-content-${comment.id}" rows="2" placeholder="Tulis balasan kamu..." maxlength="1000" class="w-full bg-[#131927] border border-gray-700/80 rounded-lg p-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition resize-y"></textarea>
+            <div class="flex items-center justify-end space-x-2">
+              <button type="button" onclick="toggleReplyForm('${comment.id}')" class="px-3 py-1 rounded-lg text-xs text-gray-400 hover:text-white transition">Batal</button>
+              <button type="button" onclick="submitReply('${comment.id}')" class="px-3.5 py-1 rounded-lg bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs transition">Kirim Balasan</button>
+            </div>
+          </div>
+          ${repliesHtml}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+export function renderDashboardHtml(initialStats?: { total: number; today: number }, initialComments?: CommentNode[]): string {
   return `<!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
@@ -372,7 +429,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
             <p class="text-xs text-gray-400 mt-1">Bagikan tanggapan, tanyakan seputar API, atau sapa komunitas!</p>
           </div>
           <span id="comment-count-badge" class="px-2.5 py-1 text-xs font-semibold rounded-full bg-[#00e599]/15 text-[#00e599] border border-[#00e599]/30">
-            0 Komentar
+            ${initialComments ? initialComments.length + ' Komentar' : '0 Komentar'}
           </span>
         </div>
 
@@ -410,9 +467,18 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
 
         <!-- LIST KOMENTAR THREADED -->
         <div id="comments-list" class="space-y-3.5 pt-1">
-          <div class="text-center py-8 text-gray-500 text-xs">
-            <i class="fa-solid fa-spinner fa-spin mr-1.5 text-[#00e599]"></i>Memuat diskusi...
-          </div>
+          ${
+            initialComments
+              ? initialComments.length === 0
+                ? '<div class="text-center py-8 text-gray-500 text-xs bg-[#0d121f] rounded-xl border border-gray-800/80">' +
+                    '<i class="fa-regular fa-comment-dots text-2xl block mb-2 text-gray-600"></i>' +
+                    'Belum ada komentar. Jadilah yang pertama berkomentar!' +
+                  '</div>'
+                : initialComments.map(renderCommentNodeServerSide).join('')
+              : '<div class="text-center py-8 text-gray-500 text-xs">' +
+                  '<i class="fa-solid fa-spinner fa-spin mr-1.5 text-[#00e599]"></i>Memuat diskusi...' +
+                '</div>'
+          }
         </div>
       </section>
 
@@ -476,19 +542,28 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         var listEl = document.getElementById('comments-list');
         var badgeEl = document.getElementById('comment-count-badge');
 
-        if (json.success && Array.isArray(json.comments)) {
-          if (badgeEl) badgeEl.innerText = (json.totalComments || 0) + ' Komentar';
-          if (json.comments.length === 0) {
+        if (!res.ok || !json.success || !Array.isArray(json.comments)) {
+          if (listEl && listEl.innerText.includes('Memuat diskusi')) {
             listEl.innerHTML =
               '<div class="text-center py-8 text-gray-500 text-xs bg-[#0d121f] rounded-xl border border-gray-800/80">' +
                 '<i class="fa-regular fa-comment-dots text-2xl block mb-2 text-gray-600"></i>' +
                 'Belum ada komentar. Jadilah yang pertama berkomentar!' +
               '</div>';
-            return;
           }
-
-          listEl.innerHTML = json.comments.map(function(c) { return renderCommentHtml(c); }).join('');
+          return;
         }
+
+        if (badgeEl) badgeEl.innerText = (json.totalComments || 0) + ' Komentar';
+        if (json.comments.length === 0) {
+          listEl.innerHTML =
+            '<div class="text-center py-8 text-gray-500 text-xs bg-[#0d121f] rounded-xl border border-gray-800/80">' +
+              '<i class="fa-regular fa-comment-dots text-2xl block mb-2 text-gray-600"></i>' +
+              'Belum ada komentar. Jadilah yang pertama berkomentar!' +
+            '</div>';
+          return;
+        }
+
+        listEl.innerHTML = json.comments.map(function(c) { return renderCommentHtml(c); }).join('');
       } catch (err) {
         var listEl = document.getElementById('comments-list');
         if (listEl) {

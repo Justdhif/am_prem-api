@@ -65,7 +65,7 @@ export function createApp(): Application {
         container.statsRepository.getStats().catch(() => undefined),
         container.getCommentsUseCase.execute().catch(() => undefined),
       ]);
-      res.send(renderDashboardHtml(stats, commentsResult?.comments));
+      res.send(renderDashboardHtml(stats, commentsResult?.comments, commentsResult ? { page: commentsResult.page, totalPages: commentsResult.totalPages, totalComments: commentsResult.totalComments } : undefined));
     } catch {
       res.send(renderDashboardHtml());
     }
@@ -89,7 +89,7 @@ export function createApp(): Application {
           container.statsRepository.getStats().catch(() => undefined),
           container.getCommentsUseCase.execute().catch(() => undefined),
         ]);
-        res.send(renderDashboardHtml(stats, commentsResult?.comments));
+        res.send(renderDashboardHtml(stats, commentsResult?.comments, commentsResult ? { page: commentsResult.page, totalPages: commentsResult.totalPages, totalComments: commentsResult.totalComments } : undefined));
       } catch {
         res.send(renderDashboardHtml());
       }

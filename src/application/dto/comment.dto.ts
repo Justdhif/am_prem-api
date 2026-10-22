@@ -21,8 +21,19 @@ export interface AddCommentOutputDto {
   };
 }
 
+export interface GetCommentsInputDto {
+  page?: number;
+  limit?: number;
+}
+
 export interface GetCommentsOutputDto {
   success: boolean;
+  page: number;
+  limit: number;
+  totalRootComments: number;
   totalComments: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
   comments: CommentNode[];
 }

@@ -57,6 +57,7 @@ function renderTikTokCommentServerSide(comment: CommentNode): string {
 export function renderDashboardHtml(
   initialStats?: { total: number; today: number },
   initialComments?: CommentNode[],
+  initialPagination?: { page: number; totalPages: number; totalComments: number },
 ): string {
   return `<!DOCTYPE html>
 <html lang="id" class="dark">
@@ -749,6 +750,21 @@ export function renderDashboardHtml(
             '<i class="fa-solid fa-spinner fa-spin mr-1.5 text-[#00e599]"></i>Memuat komentar...' +
             "</div>"
       }
+    </div>
+
+    <!-- Pagination Controls (5 Root Comments per Page) -->
+    <div id="comment-pagination-bar" class="px-3.5 py-2 border-t border-gray-800/80 bg-[#0d121f] flex items-center justify-between text-xs text-gray-400 select-none shrink-0">
+      <button type="button" id="btn-comment-prev" onclick="goToCommentPage(-1)" disabled
+        class="px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-30 disabled:pointer-events-none text-gray-300 text-[11px] font-semibold transition flex items-center space-x-1">
+        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+        <span>Sebelumnya</span>
+      </button>
+      <span id="comment-page-indicator" class="font-medium text-gray-400 text-[11px]">${initialPagination ? 'Hal ' + initialPagination.page + ' dari ' + initialPagination.totalPages : 'Hal 1 dari 1'}</span>
+      <button type="button" id="btn-comment-next" onclick="goToCommentPage(1)" ${initialPagination && initialPagination.totalPages > 1 ? '' : 'disabled'}
+        class="px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-30 disabled:pointer-events-none text-gray-300 text-[11px] font-semibold transition flex items-center space-x-1">
+        <span>Selanjutnya</span>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+      </button>
     </div>
 
     <!-- Bottom Input Area (TikTok Style) -->
@@ -1509,14 +1525,23 @@ export function renderDashboardHtml(
       }
     }
 
-    // --- Fetch Comments from Server ---
-    async function loadComments() {
+    // --- Fetch Comments with 5 Root Comments Pagination ---
+    var currentCommentPage = 1;
+    var totalCommentPages = 1;
+
+    async function loadComments(page) {
+      if (typeof page === 'number') {
+        currentCommentPage = page;
+      }
       try {
-        var res = await fetch('/api/comments');
+        var res = await fetch('/api/comments?page=' + currentCommentPage + '&limit=5');
         var json = await res.json();
         var listEl = document.getElementById('comments-sheet-list');
         var sheetCount = document.getElementById('sheet-title-count');
         var fabCount = document.getElementById('fab-count');
+        var pageIndicator = document.getElementById('comment-page-indicator');
+        var prevBtn = document.getElementById('btn-comment-prev');
+        var nextBtn = document.getElementById('btn-comment-next');
 
         if (!res.ok || !json.success || !Array.isArray(json.comments)) {
           if (listEl && listEl.innerText.includes('Memuat komentar')) {
@@ -1530,8 +1555,21 @@ export function renderDashboardHtml(
         }
 
         var total = json.totalComments || 0;
+        currentCommentPage = json.page || 1;
+        totalCommentPages = json.totalPages || 1;
+
         if (sheetCount) sheetCount.innerText = total;
         if (fabCount) fabCount.innerText = total;
+
+        if (pageIndicator) {
+          pageIndicator.innerText = 'Hal ' + currentCommentPage + ' dari ' + totalCommentPages;
+        }
+        if (prevBtn) {
+          prevBtn.disabled = !json.hasPrevPage;
+        }
+        if (nextBtn) {
+          nextBtn.disabled = !json.hasNextPage;
+        }
 
         if (json.comments.length === 0) {
           listEl.innerHTML =
@@ -1552,6 +1590,15 @@ export function renderDashboardHtml(
               'Gagal memuat komentar. Silakan refresh halaman.' +
             '</div>';
         }
+      }
+    }
+
+    function goToCommentPage(delta) {
+      var targetPage = currentCommentPage + delta;
+      if (targetPage >= 1 && targetPage <= totalCommentPages) {
+        loadComments(targetPage);
+        var listEl = document.getElementById('comments-sheet-list');
+        if (listEl) listEl.scrollTop = 0;
       }
     }
 
@@ -1630,7 +1677,7 @@ export function renderDashboardHtml(
           contentInput.style.height = 'auto';
           cancelReplyMode();
           showToast('Komentar berhasil dipublikasikan!');
-          await loadComments();
+          await loadComments(1);
           var listEl = document.getElementById('comments-sheet-list');
           if (listEl) listEl.scrollTop = 0;
         } else {

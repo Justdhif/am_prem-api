@@ -1,12 +1,18 @@
 import { ICommentRepository } from '../../domain/repositories/ICommentRepository.js';
 import { CommentNode } from '../../domain/entities/Comment.js';
-import { GetCommentsOutputDto } from '../dto/comment.dto.js';
+import { GetCommentsInputDto, GetCommentsOutputDto } from '../dto/comment.dto.js';
 
 export class GetCommentsUseCase {
   constructor(private readonly commentRepository: ICommentRepository) {}
 
-  public async execute(): Promise<GetCommentsOutputDto> {
-    const tree = await this.commentRepository.getCommentsTree();
+  public async execute(input?: GetCommentsInputDto): Promise<GetCommentsOutputDto> {
+    const rawPage = input?.page ? Number(input.page) : 1;
+    const rawLimit = input?.limit ? Number(input.limit) : 5;
+
+    const page = Math.max(1, isNaN(rawPage) ? 1 : rawPage);
+    const limit = Math.max(1, isNaN(rawLimit) ? 5 : rawLimit);
+
+    const fullTree = await this.commentRepository.getCommentsTree();
 
     const countAll = (nodes: CommentNode[]): number => {
       let count = 0;
@@ -19,6 +25,14 @@ export class GetCommentsUseCase {
       return count;
     };
 
+    const totalRootComments = fullTree.length;
+    const totalComments = countAll(fullTree);
+    const totalPages = Math.max(1, Math.ceil(totalRootComments / limit));
+    const validPage = Math.min(page, totalPages);
+
+    const startIndex = (validPage - 1) * limit;
+    const paginatedRoots = fullTree.slice(startIndex, startIndex + limit);
+
     const attachFormattedTime = (nodes: CommentNode[]): CommentNode[] => {
       return nodes.map((node) => ({
         ...node,
@@ -27,12 +41,18 @@ export class GetCommentsUseCase {
       }));
     };
 
-    const formattedTree = attachFormattedTime(tree);
+    const formattedComments = attachFormattedTime(paginatedRoots);
 
     return {
       success: true,
-      totalComments: countAll(formattedTree),
-      comments: formattedTree,
+      page: validPage,
+      limit,
+      totalRootComments,
+      totalComments,
+      totalPages,
+      hasNextPage: validPage < totalPages,
+      hasPrevPage: validPage > 1,
+      comments: formattedComments,
     };
   }
 

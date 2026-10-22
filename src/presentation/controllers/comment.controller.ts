@@ -3,9 +3,12 @@ import { container } from '../../infrastructure/container.js';
 import { addCommentSchema } from '../schemas/comment.schema.js';
 
 export class CommentController {
-  public async getComments(_req: Request, res: Response): Promise<void> {
+  public async getComments(req: Request, res: Response): Promise<void> {
     try {
-      const result = await container.getCommentsUseCase.execute();
+      const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+      const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 5;
+
+      const result = await container.getCommentsUseCase.execute({ page, limit });
       res.status(200).json(result);
     } catch (err: any) {
       res.status(500).json({

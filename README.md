@@ -4,11 +4,12 @@
 
   # Alight Motion Pro Engine & REST API
   
-  **Enterprise-grade REST API Service & Interactive Documentation built with Clean Architecture, TypeScript, Neon Serverless PostgreSQL, and Express.**
+  **Enterprise-grade REST API Service, Interactive Playground & Documentation built with Clean Architecture, TypeScript, Drizzle ORM, Neon PostgreSQL, and Express.**
 
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
   [![Node.js](https://img.shields.io/badge/Node.js-v20+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
   [![Express.js](https://img.shields.io/badge/Express.js-4.x-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+  [![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-0.38+-C5F74F?style=for-the-badge&logo=drizzle&logoColor=black)](https://orm.drizzle.team/)
   [![PostgreSQL](https://img.shields.io/badge/Neon_PostgreSQL-Serverless-00E599?style=for-the-badge&logo=postgresql&logoColor=0d121f)](https://neon.tech/)
   [![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
   [![Tests](https://img.shields.io/badge/Tests-100%25_Passing-00E599?style=for-the-badge&logo=jest&logoColor=black)](https://github.com/Justdhif/am_prem-api)
@@ -28,13 +29,13 @@
 - [Key Features](#-key-features)
 - [System Architecture](#-system-architecture)
 - [Tech Stack](#-tech-stack)
-- [Web Documentation Interface](#-web-documentation-interface)
+- [Web Dashboard, Playground & Comments](#-web-dashboard-playground--comments)
 - [API Specification](#-api-specification)
   - [1. Request Verification Link](#1-request-verification-link)
   - [2. Verify Link & Activate Pro](#2-verify-link--activate-pro)
   - [3. TikTok Alight Preset Finder](#3-tiktok-alight-preset-finder)
   - [4. Multi-Command Bot Adapter](#4-multi-command-bot-adapter)
-  - [5. Real-Time Activation Stats](#5-real-time-activation-stats)
+  - [5. Comment System Endpoints](#5-comment-system-endpoints)
 - [Environment Configuration](#-environment-configuration)
 - [Getting Started](#-getting-started)
 - [Production Deployment](#-production-deployment)
@@ -45,9 +46,9 @@
 
 ## 💡 Overview
 
-**Alight Motion Pro Engine & REST API** adalah backend microservice mandiri yang dirancang untuk mengotomatisasi siklus aktivasi lisensi **Alight Motion Pro 1 Tahun** dan **ekstraksi tautan preset video TikTok**. 
+**Alight Motion Pro Engine & REST API** adalah backend microservice mandiri yang dirancang untuk mengotomatisasi siklus aktivasi lisensi **Alight Motion Pro 1 Tahun**, **ekstraksi tautan preset video TikTok**, serta penyediaan **interactive web playground & threaded community comments**. 
 
-Dibangun dengan prinsip ketat **Clean Architecture (Uncle Bob)** dan **Domain-Driven Design (DDD)**, codebase ini memisahkan aturan bisnis inti dari framework dan driver database eksternal. Layanan ini terintegrasi langsung dengan cloud database **Neon Serverless PostgreSQL** untuk pelacakan statistik aktivasi secara persisten dan realtime, didukung oleh tampilan web dokumentasi ultra-minimalis yang ringan serta ramah perangkat mobile.
+Dibangun dengan prinsip ketat **Clean Architecture (Uncle Bob)** dan **Domain-Driven Design (DDD)**, codebase ini memisahkan aturan bisnis inti dari framework dan driver database eksternal. Layanan ini terintegrasi langsung dengan cloud database **Neon Serverless PostgreSQL** menggunakan **Drizzle ORM** untuk pelacakan statistik aktivasi dan komentar secara persisten, realtime, serta type-safe.
 
 ---
 
@@ -56,9 +57,11 @@ Dibangun dengan prinsip ketat **Clean Architecture (Uncle Bob)** dan **Domain-Dr
 | Fitur | Deskripsi | Status |
 | :--- | :--- | :---: |
 | ⚡ **Automated 2-Step Activation** | Pengiriman Firebase Magic Link & aktivasi lisensi tahunan Pro secara programmatic | `Active` |
+| 🧪 **Interactive Web Playground** | Uji coba langsung endpoint `send-link`, `verify`, & `find preset` di browser dengan live latency (ms) | `Active` |
 | 🔍 **TikTok Preset Scraper** | Ekstraksi otomatis tautan `alight.link`, Google Drive XML, & MediaFire dari caption & komentar video | `Active` |
-| 🐘 **Neon Serverless PostgreSQL** | Database pooling cloud dengan auto-migration, daily auto-reset, dan local file fallback | `Active` |
-| 📱 **Minimalist Mobile UI** | Halaman dokumentasi modern dengan Tailwind CSS, Server-Side Rendered (SSR) stats, dan live polling 10s | `Active` |
+| 💬 **TikTok-Style Comments** | Threaded replies (`> replyTo`), 9 kategori emoji keyboard lengkap, auto-expanding input, & toggle anonim | `Active` |
+| 🥞 **Drizzle ORM & PostgreSQL** | Database pooling cloud dengan Drizzle ORM type-safe queries, auto-migration, dan local fallback | `Active` |
+| 📱 **Dual-Tab Web Dashboard** | Tab navigasi **Docs** & **Playground** dengan Server-Side Rendered (SSR) stats dan kartu panduan persisten | `Active` |
 | 🤖 **Bot-Ready Interface** | Adapter serbaguna untuk bot WhatsApp (`!amprem`, `!am`, `!ampreset`, `!amstats`, `!amhelp`) | `Active` |
 | 🛡️ **Zero-Trust Security** | Sanitasi kredensial, IP spoofing rotatif, rate-limiting bertingkat, dan input validation via Zod | `Active` |
 
@@ -83,21 +86,24 @@ graph TD
     UC3[FindAlightPresetUseCase]
     UC4[GetStatsUseCase]
     UC5[HandleBotCommandUseCase]
+    UC6[CommentUseCases]
   end
 
   subgraph Domain ["Lapisan 1: Domain Core (Enterprise Rules)"]
     E1[User Entity]
     E2[Stats Entity]
     E3[Preset Entity]
+    E4[Comment Entity]
     IR1[IStatsRepository]
     IR2[ISessionRepository]
+    IR3[ICommentRepository]
     IG1[IFirebaseAuthGateway]
     IG2[IAlightGateway]
     IG3[ITikTokGateway]
   end
 
   subgraph Infrastructure ["Lapisan 3: Infrastructure Layer (External Adapters)"]
-    DB[(Neon PostgreSQL Pool)]
+    DB[(Drizzle ORM + Neon PostgreSQL)]
     FS[(Local JSON Fallback)]
     EXT1[Firebase Identity Toolkit]
     EXT2[Alight Creative CloudFunctions]
@@ -114,23 +120,23 @@ graph TD
 ### File Hierarchy
 ```text
 src/
-├── domain/                                  # Pure Domain Entities & Repository Contracts
-│   ├── entities/ (User, Stats, Preset, Session)
-│   ├── repositories/ (IStatsRepository, ISessionRepository)
+├── domain/                                  # Pure Domain Entities & Contracts
+│   ├── entities/ (User, Stats, Preset, Session, Comment)
+│   ├── repositories/ (IStatsRepository, ISessionRepository, ICommentRepository)
 │   └── gateways/ (IFirebaseAuthGateway, IAlightGateway, ITikTokGateway)
 ├── application/                             # Application Business Logic
 │   ├── dto/ (Input / Output Data Transfer Objects)
-│   └── usecases/ (SendLink, Verify, FindPreset, GetStats, BotCommands)
+│   └── usecases/ (SendLink, Verify, FindPreset, GetStats, BotCommands, Comments)
 ├── infrastructure/                          # Concrete Drivers & External APIs
-│   ├── config/ (Environment Loader)
+│   ├── database/ (Drizzle Schema, Pg Connection Pool)
 │   ├── external/ (Firebase, Alight Creative, TikTok Scrapers, IPSpoofer)
-│   ├── repositories/ (PostgresStatsRepository, FileStatsRepository, InMemorySession)
+│   ├── repositories/ (PostgresStatsRepository, PostgresCommentRepository, InMemorySession)
 │   └── container.ts (Dependency Injection Container)
 ├── presentation/                            # HTTP Transport Layer
-│   ├── controllers/ (AlightMotionController)
+│   ├── controllers/ (AlightMotionController, CommentController)
 │   ├── middlewares/ (RateLimiter, ErrorHandler, ApiKeyAuth)
 │   ├── schemas/ (Zod Validation Schemas)
-│   ├── views/ (Minimalist SSR Dashboard & Embedded Logo Assets)
+│   ├── views/ (Minimalist SSR Dashboard, Logo Assets)
 │   └── routes/ (REST Endpoints)
 ├── app.ts                                   # Express App Configuration
 └── index.ts                                 # Server & Serverless Entrypoint
@@ -142,22 +148,35 @@ src/
 
 - **Core Engine:** TypeScript 5.8, Node.js v20+ (ES Modules)
 - **HTTP Server:** Express.js 4 with Helmet & CORS
-- **Database:** Neon Serverless PostgreSQL (`pg` connection pool with SSL)
+- **Database & ORM:** Drizzle ORM (`drizzle-orm`) + Neon Serverless PostgreSQL (`pg` pool with SSL)
 - **Validation:** Zod Schema Validation
 - **Styling:** Tailwind CSS CDN (Custom Alight Mint `#00e599` theme)
-- **Testing:** Node.js native test runner & Axios integration suite
+- **Testing:** Node.js native test runner & Axios integration suite (`npm test`)
 
 ---
 
-## 🖥️ Web Documentation Interface
+## 🖥️ Web Dashboard, Playground & Comments
 
-Dokumentasi web interaktif dapat diakses langsung tanpa autentikasi di:
+Dashboard dapat diakses langsung tanpa autentikasi di:
 `http://localhost:3000/` atau `http://localhost:3000/dashboard`
 
-- **Neon Mint Theme:** Palet warna identik dengan identitas resmi Alight Motion.
-- **Server-Side Rendered (SSR):** Statistik aktivasi dimuat seketika di server sebelum HTML dikirim ke browser.
-- **Live Background Polling:** Setiap 10 detik halaman melakukan polling asinkron ke `/api/am/stats` untuk sinkronisasi angka secara real-time.
-- **Direct Links:** Akses cepat ke profil TikTok [@justdhifbieber](https://www.tiktok.com/@justdhifbieber) dan nomor WhatsApp [+44 7762 422507](https://wa.me/447762422507).
+### 1. Dua Tab Utama (Docs vs Playground)
+- **Tab Docs:**
+  - Penjelasan lengkap alur aktivasi 2 langkah.
+  - Dokumentasi seluruh endpoint REST API (`POST /api/am/send-link`, `POST /api/am/verify`, `POST /api/am/preset/find`, `POST /api/am/command`).
+  - Contoh payload JSON dan tombol **Salin cURL** sekali klik.
+- **Tab Playground:**
+  - **Card 1: Kirim Magic Link:** Form input email, live request button, tombol contoh data, reset, dan response viewer dengan badge HTTP status & latency (ms).
+  - **Card 2: Verifikasi & Aktivasi Pro:** Form email dan magic link/oobCode dengan textarea **auto break-line & auto-expand** untuk menangani tautan panjang tanpa terpotong.
+  - **Card 3: Cari Preset TikTok:** Form URL TikTok dengan auto break-line input, tombol cari preset, tombol contoh data, dan JSON live viewer.
+- **Card Panduan Bantuan & FAQ:** Selalu tampil di bawah kontainer tab sehingga dapat diakses kapan saja dari kedua tab.
+
+### 2. TikTok-Style Comment System
+- **Desktop:** Tampil sebagai sidebar container di sebelah kanan konten utama.
+- **Mobile:** Tampil sebagai bottom sheet interaktif ala aplikasi TikTok yang dapat dibuka dari floating action button (FAB).
+- **Threaded Replies:** Balasan komentar disejajarkan secara rapi dengan badge target `> nama_komentar`.
+- **Keyboard Emoji Lengkap:** 9 kategori standar Unicode (Wajah & Emosi, Orang & Tubuh, Hewan & Alam, Makanan & Minuman, Aktivitas & Olahraga, Kendaraan & Tempat, Benda & Objek, Simbol & Hati, Bendera), lengkap dengan fitur pencarian dan tombol backspace.
+- **Fitur Anonim & Avatar:** Toggle opsi anonim dan avatar yang ter-generate dinamis sesuai nama pengguna.
 
 ---
 
@@ -289,23 +308,22 @@ Adapter khusus untuk bot chat (WhatsApp / Telegram / Discord) yang menerima inpu
 
 ---
 
-### 5. Real-Time Activation Stats
-Mengambil statistik aktivasi langsung dari database cloud **Neon PostgreSQL**.
+### 5. Comment System Endpoints
+Endpoint pengelola komentar interaktif berbasis Drizzle ORM:
 
-- **Endpoint:** `GET /api/am/stats`
-- **Response (200 OK):**
+- **Ambil Tree Komentar:** `GET /api/comments`
+- **Kirim Komentar / Balasan:** `POST /api/comments`
   ```json
   {
-    "success": true,
-    "message": "Statistik Alight Motion Pro",
-    "formattedText": "*乂 STATISTIK ALIGHT MOTION PRO 乂*...",
-    "data": {
-      "totalPremium": 144,
-      "todayPremium": 1,
-      "status": "Online 🟢"
-    }
+    "parentId": "optional_parent_comment_uuid",
+    "name": "User Name",
+    "content": "Komentar teks",
+    "isAnonymous": false
   }
   ```
+
+> [!NOTE]
+> Statistik aktivasi (total & hari ini) serta pusat bantuan dan FAQ kini ter-render secara langsung melalui Server-Side Rendering (SSR) pada web UI tanpa perlu melakukan request endpoint polling terpisah.
 
 ---
 
@@ -318,7 +336,7 @@ Buat file `.env` di root project berdasarkan [`.env.example`](.env.example):
 PORT=3000
 NODE_ENV=development
 
-# Database (Neon Serverless PostgreSQL)
+# Database (Neon Serverless PostgreSQL via Drizzle ORM)
 DATABASE_URL=postgresql://neondb_owner:password@ep-sample-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
 
 # Firebase Identity Toolkit

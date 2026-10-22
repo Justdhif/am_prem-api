@@ -430,7 +430,7 @@ export function renderDashboardHtml(
       </div>
 
       <!-- 2 Cards Layout: Card 1 (Kirim Link) & Card 2 (Verify Link) -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 items-start">
 
         <!-- CARD 1: KIRIM MAGIC LINK -->
         <section class="doc-card p-5 sm:p-6 space-y-4 border-[#00e599]/30 flex flex-col justify-between">
@@ -575,6 +575,75 @@ export function renderDashboardHtml(
               <span id="pg-verify-time" class="text-gray-500 font-mono text-[11px]">0 ms</span>
             </div>
             <pre class="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs overflow-x-auto border border-gray-800 font-mono text-gray-300 max-h-56"><code id="pg-verify-output">{}</code></pre>
+          </div>
+        </section>
+
+        <!-- CARD 3: TIKTOK AM PRESET FINDER -->
+        <section class="doc-card p-5 sm:p-6 space-y-4 border-[#00e599]/30 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-gray-800">
+              <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 rounded-lg bg-purple-500/15 text-purple-400 flex items-center justify-center text-sm">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div>
+                  <h3 class="text-sm sm:text-base font-bold text-white">3. Cari Preset TikTok</h3>
+                  <div class="flex items-center space-x-2 mt-0.5">
+                    <span class="badge-method bg-purple-500/20 text-purple-400 border border-purple-500/30">POST</span>
+                    <code class="text-[11px] text-gray-400">/api/am/preset/find</code>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-xs text-gray-400 leading-relaxed">
+              Pindai link preset Alight Motion otomatis dari caption &amp; komentar video TikTok.
+            </p>
+
+            <form onsubmit="runPlaygroundPreset(event)" class="space-y-3">
+              <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1.5">
+                  URL Video TikTok <span class="text-[#00e599]">*</span>
+                </label>
+                <div class="flex items-start bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                  <i class="fa-brands fa-tiktok text-gray-500 mr-2.5 mt-1 text-xs shrink-0"></i>
+                  <textarea id="pg-preset-url" required rows="1" placeholder="https://vt.tiktok.com/ZSxxxxxxx/ atau link video TikTok"
+                    oninput="handlePresetTextareaInput(this)"
+                    class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full resize-none break-all whitespace-pre-wrap no-scrollbar leading-relaxed"
+                    style="min-height: 24px; max-height: 140px;"></textarea>
+                </div>
+                <p class="text-[10px] text-gray-500 mt-1">Link TikTok otomatis break-line &amp; auto-expand.</p>
+              </div>
+
+              <div class="flex items-center justify-between gap-2 pt-1 flex-wrap">
+                <div class="flex items-center space-x-2">
+                  <button type="submit" id="pg-preset-submit"
+                    class="px-3.5 py-2 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 disabled:opacity-50">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>Cari Preset (POST)</span>
+                  </button>
+                  <button type="button" onclick="fillSamplePreset()"
+                    class="px-3 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition active:scale-95">
+                    Contoh
+                  </button>
+                </div>
+                <button type="button" onclick="resetPlaygroundPreset()" class="text-xs text-gray-500 hover:text-white transition">
+                  Reset
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Response Viewer -->
+          <div id="pg-preset-result" class="hidden space-y-2 pt-3 border-t border-gray-800/80 mt-2">
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center space-x-2">
+                <span class="text-gray-400">Response Status:</span>
+                <span id="pg-preset-status" class="px-2 py-0.5 rounded font-mono font-bold text-[11px]">200 OK</span>
+              </div>
+              <span id="pg-preset-time" class="text-gray-500 font-mono text-[11px]">0 ms</span>
+            </div>
+            <pre class="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs overflow-x-auto border border-gray-800 font-mono text-gray-300 max-h-56"><code id="pg-preset-output">{}</code></pre>
           </div>
         </section>
 
@@ -824,6 +893,87 @@ export function renderDashboardHtml(
         if (pgBtn) pgBtn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center space-x-2 bg-[#00e599] text-gray-950 shadow-md shadow-[#00e599]/20';
         if (docsContent) docsContent.classList.add('hidden');
         if (pgContent) pgContent.classList.remove('hidden');
+      }
+    }
+
+    // Auto-expanding textarea for preset url input
+    function handlePresetTextareaInput(el) {
+      if (!el) return;
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+    }
+
+    function fillSamplePreset() {
+      var urlInput = document.getElementById('pg-preset-url');
+      if (urlInput) {
+        urlInput.value = 'https://vt.tiktok.com/ZSxxxxxxx/';
+        handlePresetTextareaInput(urlInput);
+      }
+    }
+
+    function resetPlaygroundPreset() {
+      var urlInput = document.getElementById('pg-preset-url');
+      var result = document.getElementById('pg-preset-result');
+      if (urlInput) {
+        urlInput.value = '';
+        urlInput.style.height = 'auto';
+      }
+      if (result) result.classList.add('hidden');
+    }
+
+    async function runPlaygroundPreset(e) {
+      e.preventDefault();
+      var urlInput = document.getElementById('pg-preset-url');
+      var submitBtn = document.getElementById('pg-preset-submit');
+      var resultBox = document.getElementById('pg-preset-result');
+      var statusBadge = document.getElementById('pg-preset-status');
+      var timeEl = document.getElementById('pg-preset-time');
+      var outputCode = document.getElementById('pg-preset-output');
+
+      var url = urlInput ? urlInput.value.trim() : '';
+      if (!url) return;
+
+      submitBtn.disabled = true;
+      var originalBtnHtml = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i><span>Memindai...</span>';
+
+      var t0 = performance.now();
+      try {
+        var res = await fetch('/api/am/preset/find', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: url })
+        });
+        var t1 = performance.now();
+        var json = await res.json();
+        var elapsed = Math.round(t1 - t0);
+
+        if (resultBox) resultBox.classList.remove('hidden');
+        if (timeEl) timeEl.innerText = elapsed + ' ms';
+        if (statusBadge) {
+          statusBadge.innerText = res.status + ' ' + (res.ok ? 'OK' : 'Error');
+          statusBadge.className = 'px-2 py-0.5 rounded font-mono font-bold text-[11px] ' +
+            (res.ok ? 'bg-emerald-500/20 text-[#00e599] border border-emerald-500/40' : 'bg-red-500/20 text-red-400 border border-red-500/40');
+        }
+        if (outputCode) {
+          outputCode.innerText = JSON.stringify(json, null, 2);
+          outputCode.className = res.ok ? 'text-[#00e599]' : 'text-red-300';
+        }
+      } catch (err) {
+        var elapsed = Math.round(performance.now() - t0);
+        if (resultBox) resultBox.classList.remove('hidden');
+        if (timeEl) timeEl.innerText = elapsed + ' ms';
+        if (statusBadge) {
+          statusBadge.innerText = 'Network Error';
+          statusBadge.className = 'px-2 py-0.5 rounded font-mono font-bold text-[11px] bg-red-500/20 text-red-400 border border-red-500/40';
+        }
+        if (outputCode) {
+          outputCode.innerText = JSON.stringify({ success: false, message: 'Gagal terhubung ke server', error: String(err) }, null, 2);
+          outputCode.className = 'text-red-300';
+        }
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
       }
     }
 

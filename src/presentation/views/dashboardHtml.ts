@@ -2,14 +2,19 @@ import { LOGO_DATA_URI } from './logoAsset.js';
 import { CommentNode } from '../../domain/entities/Comment.js';
 
 
-function renderCommentNodeServerSide(comment: CommentNode): string {
+
+function renderTikTokCommentServerSide(comment: CommentNode): string {
   const anonBadge = comment.isAnonymous
     ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-normal border border-gray-700/60 ml-1.5">Anonim</span>'
     : '';
 
+  const replyTarget = comment.replyToName
+    ? '<span class="text-gray-400 mx-1 text-xs font-normal">&gt;</span><span class="text-[#00e599] font-semibold text-xs">' + comment.replyToName.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>'
+    : '';
+
   const repliesHtml = (comment.replies && comment.replies.length > 0)
-    ? '<div class="mt-3 pl-3 sm:pl-4 space-y-3 border-l-2 border-gray-800/90">' +
-        comment.replies.map(renderCommentNodeServerSide).join('') +
+    ? '<div class="mt-3 pl-3 sm:pl-4 space-y-3 border-l border-gray-800/80">' +
+        comment.replies.map(renderTikTokCommentServerSide).join('') +
       '</div>'
     : '';
 
@@ -18,40 +23,25 @@ function renderCommentNodeServerSide(comment: CommentNode): string {
   const avatarUrl = comment.avatarUrl || 'https://ui-avatars.com/api/?name=Anonim&background=1f2b42&color=94a3b8&bold=true';
 
   return `
-    <div id="comment-${comment.id}" class="py-3.5 border-b border-gray-800/50 last:border-b-0 transition">
-      <div class="flex items-start space-x-3">
-        <img src="${avatarUrl}" alt="Avatar" class="w-8 h-8 rounded-full border border-gray-700/60 object-cover shrink-0 mt-0.5">
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between gap-2 flex-wrap">
-            <div class="flex items-center">
-              <span class="font-bold text-xs sm:text-sm text-white truncate">${safeName}</span>
-              ${anonBadge}
-            </div>
-            <span class="text-[10px] text-gray-500 font-medium">${comment.formattedTime || ''}</span>
+    <div id="comment-${comment.id}" class="flex items-start space-x-3 text-xs">
+      <img src="${avatarUrl}" alt="Avatar" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-gray-700/80 object-cover shrink-0 mt-0.5">
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center flex-wrap">
+            <span class="font-semibold text-gray-400 text-xs">${safeName}</span>
+            ${replyTarget}
+            ${anonBadge}
           </div>
-          <p class="text-xs text-gray-300 mt-1.5 leading-relaxed break-words whitespace-pre-line">${safeContent}</p>
-          <div class="mt-2.5 flex items-center space-x-3">
-            <button type="button" onclick="toggleReplyForm('${comment.id}')" class="text-[11px] font-semibold text-[#00e599] hover:text-[#1affaa] transition inline-flex items-center space-x-1">
-              <i class="fa-solid fa-reply text-[10px]"></i>
-              <span>Balas</span>
-            </button>
-          </div>
-          <div id="reply-box-${comment.id}" class="hidden mt-3 pt-3 border-t border-gray-800/80 space-y-2.5">
-            <div class="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">
-              <input type="text" id="reply-name-${comment.id}" placeholder="Nama kamu..." maxlength="50" class="w-full sm:w-1/2 bg-[#0d121f] border border-gray-800 rounded-lg px-2.5 py-1 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition">
-              <label class="flex items-center space-x-1.5 cursor-pointer select-none">
-                <input type="checkbox" id="reply-anon-${comment.id}" onchange="toggleAnonymous('reply-name-${comment.id}', this.checked)" class="rounded bg-gray-800 border-gray-700 text-[#00e599] focus:ring-0">
-                <span class="text-[11px] text-gray-400">Anonim</span>
-              </label>
-            </div>
-            <textarea id="reply-content-${comment.id}" rows="2" placeholder="Tulis balasan kamu..." maxlength="1000" class="w-full bg-[#0d121f] border border-gray-800 rounded-lg p-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition resize-y"></textarea>
-            <div class="flex items-center justify-end space-x-2">
-              <button type="button" onclick="toggleReplyForm('${comment.id}')" class="px-3 py-1 rounded-lg text-xs text-gray-400 hover:text-white transition">Batal</button>
-              <button type="button" onclick="submitReply('${comment.id}')" class="px-3.5 py-1 rounded-lg bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs transition">Kirim Balasan</button>
-            </div>
-          </div>
-          ${repliesHtml}
+          <button type="button" onclick="toggleLike(this)" class="text-gray-500 hover:text-red-500 transition flex items-center space-x-1 pl-2">
+            <i class="fa-regular fa-heart text-xs"></i>
+          </button>
         </div>
+        <p class="text-xs sm:text-sm text-gray-100 font-normal mt-0.5 leading-relaxed break-words whitespace-pre-line">${safeContent}</p>
+        <div class="flex items-center space-x-3 mt-1.5 text-[11px] text-gray-500">
+          <span>${comment.formattedTime || 'Baru saja'}</span>
+          <button type="button" onclick="setReplyMode('${comment.id}', '${safeName}')" class="font-bold text-gray-400 hover:text-white transition">Balas</button>
+        </div>
+        ${repliesHtml}
       </div>
     </div>
   `;
@@ -419,68 +409,109 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
     </div>
 
 
-      <!-- SECTION KOMENTAR & DISKUSI KOMUNITAS -->
-      <section class="mt-8 pt-6 border-t border-gray-800/80 space-y-6" id="diskusi">
-        <div class="flex items-center justify-between border-b border-gray-800 pb-4">
-          <div>
-            <h2 class="text-lg font-bold text-white flex items-center">
-              <i class="fa-solid fa-comments text-[#00e599] mr-2.5 text-sm"></i>Diskusi &amp; Komentar
-            </h2>
-            <p class="text-xs text-gray-400 mt-1">Bagikan tanggapan, tanyakan seputar API, atau sapa komunitas!</p>
-          </div>
-          <span id="comment-count-badge" class="px-2.5 py-1 text-xs font-semibold rounded-full bg-[#00e599]/15 text-[#00e599] border border-[#00e599]/30">
-            ${initialComments ? initialComments.length + ' Komentar' : '0 Komentar'}
-          </span>
+      
+  <!-- TIKTOK-STYLE FLOATING COMMENT BUTTON (FAB) -->
+  <button id="fab-open-comments" type="button" onclick="openCommentSheet()"
+    class="fixed bottom-6 right-5 sm:right-8 z-40 flex items-center space-x-2 px-4 py-3 rounded-full bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm shadow-xl shadow-[#00e599]/30 transition-all duration-300 transform hover:scale-105 active:scale-95 group">
+    <i class="fa-solid fa-comment-dots text-base"></i>
+    <span class="font-bold">Komentar</span>
+    <span id="fab-count" class="px-2 py-0.5 rounded-full bg-gray-950/20 text-gray-950 text-xs font-black">
+      ${initialComments ? initialComments.length : '0'}
+    </span>
+  </button>
+
+  <!-- TIKTOK-STYLE COMMENT BOTTOM SHEET (DRAWER) -->
+  <div id="comment-sheet-backdrop" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300" onclick="closeCommentSheet()"></div>
+
+  <div id="comment-sheet" class="fixed bottom-0 left-0 right-0 z-50 max-w-lg mx-auto w-full h-[85vh] max-h-[760px] bg-[#0d121f] text-white rounded-t-3xl border-t border-x border-gray-800/80 shadow-2xl flex flex-col transform translate-y-full transition-transform duration-300 ease-out">
+    
+    <!-- Header Sheet (Handle & Counter ala TikTok) -->
+    <div class="px-4 pt-2.5 pb-2 border-b border-gray-800/80 shrink-0 select-none">
+      <div class="w-10 h-1 bg-gray-600 rounded-full mx-auto mb-2 cursor-pointer" onclick="closeCommentSheet()"></div>
+      <div class="relative flex items-center justify-center">
+        <h3 class="font-bold text-sm sm:text-base text-white flex items-center">
+          <span id="sheet-title-count">${initialComments ? initialComments.length : '0'}</span>&nbsp;komentar
+          <i class="fa-solid fa-bars-staggered ml-1.5 text-xs text-gray-400"></i>
+        </h3>
+        <button type="button" onclick="closeCommentSheet()" class="absolute right-0 p-1 text-gray-400 hover:text-white transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Scrollable Comments Feed -->
+    <div id="comments-sheet-list" class="flex-1 overflow-y-auto px-4 py-3 space-y-4 overscroll-contain">
+      ${
+        initialComments
+          ? initialComments.length === 0
+            ? '<div class="text-center py-16 text-gray-500 text-xs">' +
+                '<i class="fa-regular fa-comment-dots text-3xl block mb-2 text-gray-600"></i>' +
+                'Belum ada komentar. Jadilah yang pertama berkomentar!' +
+              '</div>'
+            : initialComments.map(renderTikTokCommentServerSide).join('')
+          : '<div class="text-center py-16 text-gray-500 text-xs">' +
+              '<i class="fa-solid fa-spinner fa-spin mr-1.5 text-[#00e599]"></i>Memuat komentar...' +
+            '</div>'
+      }
+    </div>
+
+    <!-- Bottom Input Area (TikTok Style) -->
+    <div class="border-t border-gray-800/80 bg-[#0d121f] p-3 shrink-0">
+      
+      <!-- Banner Reply Indicator (aktif jika sedang membalas) -->
+      <div id="sheet-reply-banner" class="hidden flex items-center justify-between pb-2 text-xs text-gray-400">
+        <div class="flex items-center space-x-1.5">
+          <i class="fa-solid fa-reply text-[10px] text-[#00e599]"></i>
+          <span>Membalas <strong id="sheet-reply-target" class="text-[#00e599]">@User</strong></span>
+        </div>
+        <button type="button" onclick="cancelReplyMode()" class="text-gray-500 hover:text-white text-xs">
+          <i class="fa-solid fa-xmark mr-1"></i>Batal
+        </button>
+      </div>
+
+      <!-- Quick Reaction Emojis Bar -->
+      <div class="flex items-center space-x-3 pb-2.5 overflow-x-auto no-scrollbar select-none text-base">
+        <button type="button" onclick="insertEmoji('🔥')" class="hover:scale-125 transition">🔥</button>
+        <button type="button" onclick="insertEmoji('❤️')" class="hover:scale-125 transition">❤️</button>
+        <button type="button" onclick="insertEmoji('😂')" class="hover:scale-125 transition">😂</button>
+        <button type="button" onclick="insertEmoji('👏')" class="hover:scale-125 transition">👏</button>
+        <button type="button" onclick="insertEmoji('✨')" class="hover:scale-125 transition">✨</button>
+        <button type="button" onclick="insertEmoji('🙌')" class="hover:scale-125 transition">🙌</button>
+        <button type="button" onclick="insertEmoji('⚡')" class="hover:scale-125 transition">⚡</button>
+      </div>
+
+      <!-- Header Input: Nama & Toggle Anonim (TANPA BOX INPUT - Borderless & Flat) -->
+      <div class="flex items-center justify-between gap-3 pb-2 text-xs border-b border-gray-800/60 mb-2.5">
+        <div class="flex items-center space-x-2 flex-1">
+          <i class="fa-regular fa-user text-gray-500 text-[11px]"></i>
+          <input type="text" id="sheet-author-name" oninput="updateSheetAvatar()" placeholder="Nama kamu..." maxlength="50"
+            class="bg-transparent border-0 p-0 text-xs text-white placeholder-gray-500 focus:outline-none focus:ring-0 w-full disabled:opacity-40">
+        </div>
+        <label class="flex items-center space-x-1.5 cursor-pointer select-none shrink-0">
+          <input type="checkbox" id="sheet-toggle-anon" onchange="toggleSheetAnonymous(this.checked)" class="rounded bg-gray-800 border-gray-700 text-[#00e599] focus:ring-0 w-3.5 h-3.5">
+          <span class="text-[11px] text-gray-400">Anonim</span>
+        </label>
+      </div>
+
+      <!-- Main Input Bar (TikTok Rounded Pill Style) -->
+      <form id="sheet-comment-form" onsubmit="submitSheetComment(event)" class="flex items-center space-x-2">
+        <img id="sheet-user-avatar" src="https://ui-avatars.com/api/?name=User&background=00e599&color=0d121f&bold=true" alt="Avatar" class="w-8 h-8 rounded-full border border-gray-700/80 object-cover shrink-0">
+        
+        <div class="flex-1 bg-[#1a2234] rounded-full px-4 py-2 flex items-center border border-transparent focus-within:border-[#00e599]/60 transition">
+          <input type="text" id="sheet-comment-input" placeholder="Tambahkan komentar..." required maxlength="1000"
+            class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-0 w-full">
         </div>
 
-        <!-- FORM TAMBAH KOMENTAR UTAMA -->
-        <form id="main-comment-form" onsubmit="submitMainComment(event)" class="space-y-3.5 pt-1">
-          <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-            <div class="w-full sm:w-1/2">
-              <label class="text-[11px] font-medium text-gray-300 block mb-1">Nama Tampilan</label>
-              <input type="text" id="comment-name" placeholder="Nama kamu (misal: Dhif)" maxlength="50"
-                class="w-full bg-[#0d121f] border border-gray-800 rounded-lg px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition disabled:opacity-50 disabled:bg-gray-900/50">
-            </div>
-            <div class="flex items-center space-x-2 pt-1 sm:pt-4">
-              <label class="relative inline-flex items-center cursor-pointer select-none">
-                <input type="checkbox" id="toggle-anon" onchange="toggleAnonymous('comment-name', this.checked)" class="sr-only peer">
-                <div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#00e599]"></div>
-                <span class="ml-2 text-xs font-medium text-gray-300">Kirim sebagai Anonim</span>
-              </label>
-            </div>
-          </div>
+        <button type="submit" id="sheet-btn-send"
+          class="w-8 h-8 rounded-full bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold flex items-center justify-center transition shadow-md shrink-0 active:scale-95 disabled:opacity-40">
+          <i class="fa-solid fa-arrow-up text-sm"></i>
+        </button>
+      </form>
 
-          <div>
-            <label class="text-[11px] font-medium text-gray-300 block mb-1">Pesan Komentar</label>
-            <textarea id="comment-content" rows="3" placeholder="Tulis komentar atau tanggapan kamu di sini..." required maxlength="1000"
-              class="w-full bg-[#0d121f] border border-gray-800 rounded-lg p-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition resize-y"></textarea>
-          </div>
+    </div>
 
-          <div class="flex justify-end">
-            <button type="submit" id="btn-submit-comment"
-              class="inline-flex items-center space-x-1.5 px-4 py-2 rounded-lg bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs transition shadow-sm shadow-[#00e599]/20 disabled:opacity-50">
-              <i class="fa-solid fa-paper-plane text-[11px]"></i>
-              <span>Kirim Komentar</span>
-            </button>
-          </div>
-        </form>
+  </div>
 
-        <!-- LIST KOMENTAR THREADED -->
-        <div id="comments-list" class="space-y-3.5 pt-1">
-          ${
-            initialComments
-              ? initialComments.length === 0
-                ? '<div class="text-center py-8 text-gray-500 text-xs">' +
-                    '<i class="fa-regular fa-comment-dots text-2xl block mb-2 text-gray-600"></i>' +
-                    'Belum ada komentar. Jadilah yang pertama berkomentar!' +
-                  '</div>'
-                : initialComments.map(renderCommentNodeServerSide).join('')
-              : '<div class="text-center py-8 text-gray-500 text-xs">' +
-                  '<i class="fa-solid fa-spinner fa-spin mr-1.5 text-[#00e599]"></i>Memuat diskusi...' +
-                '</div>'
-          }
-        </div>
-      </section>
 
   </main>
 
@@ -534,162 +565,222 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
     }
 
     
-    // --- Comments System ---
+    
+    // --- TikTok-Style Comment Sheet Logic ---
+    var activeParentId = null;
+
+    function openCommentSheet() {
+      var sheet = document.getElementById('comment-sheet');
+      var backdrop = document.getElementById('comment-sheet-backdrop');
+      if (sheet && backdrop) {
+        backdrop.classList.remove('opacity-0', 'pointer-events-none');
+        backdrop.classList.add('opacity-100');
+        sheet.classList.remove('translate-y-full');
+        sheet.classList.add('translate-y-0');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeCommentSheet() {
+      var sheet = document.getElementById('comment-sheet');
+      var backdrop = document.getElementById('comment-sheet-backdrop');
+      if (sheet && backdrop) {
+        backdrop.classList.remove('opacity-100');
+        backdrop.classList.add('opacity-0', 'pointer-events-none');
+        sheet.classList.remove('translate-y-0');
+        sheet.classList.add('translate-y-full');
+        document.body.style.overflow = '';
+        cancelReplyMode();
+      }
+    }
+
+    function setReplyMode(parentId, targetName) {
+      activeParentId = parentId;
+      var banner = document.getElementById('sheet-reply-banner');
+      var targetEl = document.getElementById('sheet-reply-target');
+      var inputEl = document.getElementById('sheet-comment-input');
+      if (banner && targetEl) {
+        targetEl.innerText = '@' + targetName;
+        banner.classList.remove('hidden');
+      }
+      if (inputEl) {
+        inputEl.placeholder = 'Balas @' + targetName + '...';
+        inputEl.focus();
+      }
+    }
+
+    function cancelReplyMode() {
+      activeParentId = null;
+      var banner = document.getElementById('sheet-reply-banner');
+      var inputEl = document.getElementById('sheet-comment-input');
+      if (banner) banner.classList.add('hidden');
+      if (inputEl) inputEl.placeholder = 'Tambahkan komentar...';
+    }
+
+    function insertEmoji(emoji) {
+      var inputEl = document.getElementById('sheet-comment-input');
+      if (inputEl) {
+        inputEl.value += emoji;
+        inputEl.focus();
+      }
+    }
+
+    function toggleSheetAnonymous(isChecked) {
+      var nameInput = document.getElementById('sheet-author-name');
+      var avatarImg = document.getElementById('sheet-user-avatar');
+      if (nameInput) {
+        nameInput.disabled = isChecked;
+        if (isChecked) {
+          nameInput.value = '';
+          nameInput.placeholder = 'Anonim';
+          if (avatarImg) avatarImg.src = 'https://ui-avatars.com/api/?name=Anonim&background=1f2b42&color=94a3b8&bold=true';
+        } else {
+          nameInput.placeholder = 'Nama kamu...';
+          updateSheetAvatar();
+        }
+      }
+    }
+
+    function updateSheetAvatar() {
+      var nameInput = document.getElementById('sheet-author-name');
+      var avatarImg = document.getElementById('sheet-user-avatar');
+      var anonCheck = document.getElementById('sheet-toggle-anon');
+      if (anonCheck && anonCheck.checked) return;
+
+      var name = nameInput && nameInput.value.trim() ? nameInput.value.trim() : 'User';
+      if (avatarImg) {
+        avatarImg.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=00e599&color=0d121f&bold=true';
+      }
+    }
+
+    function toggleLike(btn) {
+      var icon = btn.querySelector('i');
+      if (icon) {
+        if (icon.classList.contains('fa-regular')) {
+          icon.classList.remove('fa-regular');
+          icon.classList.add('fa-solid', 'text-red-500');
+        } else {
+          icon.classList.remove('fa-solid', 'text-red-500');
+          icon.classList.add('fa-regular');
+        }
+      }
+    }
+
+    // --- Fetch Comments from Server ---
     async function loadComments() {
       try {
         var res = await fetch('/api/comments');
         var json = await res.json();
-        var listEl = document.getElementById('comments-list');
-        var badgeEl = document.getElementById('comment-count-badge');
+        var listEl = document.getElementById('comments-sheet-list');
+        var sheetCount = document.getElementById('sheet-title-count');
+        var fabCount = document.getElementById('fab-count');
 
         if (!res.ok || !json.success || !Array.isArray(json.comments)) {
-          if (listEl && listEl.innerText.includes('Memuat diskusi')) {
+          if (listEl && listEl.innerText.includes('Memuat komentar')) {
             listEl.innerHTML =
-              '<div class="text-center py-8 text-gray-500 text-xs">' +
-                '<i class="fa-regular fa-comment-dots text-2xl block mb-2 text-gray-600"></i>' +
+              '<div class="text-center py-16 text-gray-500 text-xs">' +
+                '<i class="fa-regular fa-comment-dots text-3xl block mb-2 text-gray-600"></i>' +
                 'Belum ada komentar. Jadilah yang pertama berkomentar!' +
               '</div>';
           }
           return;
         }
 
-        if (badgeEl) badgeEl.innerText = (json.totalComments || 0) + ' Komentar';
+        var total = json.totalComments || 0;
+        if (sheetCount) sheetCount.innerText = total;
+        if (fabCount) fabCount.innerText = total;
+
         if (json.comments.length === 0) {
           listEl.innerHTML =
-            '<div class="text-center py-8 text-gray-500 text-xs">' +
-              '<i class="fa-regular fa-comment-dots text-2xl block mb-2 text-gray-600"></i>' +
+            '<div class="text-center py-16 text-gray-500 text-xs">' +
+              '<i class="fa-regular fa-comment-dots text-3xl block mb-2 text-gray-600"></i>' +
               'Belum ada komentar. Jadilah yang pertama berkomentar!' +
             '</div>';
           return;
         }
 
-        listEl.innerHTML = json.comments.map(function(c) { return renderCommentHtml(c); }).join('');
+        listEl.innerHTML = json.comments.map(function(c) { return renderTikTokCommentHtml(c); }).join('');
       } catch (err) {
-        var listEl = document.getElementById('comments-list');
+        var listEl = document.getElementById('comments-sheet-list');
         if (listEl) {
           listEl.innerHTML =
-            '<div class="text-center py-4 text-red-400 text-xs">' +
-              'Gagal memuat diskusi. Silakan refresh halaman.' +
+            '<div class="text-center py-12 text-red-400 text-xs">' +
+              'Gagal memuat komentar. Silakan refresh halaman.' +
             '</div>';
         }
       }
     }
 
-    function renderCommentHtml(comment) {
+    function renderTikTokCommentHtml(comment) {
       var anonBadge = comment.isAnonymous
         ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-normal border border-gray-700/60 ml-1.5">Anonim</span>'
         : '';
 
+      var replyTarget = comment.replyToName
+        ? '<span class="text-gray-400 mx-1 text-xs font-normal">&gt;</span><span class="text-[#00e599] font-semibold text-xs">' + escapeHtml(comment.replyToName) + '</span>'
+        : '';
+
       var repliesHtml = (comment.replies && comment.replies.length > 0)
-        ? '<div class="mt-3 pl-3 sm:pl-4 space-y-3 border-l-2 border-gray-800/90">' +
-            comment.replies.map(function(r) { return renderCommentHtml(r); }).join('') +
+        ? '<div class="mt-3 pl-3 sm:pl-4 space-y-3 border-l border-gray-800/80">' +
+            comment.replies.map(function(r) { return renderTikTokCommentHtml(r); }).join('') +
           '</div>'
         : '';
 
       return (
-        '<div id="comment-' + comment.id + '" class="py-3.5 border-b border-gray-800/50 last:border-b-0 transition">' +
-          '<div class="flex items-start space-x-3">' +
-            '<img src="' + escapeHtml(comment.avatarUrl) + '" alt="Avatar" class="w-8 h-8 rounded-full border border-gray-700/60 object-cover shrink-0 mt-0.5">' +
-            '<div class="flex-1 min-w-0">' +
-              '<div class="flex items-center justify-between gap-2 flex-wrap">' +
-                '<div class="flex items-center">' +
-                  '<span class="font-bold text-xs sm:text-sm text-white truncate">' + escapeHtml(comment.name) + '</span>' +
-                  anonBadge +
-                '</div>' +
-                '<span class="text-[10px] text-gray-500 font-medium">' + escapeHtml(comment.formattedTime || '') + '</span>' +
+        '<div id="comment-' + comment.id + '" class="flex items-start space-x-3 text-xs">' +
+          '<img src="' + escapeHtml(comment.avatarUrl) + '" alt="Avatar" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-gray-700/80 object-cover shrink-0 mt-0.5">' +
+          '<div class="flex-1 min-w-0">' +
+            '<div class="flex items-center justify-between">' +
+              '<div class="flex items-center flex-wrap">' +
+                '<span class="font-semibold text-gray-400 text-xs">' + escapeHtml(comment.name) + '</span>' +
+                replyTarget +
+                anonBadge +
               '</div>' +
-              '<p class="text-xs text-gray-300 mt-1.5 leading-relaxed break-words whitespace-pre-line">' + escapeHtml(comment.content) + '</p>' +
-              '<div class="mt-2.5 flex items-center space-x-3">' +
-                '<button type="button" onclick="toggleReplyForm(\'' + comment.id + '\')" class="text-[11px] font-semibold text-[#00e599] hover:text-[#1affaa] transition inline-flex items-center space-x-1">' +
-                  '<i class="fa-solid fa-reply text-[10px]"></i>' +
-                  '<span>Balas</span>' +
-                '</button>' +
-              '</div>' +
-              '<div id="reply-box-' + comment.id + '" class="hidden mt-3 pt-3 border-t border-gray-800/80 space-y-2.5">' +
-                '<div class="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">' +
-                  '<input type="text" id="reply-name-' + comment.id + '" placeholder="Nama kamu..." maxlength="50" class="w-full sm:w-1/2 bg-[#0d121f] border border-gray-800 rounded-lg px-2.5 py-1 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition">' +
-                  '<label class="flex items-center space-x-1.5 cursor-pointer select-none">' +
-                    '<input type="checkbox" id="reply-anon-' + comment.id + '" onchange="toggleAnonymous(\'' + 'reply-name-' + comment.id + '\', this.checked)" class="rounded bg-gray-800 border-gray-700 text-[#00e599] focus:ring-0">' +
-                    '<span class="text-[11px] text-gray-400">Anonim</span>' +
-                  '</label>' +
-                '</div>' +
-                '<textarea id="reply-content-' + comment.id + '" rows="2" placeholder="Tulis balasan kamu..." maxlength="1000" class="w-full bg-[#0d121f] border border-gray-800 rounded-lg p-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition resize-y"></textarea>' +
-                '<div class="flex items-center justify-end space-x-2">' +
-                  '<button type="button" onclick="toggleReplyForm(\'' + comment.id + '\')" class="px-3 py-1 rounded-lg text-xs text-gray-400 hover:text-white transition">Batal</button>' +
-                  '<button type="button" onclick="submitReply(\'' + comment.id + '\')" class="px-3.5 py-1 rounded-lg bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs transition">Kirim Balasan</button>' +
-                '</div>' +
-              '</div>' +
-              repliesHtml +
+              '<button type="button" onclick="toggleLike(this)" class="text-gray-500 hover:text-red-500 transition flex items-center space-x-1 pl-2">' +
+                '<i class="fa-regular fa-heart text-xs"></i>' +
+              '</button>' +
             '</div>' +
+            '<p class="text-xs sm:text-sm text-gray-100 font-normal mt-0.5 leading-relaxed break-words whitespace-pre-line">' + escapeHtml(comment.content) + '</p>' +
+            '<div class="flex items-center space-x-3 mt-1.5 text-[11px] text-gray-500">' +
+              '<span>' + escapeHtml(comment.formattedTime || 'Baru saja') + '</span>' +
+              '<button type="button" onclick="setReplyMode(\'' + comment.id + '\', \'' + escapeHtml(comment.name) + '\')" class="font-bold text-gray-400 hover:text-white transition">Balas</button>' +
+            '</div>' +
+            repliesHtml +
           '</div>' +
         '</div>'
       );
     }
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    function toggleAnonymous(inputId, isChecked) {
-      var input = document.getElementById(inputId);
-      if (!input) return;
-      if (isChecked) {
-        input.disabled = true;
-        input.value = '';
-        input.placeholder = 'Anonim';
-      } else {
-        input.disabled = false;
-        input.placeholder = 'Nama kamu...';
-      }
-    }
-
-    function toggleReplyForm(commentId) {
-      var box = document.getElementById('reply-box-' + commentId);
-      if (box) {
-        box.classList.toggle('hidden');
-        if (!box.classList.contains('hidden')) {
-          var textarea = document.getElementById('reply-content-' + commentId);
-          if (textarea) textarea.focus();
-        }
-      }
-    }
-
-    async function submitMainComment(e) {
+    async function submitSheetComment(e) {
       e.preventDefault();
-      var nameInput = document.getElementById('comment-name');
-      var anonToggle = document.getElementById('toggle-anon');
-      var contentInput = document.getElementById('comment-content');
-      var btn = document.getElementById('btn-submit-comment');
+      var nameInput = document.getElementById('sheet-author-name');
+      var anonToggle = document.getElementById('sheet-toggle-anon');
+      var contentInput = document.getElementById('sheet-comment-input');
+      var btn = document.getElementById('sheet-btn-send');
 
       var isAnonymous = Boolean(anonToggle && anonToggle.checked);
       var name = isAnonymous ? 'Anonim' : (nameInput ? nameInput.value : '').trim();
       var content = (contentInput ? contentInput.value : '').trim();
 
-      if (!content) {
-        showToast('Komentar tidak boleh kosong!');
-        return;
-      }
+      if (!content) return;
 
       btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i><span>Mengirim...</span>';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i>';
 
       try {
         var res = await fetch('/api/comments', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: name, isAnonymous: isAnonymous, content: content }),
+          body: JSON.stringify({ parentId: activeParentId, name: name, isAnonymous: isAnonymous, content: content }),
         });
         var json = await res.json();
         if (json.success) {
           contentInput.value = '';
+          cancelReplyMode();
           showToast('Komentar berhasil dipublikasikan!');
           await loadComments();
+          var listEl = document.getElementById('comments-sheet-list');
+          if (listEl) listEl.scrollTop = 0;
         } else {
           showToast(json.message || 'Gagal mengirim komentar.');
         }
@@ -697,40 +788,10 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         showToast('Gagal terhubung ke server.');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-paper-plane text-[11px]"></i><span>Kirim Komentar</span>';
+        btn.innerHTML = '<i class="fa-solid fa-arrow-up text-sm"></i>';
       }
     }
-
-    async function submitReply(parentId) {
-      var nameInput = document.getElementById('reply-name-' + parentId);
-      var anonCheck = document.getElementById('reply-anon-' + parentId);
-      var contentInput = document.getElementById('reply-content-' + parentId);
-
-      var isAnonymous = Boolean(anonCheck && anonCheck.checked);
-      var name = isAnonymous ? 'Anonim' : (nameInput ? nameInput.value : '').trim();
-      var content = (contentInput ? contentInput.value : '').trim();
-
-      if (!content) {
-        showToast('Balasan tidak boleh kosong!');
-        return;
-      }
-
-      try {
-        var res = await fetch('/api/comments', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ parentId: parentId, name: name, isAnonymous: isAnonymous, content: content }),
-        });
-        var json = await res.json();
-        if (json.success) {
-          if (contentInput) contentInput.value = '';
-          toggleReplyForm(parentId);
-          showToast('Balasan berhasil dikirim!');
-          await loadComments();
-        } else {
-          showToast(json.message || 'Gagal mengirim balasan.');
-        }
-      } catch (err) {
+ catch (err) {
         showToast('Gagal terhubung ke server.');
       }
     }

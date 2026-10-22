@@ -1533,6 +1533,22 @@ export function renderDashboardHtml(
       if (typeof page === 'number') {
         currentCommentPage = page;
       }
+
+      var listEl = document.getElementById('comments-sheet-list');
+      var prevBtn = document.getElementById('btn-comment-prev');
+      var nextBtn = document.getElementById('btn-comment-next');
+
+      // UI Loader saat memuat komentar halaman
+      if (prevBtn) prevBtn.disabled = true;
+      if (nextBtn) nextBtn.disabled = true;
+      if (listEl) {
+        listEl.innerHTML =
+          '<div class="flex flex-col items-center justify-center py-20 text-gray-400 space-y-3 select-none animate-in fade-in duration-150">' +
+            '<div class="w-8 h-8 border-2 border-gray-700/80 border-t-[#00e599] rounded-full animate-spin"></div>' +
+            '<span class="text-xs text-gray-400 font-medium tracking-wide">Memuat komentar...</span>' +
+          '</div>';
+      }
+
       try {
         var res = await fetch('/api/comments?page=' + currentCommentPage + '&limit=5');
         var json = await res.json();

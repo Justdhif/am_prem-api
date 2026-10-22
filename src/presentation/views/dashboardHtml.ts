@@ -61,6 +61,9 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         <a href="https://www.tiktok.com/@justdhifbieber" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-400 hover:text-[#00e599] transition" title="TikTok">
           <i class="fa-brands fa-tiktok text-xl"></i>
         </a>
+        <a href="https://wa.me/447762422507" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-400 hover:text-[#00e599] transition" title="WhatsApp (+44 7762 422507)">
+          <i class="fa-brands fa-whatsapp text-xl"></i>
+        </a>
       </div>
     </div>
   </header>

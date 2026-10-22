@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import alightMotionRoutes from './alightMotion.routes.js';
+import commentRoutes from './comment.routes.js';
 
 const router = Router();
 
@@ -12,5 +13,7 @@ router.get('/health', (_req, res) => {
 });
 
 router.use('/am', alightMotionRoutes);
+router.use('/comments', commentRoutes);
+router.use('/am/comments', commentRoutes);
 
 export default router;

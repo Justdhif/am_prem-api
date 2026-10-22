@@ -361,6 +361,61 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
       </section>
     </div>
 
+
+      <!-- SECTION KOMENTAR & DISKUSI KOMUNITAS -->
+      <section class="doc-card p-5 sm:p-6 space-y-6" id="diskusi">
+        <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center">
+              <i class="fa-solid fa-comments text-[#00e599] mr-2.5 text-sm"></i>Diskusi &amp; Komentar
+            </h2>
+            <p class="text-xs text-gray-400 mt-1">Bagikan tanggapan, tanyakan seputar API, atau sapa komunitas!</p>
+          </div>
+          <span id="comment-count-badge" class="px-2.5 py-1 text-xs font-semibold rounded-full bg-[#00e599]/15 text-[#00e599] border border-[#00e599]/30">
+            0 Komentar
+          </span>
+        </div>
+
+        <!-- FORM TAMBAH KOMENTAR UTAMA -->
+        <form id="main-comment-form" onsubmit="submitMainComment(event)" class="space-y-3 bg-[#0d121f] p-4 rounded-xl border border-gray-800/80">
+          <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+            <div class="w-full sm:w-1/2">
+              <label class="text-[11px] font-medium text-gray-300 block mb-1">Nama Tampilan</label>
+              <input type="text" id="comment-name" placeholder="Nama kamu (misal: Dhif)" maxlength="50"
+                class="w-full bg-[#131927] border border-gray-700/80 rounded-lg px-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition disabled:opacity-50 disabled:bg-gray-800/50">
+            </div>
+            <div class="flex items-center space-x-2 pt-1 sm:pt-4">
+              <label class="relative inline-flex items-center cursor-pointer select-none">
+                <input type="checkbox" id="toggle-anon" onchange="toggleAnonymous('comment-name', this.checked)" class="sr-only peer">
+                <div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#00e599]"></div>
+                <span class="ml-2 text-xs font-medium text-gray-300">Kirim sebagai Anonim</span>
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-medium text-gray-300 block mb-1">Pesan Komentar</label>
+            <textarea id="comment-content" rows="3" placeholder="Tulis komentar atau tanggapan kamu di sini..." required maxlength="1000"
+              class="w-full bg-[#131927] border border-gray-700/80 rounded-lg p-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition resize-y"></textarea>
+          </div>
+
+          <div class="flex justify-end">
+            <button type="submit" id="btn-submit-comment"
+              class="inline-flex items-center space-x-1.5 px-4 py-2 rounded-lg bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs transition shadow-sm shadow-[#00e599]/20 disabled:opacity-50">
+              <i class="fa-solid fa-paper-plane text-[11px]"></i>
+              <span>Kirim Komentar</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- LIST KOMENTAR THREADED -->
+        <div id="comments-list" class="space-y-3.5 pt-1">
+          <div class="text-center py-8 text-gray-500 text-xs">
+            <i class="fa-solid fa-spinner fa-spin mr-1.5 text-[#00e599]"></i>Memuat diskusi...
+          </div>
+        </div>
+      </section>
+
   </main>
 
   <!-- TOAST NOTIFICATION -->
@@ -412,7 +467,201 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
       }
     }
 
+    
+    // --- Comments System ---
+    async function loadComments() {
+      try {
+        var res = await fetch('/api/comments');
+        var json = await res.json();
+        var listEl = document.getElementById('comments-list');
+        var badgeEl = document.getElementById('comment-count-badge');
+
+        if (json.success && Array.isArray(json.comments)) {
+          if (badgeEl) badgeEl.innerText = (json.totalComments || 0) + ' Komentar';
+          if (json.comments.length === 0) {
+            listEl.innerHTML =
+              '<div class="text-center py-8 text-gray-500 text-xs bg-[#0d121f] rounded-xl border border-gray-800/80">' +
+                '<i class="fa-regular fa-comment-dots text-2xl block mb-2 text-gray-600"></i>' +
+                'Belum ada komentar. Jadilah yang pertama berkomentar!' +
+              '</div>';
+            return;
+          }
+
+          listEl.innerHTML = json.comments.map(function(c) { return renderCommentHtml(c); }).join('');
+        }
+      } catch (err) {
+        var listEl = document.getElementById('comments-list');
+        if (listEl) {
+          listEl.innerHTML =
+            '<div class="text-center py-4 text-red-400 text-xs">' +
+              'Gagal memuat diskusi. Silakan refresh halaman.' +
+            '</div>';
+        }
+      }
+    }
+
+    function renderCommentHtml(comment) {
+      var anonBadge = comment.isAnonymous
+        ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-normal border border-gray-700/60 ml-1.5">Anonim</span>'
+        : '';
+
+      var repliesHtml = (comment.replies && comment.replies.length > 0)
+        ? '<div class="mt-3 pl-3 sm:pl-4 space-y-3 border-l-2 border-gray-800/90">' +
+            comment.replies.map(function(r) { return renderCommentHtml(r); }).join('') +
+          '</div>'
+        : '';
+
+      return (
+        '<div id="comment-' + comment.id + '" class="bg-[#0d121f] p-3.5 sm:p-4 rounded-xl border border-gray-800/80 transition hover:border-gray-700">' +
+          '<div class="flex items-start space-x-3">' +
+            '<img src="' + escapeHtml(comment.avatarUrl) + '" alt="Avatar" class="w-8 h-8 rounded-full border border-gray-700/60 object-cover shrink-0 mt-0.5">' +
+            '<div class="flex-1 min-w-0">' +
+              '<div class="flex items-center justify-between gap-2 flex-wrap">' +
+                '<div class="flex items-center">' +
+                  '<span class="font-bold text-xs sm:text-sm text-white truncate">' + escapeHtml(comment.name) + '</span>' +
+                  anonBadge +
+                '</div>' +
+                '<span class="text-[10px] text-gray-500 font-medium">' + escapeHtml(comment.formattedTime || '') + '</span>' +
+              '</div>' +
+              '<p class="text-xs text-gray-300 mt-1.5 leading-relaxed break-words whitespace-pre-line">' + escapeHtml(comment.content) + '</p>' +
+              '<div class="mt-2.5 flex items-center space-x-3">' +
+                '<button type="button" onclick="toggleReplyForm(\'' + comment.id + '\')" class="text-[11px] font-semibold text-[#00e599] hover:text-[#1affaa] transition inline-flex items-center space-x-1">' +
+                  '<i class="fa-solid fa-reply text-[10px]"></i>' +
+                  '<span>Balas</span>' +
+                '</button>' +
+              '</div>' +
+              '<div id="reply-box-' + comment.id + '" class="hidden mt-3 pt-3 border-t border-gray-800/80 space-y-2.5">' +
+                '<div class="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">' +
+                  '<input type="text" id="reply-name-' + comment.id + '" placeholder="Nama kamu..." maxlength="50" class="w-full sm:w-1/2 bg-[#131927] border border-gray-700/80 rounded-lg px-2.5 py-1 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition">' +
+                  '<label class="flex items-center space-x-1.5 cursor-pointer select-none">' +
+                    '<input type="checkbox" id="reply-anon-' + comment.id + '" onchange="toggleAnonymous(\'' + 'reply-name-' + comment.id + '\', this.checked)" class="rounded bg-gray-800 border-gray-700 text-[#00e599] focus:ring-0">' +
+                    '<span class="text-[11px] text-gray-400">Anonim</span>' +
+                  '</label>' +
+                '</div>' +
+                '<textarea id="reply-content-' + comment.id + '" rows="2" placeholder="Tulis balasan kamu..." maxlength="1000" class="w-full bg-[#131927] border border-gray-700/80 rounded-lg p-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition resize-y"></textarea>' +
+                '<div class="flex items-center justify-end space-x-2">' +
+                  '<button type="button" onclick="toggleReplyForm(\'' + comment.id + '\')" class="px-3 py-1 rounded-lg text-xs text-gray-400 hover:text-white transition">Batal</button>' +
+                  '<button type="button" onclick="submitReply(\'' + comment.id + '\')" class="px-3.5 py-1 rounded-lg bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs transition">Kirim Balasan</button>' +
+                '</div>' +
+              '</div>' +
+              repliesHtml +
+            '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function toggleAnonymous(inputId, isChecked) {
+      var input = document.getElementById(inputId);
+      if (!input) return;
+      if (isChecked) {
+        input.disabled = true;
+        input.value = '';
+        input.placeholder = 'Anonim';
+      } else {
+        input.disabled = false;
+        input.placeholder = 'Nama kamu...';
+      }
+    }
+
+    function toggleReplyForm(commentId) {
+      var box = document.getElementById('reply-box-' + commentId);
+      if (box) {
+        box.classList.toggle('hidden');
+        if (!box.classList.contains('hidden')) {
+          var textarea = document.getElementById('reply-content-' + commentId);
+          if (textarea) textarea.focus();
+        }
+      }
+    }
+
+    async function submitMainComment(e) {
+      e.preventDefault();
+      var nameInput = document.getElementById('comment-name');
+      var anonToggle = document.getElementById('toggle-anon');
+      var contentInput = document.getElementById('comment-content');
+      var btn = document.getElementById('btn-submit-comment');
+
+      var isAnonymous = Boolean(anonToggle && anonToggle.checked);
+      var name = isAnonymous ? 'Anonim' : (nameInput ? nameInput.value : '').trim();
+      var content = (contentInput ? contentInput.value : '').trim();
+
+      if (!content) {
+        showToast('Komentar tidak boleh kosong!');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i><span>Mengirim...</span>';
+
+      try {
+        var res = await fetch('/api/comments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name, isAnonymous: isAnonymous, content: content }),
+        });
+        var json = await res.json();
+        if (json.success) {
+          contentInput.value = '';
+          showToast('Komentar berhasil dipublikasikan!');
+          await loadComments();
+        } else {
+          showToast(json.message || 'Gagal mengirim komentar.');
+        }
+      } catch (err) {
+        showToast('Gagal terhubung ke server.');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane text-[11px]"></i><span>Kirim Komentar</span>';
+      }
+    }
+
+    async function submitReply(parentId) {
+      var nameInput = document.getElementById('reply-name-' + parentId);
+      var anonCheck = document.getElementById('reply-anon-' + parentId);
+      var contentInput = document.getElementById('reply-content-' + parentId);
+
+      var isAnonymous = Boolean(anonCheck && anonCheck.checked);
+      var name = isAnonymous ? 'Anonim' : (nameInput ? nameInput.value : '').trim();
+      var content = (contentInput ? contentInput.value : '').trim();
+
+      if (!content) {
+        showToast('Balasan tidak boleh kosong!');
+        return;
+      }
+
+      try {
+        var res = await fetch('/api/comments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ parentId: parentId, name: name, isAnonymous: isAnonymous, content: content }),
+        });
+        var json = await res.json();
+        if (json.success) {
+          if (contentInput) contentInput.value = '';
+          toggleReplyForm(parentId);
+          showToast('Balasan berhasil dikirim!');
+          await loadComments();
+        } else {
+          showToast(json.message || 'Gagal mengirim balasan.');
+        }
+      } catch (err) {
+        showToast('Gagal terhubung ke server.');
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
+      loadComments();
       loadStats();
       setInterval(loadStats, 10000); // Polling otomatis tiap 10 detik agar realtime
     });

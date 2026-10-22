@@ -120,27 +120,27 @@ export class FindAlightPresetUseCase {
       },
       {
         type: 'alight_creative',
-        regex: /https?:\/\/(?:www\.)?alightcreative\.com\/[^\s"')]+/gi,
+        regex: /(?:https?:\/\/)?(?:[a-zA-Z0-9_\-]+\.)?alightcreative\.com\/[^\s"')]+/gi,
         label: 'Alight Creative',
       },
       {
         type: 'google_drive',
-        regex: /https?:\/\/(?:drive\.google\.com|docs\.google\.com)\/[^\s"')]+/gi,
+        regex: /(?:https?:\/\/)?(?:drive\.google\.com|docs\.google\.com)\/[^\s"')]+/gi,
         label: 'Google Drive (XML/Preset)',
       },
       {
         type: 'mediafire',
-        regex: /https?:\/\/(?:www\.)?mediafire\.com\/[^\s"')]+/gi,
+        regex: /(?:https?:\/\/)?(?:www\.)?mediafire\.com\/[^\s"')]+/gi,
         label: 'MediaFire File',
       },
       {
         type: 'sfile',
-        regex: /https?:\/\/(?:www\.)?sfile\.mobi\/[^\s"')]+/gi,
+        regex: /(?:https?:\/\/)?(?:www\.)?sfile\.mobi\/[^\s"')]+/gi,
         label: 'Sfile Mobi',
       },
       {
         type: 'shortlink',
-        regex: /https?:\/\/(?:bit\.ly|tinyurl\.com|s\.id|cutt\.ly|linkvertise\.com)\/[^\s"')]+/gi,
+        regex: /(?:https?:\/\/)?(?:bit\.ly|tinyurl\.com|s\.id|cutt\.ly|linkvertise\.com)\/[^\s"')]+/gi,
         label: 'Shortlink Preset',
       },
     ];
@@ -149,12 +149,12 @@ export class FindAlightPresetUseCase {
       const matches = text.match(regex);
       if (matches) {
         for (let match of matches) {
-          // Bersihkan trailing punctuation
-          match = match.replace(/[\.\,\)\]\>\'\"\;\:]+$/, '');
+          // Bersihkan trailing punctuation dan markdown formatting
+          match = match.replace(/[\.\,\)\]\>\'\"\;\:\*\_\~]+$/, '');
 
           // Pastikan prefix https://
           let cleanUrl = match;
-          if (cleanUrl.toLowerCase().startsWith('alight.link/')) {
+          if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
             cleanUrl = 'https://' + cleanUrl;
           }
 

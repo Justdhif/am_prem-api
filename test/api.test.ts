@@ -219,6 +219,23 @@ async function runTests() {
       assert.strictEqual(err.response?.status, 400);
       assert(err.response?.data?.replyText.includes('Belum Lengkap'));
     }
+
+    // Ekstraksi link preset dari balasan komentar kreator (alightcreative / drive / mediafire dll)
+    const sampleReplyText = 'XML pm wak🗿 5mb:\nhttps://alightcreative.com/am/share/u/SRTPfg8lX3qOFUZGSXKMvr2ZF2/p/wSi2LfMf-943c09596b6ff61f';
+    const extractedPresets = container.findAlightPresetUseCase.extractPresetsFromText(
+      sampleReplyText,
+      'comment',
+      'mailreal_',
+      true
+    );
+    assert.strictEqual(extractedPresets.length, 1);
+    assert.strictEqual(
+      extractedPresets[0].url,
+      'https://alightcreative.com/am/share/u/SRTPfg8lX3qOFUZGSXKMvr2ZF2/p/wSi2LfMf-943c09596b6ff61f'
+    );
+    assert.strictEqual(extractedPresets[0].type, 'alight_creative');
+    assert.strictEqual(extractedPresets[0].isCreator, true);
+
     console.log('✅ TikTok Preset Finder passed');
 
     // Test 8: Comment Section & Threaded Replies

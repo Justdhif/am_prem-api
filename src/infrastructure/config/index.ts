@@ -13,7 +13,12 @@ export const config = {
     : path.resolve(process.cwd(), 'data', 'stats.json'),
 
   database: {
-    url: process.env.DATABASE_URL || process.env.POSTGRES_URL || '',
+    url:
+      process.env.DATABASE_URL ||
+      process.env.POSTGRES_URL ||
+      process.env.DATABASE_URL_UNPOOLED ||
+      process.env.POSTGRES_PRISMA_URL ||
+      '',
   },
 
   firebase: {

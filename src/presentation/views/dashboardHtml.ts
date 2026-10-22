@@ -1,6 +1,6 @@
 import { LOGO_DATA_URI } from './logoAsset.js';
 
-export function renderDashboardHtml(): string {
+export function renderDashboardHtml(initialStats?: { total: number; today: number }): string {
   return `<!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
@@ -92,11 +92,11 @@ export function renderDashboardHtml(): string {
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-6 pt-5 border-t border-gray-800">
         <div class="bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
           <span class="text-[11px] text-gray-400 block">Total Aktivasi</span>
-          <span id="stat-total" class="text-base sm:text-lg font-bold text-white mt-0.5 block">Loading...</span>
+          <span id="stat-total" class="text-base sm:text-lg font-bold text-white mt-0.5 block">${initialStats ? initialStats.total + ' Akun' : 'Loading...'}</span>
         </div>
         <div class="bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
           <span class="text-[11px] text-gray-400 block">Aktivasi Hari Ini</span>
-          <span id="stat-today" class="text-base sm:text-lg font-bold text-[#00e599] mt-0.5 block">Loading...</span>
+          <span id="stat-today" class="text-base sm:text-lg font-bold text-[#00e599] mt-0.5 block">${initialStats ? initialStats.today + ' Akun' : 'Loading...'}</span>
         </div>
         <div class="col-span-2 sm:col-span-1 bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
           <span class="text-[11px] text-gray-400 block">Protokol</span>
@@ -409,7 +409,10 @@ export function renderDashboardHtml(): string {
       }
     }
 
-    window.addEventListener('DOMContentLoaded', loadStats);
+    window.addEventListener('DOMContentLoaded', () => {
+      loadStats();
+      setInterval(loadStats, 10000); // Polling otomatis tiap 10 detik agar realtime
+    });
   </script>
 </body>
 </html>`;

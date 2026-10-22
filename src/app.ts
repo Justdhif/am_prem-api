@@ -7,6 +7,7 @@ import { config } from './infrastructure/config/index.js';
 import { generalLimiter } from './presentation/middlewares/rateLimiter.js';
 import { errorHandler, notFoundHandler } from './presentation/middlewares/errorHandler.js';
 import { renderDashboardHtml } from './presentation/views/dashboardHtml.js';
+import { container } from './infrastructure/container.js';
 
 export function createApp(): Application {
   const app: Application = express();
@@ -56,10 +57,15 @@ export function createApp(): Application {
     });
   });
 
-  // Web Dashboard & Generator Route
-  app.get('/dashboard', (_req: Request, res: Response) => {
+  // Web Dashboard & Generator Route (SSR dengan data stats terkini dari database)
+  app.get('/dashboard', async (_req: Request, res: Response) => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.send(renderDashboardHtml());
+    try {
+      const stats = await container.statsRepository.getStats();
+      res.send(renderDashboardHtml(stats));
+    } catch {
+      res.send(renderDashboardHtml());
+    }
   });
 
   // Sajikan static public assets (misal logo.jpg)
@@ -69,13 +75,18 @@ export function createApp(): Application {
   });
 
   // Root welcome & info endpoint (HTML untuk browser, JSON untuk API client)
-  app.get('/', (req: Request, res: Response) => {
+  app.get('/', async (req: Request, res: Response) => {
     // Deteksi apakah request berasal dari navigasi browser yang meminta halaman HTML
     const isBrowserHtmlRequest = req.headers['accept']?.includes('text/html');
 
     if (isBrowserHtmlRequest && !req.xhr) {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.send(renderDashboardHtml());
+      try {
+        const stats = await container.statsRepository.getStats();
+        res.send(renderDashboardHtml(stats));
+      } catch {
+        res.send(renderDashboardHtml());
+      }
       return;
     }
 

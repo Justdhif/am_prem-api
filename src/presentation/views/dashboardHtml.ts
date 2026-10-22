@@ -407,9 +407,25 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
 }</code></pre>
       </section>
     </div>
+  </main>
 
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 flex items-center space-x-2.5 px-4 py-2.5 rounded-xl bg-[#131927] text-white border border-[#00e599]/40 shadow-xl transition-all duration-300 transform translate-y-20 opacity-0 text-xs">
+    <i class="fa-solid fa-circle-check text-[#00e599]"></i>
+    <span id="toast-msg">Tersalin ke clipboard!</span>
+  </div>
 
-      
+  <!-- MINIMALIST FOOTER -->
+  <footer class="border-t border-gray-800/80 py-6 mt-8 text-center text-xs text-gray-500 bg-[#0d121f]">
+    <div class="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center space-x-2">
+        <img src="${LOGO_DATA_URI}" alt="Logo" class="w-5 h-5 rounded-md object-cover">
+        <span class="text-gray-300 font-semibold">Alight Motion Pro API</span>
+      </div>
+      <p class="text-[11px] text-gray-500">Crafted with 💚 by <strong>Justdhif</strong> &copy; 2026. Clean Architecture.</p>
+    </div>
+  </footer>
+
   <!-- TIKTOK-STYLE FLOATING COMMENT BUTTON (FAB) -->
   <button id="fab-open-comments" type="button" onclick="openCommentSheet()"
     class="fixed bottom-6 right-5 sm:right-8 z-40 flex items-center space-x-2 px-4 py-3 rounded-full bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm shadow-xl shadow-[#00e599]/30 transition-all duration-300 transform hover:scale-105 active:scale-95 group">
@@ -421,9 +437,9 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
   </button>
 
   <!-- TIKTOK-STYLE COMMENT BOTTOM SHEET (DRAWER) -->
-  <div id="comment-sheet-backdrop" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300" onclick="closeCommentSheet()"></div>
+  <div id="comment-sheet-backdrop" class="fixed inset-0 w-full h-full bg-black/80 backdrop-blur-md z-[99] opacity-0 pointer-events-none transition-opacity duration-300" onclick="closeCommentSheet()"></div>
 
-  <div id="comment-sheet" class="fixed bottom-0 left-0 right-0 z-50 max-w-lg mx-auto w-full h-[85vh] max-h-[760px] bg-[#0d121f] text-white rounded-t-3xl border-t border-x border-gray-800/80 shadow-2xl flex flex-col transform translate-y-full transition-transform duration-300 ease-out">
+  <div id="comment-sheet" class="fixed bottom-0 left-0 right-0 z-[100] max-w-lg mx-auto w-full h-[85vh] max-h-[760px] bg-[#0d121f] text-white rounded-t-3xl border-t border-x border-gray-800/80 shadow-2xl flex flex-col transform translate-y-full transition-transform duration-300 ease-out">
     
     <!-- Header Sheet (Handle & Counter ala TikTok) -->
     <div class="px-4 pt-2.5 pb-2 border-b border-gray-800/80 shrink-0 select-none">
@@ -511,26 +527,6 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
     </div>
 
   </div>
-
-
-  </main>
-
-  <!-- TOAST NOTIFICATION -->
-  <div id="toast" class="fixed bottom-5 right-5 z-50 flex items-center space-x-2.5 px-4 py-2.5 rounded-xl bg-[#131927] text-white border border-[#00e599]/40 shadow-xl transition-all duration-300 transform translate-y-20 opacity-0 text-xs">
-    <i class="fa-solid fa-circle-check text-[#00e599]"></i>
-    <span id="toast-msg">Tersalin ke clipboard!</span>
-  </div>
-
-  <!-- MINIMALIST FOOTER -->
-  <footer class="border-t border-gray-800/80 py-6 mt-8 text-center text-xs text-gray-500 bg-[#0d121f]">
-    <div class="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-      <div class="flex items-center space-x-2">
-        <img src="${LOGO_DATA_URI}" alt="Logo" class="w-5 h-5 rounded-md object-cover">
-        <span class="text-gray-300 font-semibold">Alight Motion Pro API</span>
-      </div>
-      <p class="text-[11px] text-gray-500">Crafted with 💚 by <strong>Justdhif</strong> &copy; 2026. Clean Architecture.</p>
-    </div>
-  </footer>
 
   <!-- LIGHTWEIGHT CLIENT SCRIPT -->
   <script>
@@ -708,6 +704,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
 
         listEl.innerHTML = json.comments.map(function(c) { return renderTikTokCommentHtml(c); }).join('');
       } catch (err) {
+        console.error('Gagal memuat komentar:', err);
         var listEl = document.getElementById('comments-sheet-list');
         if (listEl) {
           listEl.innerHTML =
@@ -716,6 +713,16 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
             '</div>';
         }
       }
+    }
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
     function renderTikTokCommentHtml(comment) {
@@ -733,9 +740,11 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
           '</div>'
         : '';
 
+      var avatar = comment.avatarUrl || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(comment.name || 'Anonim') + '&background=1f2b42&color=94a3b8&bold=true');
+
       return (
         '<div id="comment-' + comment.id + '" class="flex items-start space-x-3 text-xs">' +
-          '<img src="' + escapeHtml(comment.avatarUrl) + '" alt="Avatar" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-gray-700/80 object-cover shrink-0 mt-0.5">' +
+          '<img src="' + escapeHtml(avatar) + '" alt="Avatar" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-gray-700/80 object-cover shrink-0 mt-0.5">' +
           '<div class="flex-1 min-w-0">' +
             '<div class="flex items-center justify-between">' +
               '<div class="flex items-center flex-wrap">' +

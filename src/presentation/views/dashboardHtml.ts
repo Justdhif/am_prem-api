@@ -18,7 +18,7 @@ function renderCommentNodeServerSide(comment: CommentNode): string {
   const avatarUrl = comment.avatarUrl || 'https://ui-avatars.com/api/?name=Anonim&background=1f2b42&color=94a3b8&bold=true';
 
   return `
-    <div id="comment-${comment.id}" class="bg-[#0d121f] p-3.5 sm:p-4 rounded-xl border border-gray-800/80 transition hover:border-gray-700">
+    <div id="comment-${comment.id}" class="py-3.5 border-b border-gray-800/50 last:border-b-0 transition">
       <div class="flex items-start space-x-3">
         <img src="${avatarUrl}" alt="Avatar" class="w-8 h-8 rounded-full border border-gray-700/60 object-cover shrink-0 mt-0.5">
         <div class="flex-1 min-w-0">
@@ -38,13 +38,13 @@ function renderCommentNodeServerSide(comment: CommentNode): string {
           </div>
           <div id="reply-box-${comment.id}" class="hidden mt-3 pt-3 border-t border-gray-800/80 space-y-2.5">
             <div class="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">
-              <input type="text" id="reply-name-${comment.id}" placeholder="Nama kamu..." maxlength="50" class="w-full sm:w-1/2 bg-[#131927] border border-gray-700/80 rounded-lg px-2.5 py-1 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition">
+              <input type="text" id="reply-name-${comment.id}" placeholder="Nama kamu..." maxlength="50" class="w-full sm:w-1/2 bg-[#0d121f] border border-gray-800 rounded-lg px-2.5 py-1 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition">
               <label class="flex items-center space-x-1.5 cursor-pointer select-none">
                 <input type="checkbox" id="reply-anon-${comment.id}" onchange="toggleAnonymous('reply-name-${comment.id}', this.checked)" class="rounded bg-gray-800 border-gray-700 text-[#00e599] focus:ring-0">
                 <span class="text-[11px] text-gray-400">Anonim</span>
               </label>
             </div>
-            <textarea id="reply-content-${comment.id}" rows="2" placeholder="Tulis balasan kamu..." maxlength="1000" class="w-full bg-[#131927] border border-gray-700/80 rounded-lg p-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition resize-y"></textarea>
+            <textarea id="reply-content-${comment.id}" rows="2" placeholder="Tulis balasan kamu..." maxlength="1000" class="w-full bg-[#0d121f] border border-gray-800 rounded-lg p-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition resize-y"></textarea>
             <div class="flex items-center justify-end space-x-2">
               <button type="button" onclick="toggleReplyForm('${comment.id}')" class="px-3 py-1 rounded-lg text-xs text-gray-400 hover:text-white transition">Batal</button>
               <button type="button" onclick="submitReply('${comment.id}')" class="px-3.5 py-1 rounded-lg bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs transition">Kirim Balasan</button>
@@ -420,7 +420,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
 
 
       <!-- SECTION KOMENTAR & DISKUSI KOMUNITAS -->
-      <section class="doc-card p-5 sm:p-6 space-y-6" id="diskusi">
+      <section class="mt-8 pt-6 border-t border-gray-800/80 space-y-6" id="diskusi">
         <div class="flex items-center justify-between border-b border-gray-800 pb-4">
           <div>
             <h2 class="text-lg font-bold text-white flex items-center">
@@ -434,12 +434,12 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         </div>
 
         <!-- FORM TAMBAH KOMENTAR UTAMA -->
-        <form id="main-comment-form" onsubmit="submitMainComment(event)" class="space-y-3 bg-[#0d121f] p-4 rounded-xl border border-gray-800/80">
+        <form id="main-comment-form" onsubmit="submitMainComment(event)" class="space-y-3.5 pt-1">
           <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
             <div class="w-full sm:w-1/2">
               <label class="text-[11px] font-medium text-gray-300 block mb-1">Nama Tampilan</label>
               <input type="text" id="comment-name" placeholder="Nama kamu (misal: Dhif)" maxlength="50"
-                class="w-full bg-[#131927] border border-gray-700/80 rounded-lg px-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition disabled:opacity-50 disabled:bg-gray-800/50">
+                class="w-full bg-[#0d121f] border border-gray-800 rounded-lg px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition disabled:opacity-50 disabled:bg-gray-900/50">
             </div>
             <div class="flex items-center space-x-2 pt-1 sm:pt-4">
               <label class="relative inline-flex items-center cursor-pointer select-none">
@@ -453,7 +453,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
           <div>
             <label class="text-[11px] font-medium text-gray-300 block mb-1">Pesan Komentar</label>
             <textarea id="comment-content" rows="3" placeholder="Tulis komentar atau tanggapan kamu di sini..." required maxlength="1000"
-              class="w-full bg-[#131927] border border-gray-700/80 rounded-lg p-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition resize-y"></textarea>
+              class="w-full bg-[#0d121f] border border-gray-800 rounded-lg p-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition resize-y"></textarea>
           </div>
 
           <div class="flex justify-end">
@@ -470,7 +470,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
           ${
             initialComments
               ? initialComments.length === 0
-                ? '<div class="text-center py-8 text-gray-500 text-xs bg-[#0d121f] rounded-xl border border-gray-800/80">' +
+                ? '<div class="text-center py-8 text-gray-500 text-xs">' +
                     '<i class="fa-regular fa-comment-dots text-2xl block mb-2 text-gray-600"></i>' +
                     'Belum ada komentar. Jadilah yang pertama berkomentar!' +
                   '</div>'
@@ -545,7 +545,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         if (!res.ok || !json.success || !Array.isArray(json.comments)) {
           if (listEl && listEl.innerText.includes('Memuat diskusi')) {
             listEl.innerHTML =
-              '<div class="text-center py-8 text-gray-500 text-xs bg-[#0d121f] rounded-xl border border-gray-800/80">' +
+              '<div class="text-center py-8 text-gray-500 text-xs">' +
                 '<i class="fa-regular fa-comment-dots text-2xl block mb-2 text-gray-600"></i>' +
                 'Belum ada komentar. Jadilah yang pertama berkomentar!' +
               '</div>';
@@ -556,7 +556,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         if (badgeEl) badgeEl.innerText = (json.totalComments || 0) + ' Komentar';
         if (json.comments.length === 0) {
           listEl.innerHTML =
-            '<div class="text-center py-8 text-gray-500 text-xs bg-[#0d121f] rounded-xl border border-gray-800/80">' +
+            '<div class="text-center py-8 text-gray-500 text-xs">' +
               '<i class="fa-regular fa-comment-dots text-2xl block mb-2 text-gray-600"></i>' +
               'Belum ada komentar. Jadilah yang pertama berkomentar!' +
             '</div>';
@@ -587,7 +587,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         : '';
 
       return (
-        '<div id="comment-' + comment.id + '" class="bg-[#0d121f] p-3.5 sm:p-4 rounded-xl border border-gray-800/80 transition hover:border-gray-700">' +
+        '<div id="comment-' + comment.id + '" class="py-3.5 border-b border-gray-800/50 last:border-b-0 transition">' +
           '<div class="flex items-start space-x-3">' +
             '<img src="' + escapeHtml(comment.avatarUrl) + '" alt="Avatar" class="w-8 h-8 rounded-full border border-gray-700/60 object-cover shrink-0 mt-0.5">' +
             '<div class="flex-1 min-w-0">' +
@@ -607,13 +607,13 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
               '</div>' +
               '<div id="reply-box-' + comment.id + '" class="hidden mt-3 pt-3 border-t border-gray-800/80 space-y-2.5">' +
                 '<div class="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">' +
-                  '<input type="text" id="reply-name-' + comment.id + '" placeholder="Nama kamu..." maxlength="50" class="w-full sm:w-1/2 bg-[#131927] border border-gray-700/80 rounded-lg px-2.5 py-1 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition">' +
+                  '<input type="text" id="reply-name-' + comment.id + '" placeholder="Nama kamu..." maxlength="50" class="w-full sm:w-1/2 bg-[#0d121f] border border-gray-800 rounded-lg px-2.5 py-1 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition">' +
                   '<label class="flex items-center space-x-1.5 cursor-pointer select-none">' +
                     '<input type="checkbox" id="reply-anon-' + comment.id + '" onchange="toggleAnonymous(\'' + 'reply-name-' + comment.id + '\', this.checked)" class="rounded bg-gray-800 border-gray-700 text-[#00e599] focus:ring-0">' +
                     '<span class="text-[11px] text-gray-400">Anonim</span>' +
                   '</label>' +
                 '</div>' +
-                '<textarea id="reply-content-' + comment.id + '" rows="2" placeholder="Tulis balasan kamu..." maxlength="1000" class="w-full bg-[#131927] border border-gray-700/80 rounded-lg p-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition resize-y"></textarea>' +
+                '<textarea id="reply-content-' + comment.id + '" rows="2" placeholder="Tulis balasan kamu..." maxlength="1000" class="w-full bg-[#0d121f] border border-gray-800 rounded-lg p-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00e599] transition resize-y"></textarea>' +
                 '<div class="flex items-center justify-end space-x-2">' +
                   '<button type="button" onclick="toggleReplyForm(\'' + comment.id + '\')" class="px-3 py-1 rounded-lg text-xs text-gray-400 hover:text-white transition">Batal</button>' +
                   '<button type="button" onclick="submitReply(\'' + comment.id + '\')" class="px-3.5 py-1 rounded-lg bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs transition">Kirim Balasan</button>' +

@@ -38,13 +38,13 @@ export class PostgresStatsRepository implements IStatsRepository {
     const query = `
       CREATE TABLE IF NOT EXISTS app_stats (
         id VARCHAR(50) PRIMARY KEY,
-        total_premium INT NOT NULL DEFAULT 143,
-        today_premium INT NOT NULL DEFAULT 19,
+        total_premium INT NOT NULL DEFAULT 0,
+        today_premium INT NOT NULL DEFAULT 0,
         last_date VARCHAR(20) NOT NULL
       );
 
       INSERT INTO app_stats (id, total_premium, today_premium, last_date)
-      VALUES ('global_stats', 143, 19, '${this.getTodayDateString()}')
+      VALUES ('global_stats', 0, 0, '${this.getTodayDateString()}')
       ON CONFLICT (id) DO NOTHING;
     `;
 
@@ -134,3 +134,5 @@ export class PostgresStatsRepository implements IStatsRepository {
     }
   }
 }
+
+

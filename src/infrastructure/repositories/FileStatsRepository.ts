@@ -6,8 +6,8 @@ import { config } from '../config/index.js';
 
 export class FileStatsRepository implements IStatsRepository {
   private memoryStats: StoredStats = {
-    totalPremium: 143,
-    todayPremium: 19,
+    totalPremium: 0,
+    todayPremium: 0,
     lastDate: this.getTodayDateString(),
   };
 
@@ -108,3 +108,4 @@ export class FileStatsRepository implements IStatsRepository {
     };
   }
 }
+

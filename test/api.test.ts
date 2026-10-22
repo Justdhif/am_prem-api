@@ -285,6 +285,18 @@ async function runTests() {
     } catch (err: any) {
       assert.strictEqual(err.response?.status, 400);
     }
+    // Cleanup test comments so test data does not pollute database
+    try {
+      const { pool } = await import('../src/infrastructure/database/drizzle.js');
+      if (pool) {
+        await pool.query('DELETE FROM comments WHERE id IN ($1, $2, $3)', [
+          parentId,
+          replyId,
+          nestedReplyRes.data.data.id,
+        ]);
+      }
+    } catch {}
+
     console.log('✅ Comment Section & Threaded Replies passed');
 
     console.log('✅ Express API endpoints & Web Generator passed');

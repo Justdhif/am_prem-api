@@ -1,31 +1,15 @@
-import pg from 'pg';
+import { eq, sql } from 'drizzle-orm';
 import { IStatsRepository } from '../../domain/repositories/IStatsRepository.js';
 import { StatsData } from '../../domain/entities/Stats.js';
-import { config } from '../config/index.js';
+import { db, pool, schema } from '../database/drizzle.js';
 import { FileStatsRepository } from './FileStatsRepository.js';
 
 export class PostgresStatsRepository implements IStatsRepository {
-  private pool: pg.Pool | null = null;
   private isTableInitialized = false;
   private readonly fallbackRepo: FileStatsRepository;
 
   constructor() {
     this.fallbackRepo = new FileStatsRepository();
-
-    if (config.database.url) {
-      this.pool = new pg.Pool({
-        connectionString: config.database.url,
-        ssl: { rejectUnauthorized: false },
-        max: 5,
-        idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 8000,
-      });
-
-      // Tangani error koneksi tak terduga pada pool
-      this.pool.on('error', (err) => {
-        console.warn('⚠️ Postgres Pool Warning:', err.message);
-      });
-    }
   }
 
   private getTodayDateString(): string {
@@ -33,7 +17,7 @@ export class PostgresStatsRepository implements IStatsRepository {
   }
 
   private async ensureTable(): Promise<void> {
-    if (this.isTableInitialized || !this.pool) return;
+    if (this.isTableInitialized || !pool) return;
 
     const query = `
       CREATE TABLE IF NOT EXISTS app_stats (
@@ -49,7 +33,7 @@ export class PostgresStatsRepository implements IStatsRepository {
     `;
 
     try {
-      await this.pool.query(query);
+      await pool.query(query);
       this.isTableInitialized = true;
     } catch (err: any) {
       console.warn('⚠️ Gagal inisialisasi tabel Postgres, beralih ke fallback lokal:', err.message);
@@ -57,7 +41,7 @@ export class PostgresStatsRepository implements IStatsRepository {
   }
 
   public async getStats(): Promise<StatsData> {
-    if (!this.pool) {
+    if (!db) {
       return this.fallbackRepo.getStats();
     }
 
@@ -65,39 +49,40 @@ export class PostgresStatsRepository implements IStatsRepository {
       await this.ensureTable();
       const today = this.getTodayDateString();
 
-      const result = await this.pool.query(
-        'SELECT total_premium, today_premium, last_date FROM app_stats WHERE id = $1',
-        ['global_stats']
-      );
+      const rows = await db
+        .select()
+        .from(schema.appStats)
+        .where(eq(schema.appStats.id, 'global_stats'))
+        .limit(1);
 
-      if (result.rows.length === 0) {
+      if (rows.length === 0) {
         return this.fallbackRepo.getStats();
       }
 
-      const row = result.rows[0];
-      let todayCount = row.today_premium;
+      const row = rows[0];
+      let todayCount = row.todayPremium;
 
       // Jika tanggal sudah berganti (hari baru), reset hitungan hari ini ke 0
-      if (row.last_date !== today) {
+      if (row.lastDate !== today) {
         todayCount = 0;
-        await this.pool.query(
-          'UPDATE app_stats SET today_premium = 0, last_date = $1 WHERE id = $2',
-          [today, 'global_stats']
-        );
+        await db
+          .update(schema.appStats)
+          .set({ todayPremium: 0, lastDate: today })
+          .where(eq(schema.appStats.id, 'global_stats'));
       }
 
       return {
-        total: row.total_premium,
+        total: row.totalPremium,
         today: todayCount,
       };
     } catch (err: any) {
-      console.warn('⚠️ Postgres getStats gagal, menggunakan fallback:', err.message);
+      console.warn('⚠️ Drizzle getStats gagal, menggunakan fallback:', err.message);
       return this.fallbackRepo.getStats();
     }
   }
 
   public async incrementStats(): Promise<StatsData> {
-    if (!this.pool) {
+    if (!db) {
       return this.fallbackRepo.incrementStats();
     }
 
@@ -105,34 +90,29 @@ export class PostgresStatsRepository implements IStatsRepository {
       await this.ensureTable();
       const today = this.getTodayDateString();
 
-      const updateQuery = `
-        UPDATE app_stats
-        SET 
-          total_premium = total_premium + 1,
-          today_premium = CASE WHEN last_date = $1 THEN today_premium + 1 ELSE 1 END,
-          last_date = $1
-        WHERE id = 'global_stats'
-        RETURNING total_premium, today_premium;
-      `;
+      const updated = await db
+        .update(schema.appStats)
+        .set({
+          totalPremium: sql`${schema.appStats.totalPremium} + 1`,
+          todayPremium: sql`CASE WHEN ${schema.appStats.lastDate} = ${today} THEN ${schema.appStats.todayPremium} + 1 ELSE 1 END`,
+          lastDate: today,
+        })
+        .where(eq(schema.appStats.id, 'global_stats'))
+        .returning();
 
-      const result = await this.pool.query(updateQuery, [today]);
-
-      if (result.rows.length > 0) {
-        const row = result.rows[0];
-        // Sinkronkan juga ke fallback repository lokal
-        this.fallbackRepo.syncWithValues(row.total_premium, row.today_premium);
+      if (updated.length > 0) {
+        const row = updated[0];
+        this.fallbackRepo.syncWithValues(row.totalPremium, row.todayPremium);
         return {
-          total: row.total_premium,
-          today: row.today_premium,
+          total: row.totalPremium,
+          today: row.todayPremium,
         };
       }
 
       return this.fallbackRepo.incrementStats();
     } catch (err: any) {
-      console.warn('⚠️ Postgres incrementStats gagal, menggunakan fallback:', err.message);
+      console.warn('⚠️ Drizzle incrementStats gagal, menggunakan fallback:', err.message);
       return this.fallbackRepo.incrementStats();
     }
   }
 }
-
-

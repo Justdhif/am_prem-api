@@ -1,35 +1,20 @@
-import pg from 'pg';
 import crypto from 'crypto';
+import { asc } from 'drizzle-orm';
 import { ICommentRepository, CreateCommentParams } from '../../domain/repositories/ICommentRepository.js';
 import { Comment, CommentNode } from '../../domain/entities/Comment.js';
-import { config } from '../config/index.js';
+import { db, pool, schema } from '../database/drizzle.js';
 import { FileCommentRepository } from './FileCommentRepository.js';
 
 export class PostgresCommentRepository implements ICommentRepository {
-  private pool: pg.Pool | null = null;
   private isTableInitialized = false;
   private readonly fallbackRepo: FileCommentRepository;
 
   constructor() {
     this.fallbackRepo = new FileCommentRepository();
-
-    if (config.database.url) {
-      this.pool = new pg.Pool({
-        connectionString: config.database.url,
-        ssl: { rejectUnauthorized: false },
-        max: 5,
-        idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 8000,
-      });
-
-      this.pool.on('error', (err) => {
-        console.warn('⚠️ Postgres Comments Pool Warning:', err.message);
-      });
-    }
   }
 
   private async ensureTable(): Promise<void> {
-    if (this.isTableInitialized || !this.pool) return;
+    if (this.isTableInitialized || !pool) return;
 
     const query = `
       CREATE TABLE IF NOT EXISTS comments (
@@ -45,7 +30,7 @@ export class PostgresCommentRepository implements ICommentRepository {
     `;
 
     try {
-      await this.pool.query(query);
+      await pool.query(query);
       this.isTableInitialized = true;
     } catch (err: any) {
       console.warn('⚠️ Gagal inisialisasi tabel comments Postgres, beralih ke fallback:', err.message);
@@ -53,7 +38,7 @@ export class PostgresCommentRepository implements ICommentRepository {
   }
 
   public async createComment(params: CreateCommentParams): Promise<Comment> {
-    if (!this.pool) {
+    if (!db) {
       return this.fallbackRepo.createComment(params);
     }
 
@@ -64,65 +49,57 @@ export class PostgresCommentRepository implements ICommentRepository {
       const isAnon = Boolean(params.isAnonymous);
       const parentId = params.parentId || null;
 
-      const query = `
-        INSERT INTO comments (id, parent_id, name, is_anonymous, content, created_at)
-        VALUES ($1, $2, $3, $4, $5, NOW())
-        RETURNING id, parent_id, name, is_anonymous, content, created_at;
-      `;
+      const inserted = await db
+        .insert(schema.comments)
+        .values({
+          id,
+          parentId,
+          name: params.name,
+          isAnonymous: isAnon,
+          content: params.content,
+        })
+        .returning();
 
-      const result = await this.pool.query(query, [
-        id,
-        parentId,
-        params.name,
-        isAnon,
-        params.content,
-      ]);
-
-      const row = result.rows[0];
-      const created: Comment = {
+      const row = inserted[0];
+      return {
         id: row.id,
-        parentId: row.parent_id,
+        parentId: row.parentId,
         name: row.name,
-        isAnonymous: Boolean(row.is_anonymous),
+        isAnonymous: row.isAnonymous,
         content: row.content,
-        createdAt: new Date(row.created_at).toISOString(),
+        createdAt: new Date(row.createdAt).toISOString(),
       };
-
-      return created;
     } catch (err: any) {
-      console.warn('⚠️ Postgres createComment gagal, beralih ke fallback:', err.message);
+      console.warn('⚠️ Drizzle createComment gagal, beralih ke fallback:', err.message);
       return this.fallbackRepo.createComment(params);
     }
   }
 
   public async getCommentsTree(): Promise<CommentNode[]> {
-    if (!this.pool) {
+    if (!db) {
       return this.fallbackRepo.getCommentsTree();
     }
 
     try {
       await this.ensureTable();
 
-      const query = `
-        SELECT id, parent_id, name, is_anonymous, content, created_at
-        FROM comments
-        ORDER BY created_at ASC;
-      `;
+      const rows = await db
+        .select()
+        .from(schema.comments)
+        .orderBy(asc(schema.comments.createdAt));
 
-      const result = await this.pool.query(query);
-
-      const flatList: Comment[] = result.rows.map((row) => ({
+      const flatList: Comment[] = rows.map((row) => ({
         id: row.id,
-        parentId: row.parent_id,
+        parentId: row.parentId,
         name: row.name,
-        isAnonymous: Boolean(row.is_anonymous),
+        isAnonymous: row.isAnonymous,
         content: row.content,
-        createdAt: new Date(row.created_at).toISOString(),
+        createdAt: new Date(row.createdAt).toISOString(),
       }));
 
       return this.fallbackRepo.buildTree(flatList);
     } catch (err: any) {
-      console.warn('⚠️ Postgres getCommentsTree gagal, beralih ke fallback:', err.message);
+      console.warn('⚠️ Drizzle getCommentsTree gagal, beralih ke fallback:', err.message);
       return this.fallbackRepo.getCommentsTree();
     }
   }

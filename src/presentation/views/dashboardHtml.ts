@@ -84,6 +84,8 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
     ::-webkit-scrollbar-track { background: #0d121f; }
     ::-webkit-scrollbar-thumb { background: #1f2b42; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #00e599; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-[#00e599] selection:text-gray-950">
@@ -466,8 +468,8 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
 
       <!-- Header Input: Nama & Toggle Anonim (TANPA BOX INPUT - Borderless & Flat) -->
       <div class="flex items-center justify-between gap-3 pb-2 text-xs border-b border-gray-800/60 mb-2.5">
-        <div class="flex items-center space-x-2 flex-1">
-          <i class="fa-regular fa-user text-gray-500 text-[11px]"></i>
+        <div class="flex items-center space-x-2 flex-1 min-w-0">
+          <img id="sheet-user-avatar" src="https://ui-avatars.com/api/?name=User&background=00e599&color=0d121f&bold=true" alt="Avatar" class="w-6 h-6 rounded-full border border-gray-700/80 object-cover shrink-0">
           <input type="text" id="sheet-author-name" oninput="updateSheetAvatar()" placeholder="Nama kamu..." maxlength="50"
             class="bg-transparent border-0 p-0 text-xs text-white placeholder-gray-500 focus:outline-none focus:ring-0 w-full disabled:opacity-40">
         </div>
@@ -477,17 +479,15 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         </label>
       </div>
 
-      <!-- Main Input Bar (TikTok Rounded Pill Style) -->
-      <form id="sheet-comment-form" onsubmit="submitSheetComment(event)" class="flex items-center space-x-2">
-        <img id="sheet-user-avatar" src="https://ui-avatars.com/api/?name=User&background=00e599&color=0d121f&bold=true" alt="Avatar" class="w-8 h-8 rounded-full border border-gray-700/80 object-cover shrink-0">
-        
-        <div class="flex-1 bg-[#1a2234] rounded-full px-4 py-2 flex items-center border border-transparent focus-within:border-[#00e599]/60 transition">
-          <input type="text" id="sheet-comment-input" placeholder="Tambahkan komentar..." required maxlength="1000"
-            class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-0 w-full">
+      <!-- Main Input Bar (TikTok Rounded Pill Style with Auto Break Line) -->
+      <form id="sheet-comment-form" onsubmit="submitSheetComment(event)" class="flex items-end space-x-2">
+        <div class="flex-1 bg-[#1a2234] rounded-2xl px-4 py-2 flex items-center border border-transparent focus-within:border-[#00e599]/60 transition min-h-[38px]">
+          <textarea id="sheet-comment-input" rows="1" placeholder="Tambahkan komentar..." required maxlength="1000" oninput="handleCommentInput(this)" onkeydown="handleCommentKeyDown(event)"
+            class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-0 w-full resize-none leading-relaxed max-h-28 overflow-y-auto block no-scrollbar"></textarea>
         </div>
 
         <button type="submit" id="sheet-btn-send"
-          class="w-8 h-8 rounded-full bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold flex items-center justify-center transition shadow-md shrink-0 active:scale-95 disabled:opacity-40">
+          class="w-9 h-9 rounded-full bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold flex items-center justify-center transition shadow-md shrink-0 active:scale-95 disabled:opacity-40 mb-0.5">
           <i class="fa-solid fa-arrow-up text-sm"></i>
         </button>
       </form>
@@ -620,13 +620,28 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
       var banner = document.getElementById('sheet-reply-banner');
       var inputEl = document.getElementById('sheet-comment-input');
       if (banner) banner.classList.add('hidden');
-      if (inputEl) inputEl.placeholder = 'Tambahkan komentar...';
+      if (inputEl) inputEl.placeholder = 'Tambahkan komentar...'; inputEl.style.height = 'auto';
+    }
+
+    function handleCommentInput(el) {
+      if (!el) return;
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 112) + 'px';
+    }
+
+    function handleCommentKeyDown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        var form = document.getElementById('sheet-comment-form');
+        if (form) form.requestSubmit();
+      }
     }
 
     function insertEmoji(emoji) {
       var inputEl = document.getElementById('sheet-comment-input');
       if (inputEl) {
         inputEl.value += emoji;
+        handleCommentInput(inputEl);
         inputEl.focus();
       }
     }
@@ -777,6 +792,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         var json = await res.json();
         if (json.success) {
           contentInput.value = '';
+          contentInput.style.height = 'auto';
           cancelReplyMode();
           showToast('Komentar berhasil dipublikasikan!');
           await loadComments();

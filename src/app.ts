@@ -77,6 +77,11 @@ export function createApp(): Application {
     res.sendFile('public/logo.jpg', { root: process.cwd() });
   });
 
+  app.get('/logo.svg', (_req: Request, res: Response) => {
+    res.setHeader('Content-Type', 'image/svg+xml');
+    res.sendFile('public/logo.svg', { root: process.cwd() });
+  });
+
   // Root welcome & info endpoint (HTML untuk browser, JSON untuk API client)
   app.get('/', async (req: Request, res: Response) => {
     // Deteksi apakah request berasal dari navigasi browser yang meminta halaman HTML

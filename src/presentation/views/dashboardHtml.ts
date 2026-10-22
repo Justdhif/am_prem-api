@@ -746,9 +746,13 @@ export function renderDashboardHtml(
               "Belum ada komentar. Jadilah yang pertama berkomentar!" +
               "</div>"
             : initialComments.map(renderTikTokCommentServerSide).join("")
-          : '<div class="text-center py-16 text-gray-500 text-xs">' +
-            '<i class="fa-solid fa-spinner fa-spin mr-1.5 text-[#00e599]"></i>Memuat komentar...' +
-            "</div>"
+          : '<div class="flex flex-col items-center justify-center py-20 text-gray-400 space-y-3 select-none animate-in fade-in duration-150">' +
+              '<div class="relative w-11 h-11 flex items-center justify-center">' +
+                '<div class="absolute inset-0 rounded-full bg-[#00e599]/20 blur-md animate-pulse"></div>' +
+                '<img src="/logo.svg" alt="Loading" class="w-10 h-10 animate-spin relative z-10 drop-shadow-[0_0_12px_rgba(0,229,153,0.5)]">' +
+              '</div>' +
+              '<span class="text-xs text-gray-400 font-medium tracking-wide">Memuat komentar...</span>' +
+            '</div>'
       }
     </div>
 
@@ -1538,13 +1542,16 @@ export function renderDashboardHtml(
       var prevBtn = document.getElementById('btn-comment-prev');
       var nextBtn = document.getElementById('btn-comment-next');
 
-      // UI Loader saat memuat komentar halaman
+      // UI Loader animasi logo.svg saat memuat komentar halaman
       if (prevBtn) prevBtn.disabled = true;
       if (nextBtn) nextBtn.disabled = true;
       if (listEl) {
         listEl.innerHTML =
           '<div class="flex flex-col items-center justify-center py-20 text-gray-400 space-y-3 select-none animate-in fade-in duration-150">' +
-            '<div class="w-8 h-8 border-2 border-gray-700/80 border-t-[#00e599] rounded-full animate-spin"></div>' +
+            '<div class="relative w-11 h-11 flex items-center justify-center">' +
+              '<div class="absolute inset-0 rounded-full bg-[#00e599]/25 blur-md animate-pulse"></div>' +
+              '<img src="/logo.svg" alt="Loading" class="w-10 h-10 animate-spin relative z-10 drop-shadow-[0_0_12px_rgba(0,229,153,0.5)]">' +
+            '</div>' +
             '<span class="text-xs text-gray-400 font-medium tracking-wide">Memuat komentar...</span>' +
           '</div>';
       }

@@ -72,7 +72,7 @@ export class FileCommentRepository implements ICommentRepository {
     const map = new Map<string, CommentNode>();
     const roots: CommentNode[] = [];
 
-    // Buat node untuk setiap komentar
+    // 1. Buat node untuk setiap komentar
     for (const c of flatList) {
       const isAnon = c.isAnonymous;
       const avatarUrl = isAnon
@@ -82,33 +82,44 @@ export class FileCommentRepository implements ICommentRepository {
       map.set(c.id, {
         ...c,
         avatarUrl,
+        replyToName: null,
         replies: [],
       });
     }
 
-    // Sambungkan parent-child
+    // 2. Hubungkan balasan ke akar utamanya (agar sejajar di level 1)
     for (const c of flatList) {
       const node = map.get(c.id)!;
-      if (c.parentId && map.has(c.parentId)) {
-        map.get(c.parentId)!.replies.push(node);
-      } else {
+      if (!c.parentId || !map.has(c.parentId)) {
         roots.push(node);
+      } else {
+        const directParent = map.get(c.parentId)!;
+
+        // Cari akar paling atas (root comment)
+        let curr = directParent;
+        while (curr.parentId && map.has(curr.parentId)) {
+          curr = map.get(curr.parentId)!;
+        }
+        const rootParent = curr;
+
+        // Jika membalas balasan lain (bukan langsung ke root comment), cantumkan nama target
+        if (directParent.id !== rootParent.id) {
+          node.replyToName = directParent.name;
+        }
+
+        rootParent.replies.push(node);
       }
     }
 
-    // Urutkan akar: komentar terbaru di atas (DESC)
+    // 3. Urutkan komentar root: terbaru di atas (DESC)
     roots.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    // Urutkan balasan: kronologis (ASC)
-    const sortRepliesAsc = (nodes: CommentNode[]) => {
-      for (const n of nodes) {
-        if (n.replies && n.replies.length > 0) {
-          n.replies.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-          sortRepliesAsc(n.replies);
-        }
+    // 4. Urutkan semua balasan di bawah root secara kronologis (ASC)
+    for (const r of roots) {
+      if (r.replies && r.replies.length > 0) {
+        r.replies.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
       }
-    };
-    sortRepliesAsc(roots);
+    }
 
     return roots;
   }

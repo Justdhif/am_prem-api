@@ -274,7 +274,9 @@ async function runTests() {
     assert(foundParent, 'Parent comment should be in tree');
     assert.strictEqual(foundParent.replies.length >= 1, true);
     assert.strictEqual(foundParent.replies[0].id, replyId);
-    assert.strictEqual(foundParent.replies[0].replies.length >= 1, true);
+    const foundNested = foundParent.replies.find((r: any) => r.id === nestedReplyRes.data.data.id);
+    assert(foundNested, 'Nested reply should be aligned in root replies');
+    assert.strictEqual(foundNested.replyToName, 'Anonim');
 
     // POST /api/comments validation: empty content should fail
     try {

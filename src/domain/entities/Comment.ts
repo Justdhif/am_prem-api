@@ -9,6 +9,7 @@ export interface Comment {
 
 export interface CommentNode extends Comment {
   avatarUrl: string;
+  replyToName?: string | null;
   formattedTime?: string;
   replies: CommentNode[];
 }

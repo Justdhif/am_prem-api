@@ -442,7 +442,27 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
     </div>
 
     <!-- Bottom Input Area (TikTok Style) -->
-    <div class="border-t border-gray-800/80 bg-[#0d121f] p-3 shrink-0">
+    <div class="border-t border-gray-800/80 bg-[#0d121f] p-3 shrink-0 relative">
+
+      <!-- FULL EMOJI PICKER POPUP (LENGKAP BERBAGAI KATEGORI) -->
+      <div id="emoji-picker-container" class="hidden absolute bottom-full left-3 right-3 mb-2 bg-[#131927] border border-gray-700/80 rounded-2xl shadow-2xl p-3 z-50 flex flex-col max-h-72 select-none animate-in fade-in duration-150">
+        <!-- Search bar & Close -->
+        <div class="flex items-center space-x-2 pb-2 mb-2 border-b border-gray-800">
+          <div class="flex-1 flex items-center bg-[#1a2234] rounded-lg px-2.5 py-1 text-xs text-gray-300">
+            <i class="fa-solid fa-magnifying-glass text-gray-500 mr-2 text-[11px]"></i>
+            <input type="text" id="emoji-search-input" oninput="filterEmojis(this.value)" placeholder="Cari emoji..." class="bg-transparent border-0 p-0 text-xs text-white placeholder-gray-500 focus:outline-none w-full">
+          </div>
+          <button type="button" onclick="closeEmojiPicker()" class="text-gray-400 hover:text-white p-1 text-xs transition">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Category Tabs -->
+        <div id="emoji-category-tabs" class="flex items-center space-x-1 pb-2 overflow-x-auto no-scrollbar text-sm border-b border-gray-800/60 mb-2"></div>
+
+        <!-- Emoji Grid List (Scrollable) -->
+        <div id="emoji-grid-list" class="flex-1 overflow-y-auto max-h-48 grid grid-cols-7 sm:grid-cols-8 gap-1 text-xl py-1 pr-1 overscroll-contain"></div>
+      </div>
       
       <!-- Banner Reply Indicator (aktif jika sedang membalas) -->
       <div id="sheet-reply-banner" class="hidden flex items-center justify-between pb-2 text-xs text-gray-400">
@@ -455,16 +475,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         </button>
       </div>
 
-      <!-- Quick Reaction Emojis Bar -->
-      <div class="flex items-center space-x-3 pb-2.5 overflow-x-auto no-scrollbar select-none text-base">
-        <button type="button" onclick="insertEmoji('🔥')" class="hover:scale-125 transition">🔥</button>
-        <button type="button" onclick="insertEmoji('❤️')" class="hover:scale-125 transition">❤️</button>
-        <button type="button" onclick="insertEmoji('😂')" class="hover:scale-125 transition">😂</button>
-        <button type="button" onclick="insertEmoji('👏')" class="hover:scale-125 transition">👏</button>
-        <button type="button" onclick="insertEmoji('✨')" class="hover:scale-125 transition">✨</button>
-        <button type="button" onclick="insertEmoji('🙌')" class="hover:scale-125 transition">🙌</button>
-        <button type="button" onclick="insertEmoji('⚡')" class="hover:scale-125 transition">⚡</button>
-      </div>
+
 
       <!-- Header Input: Nama & Toggle Anonim (TANPA BOX INPUT - Borderless & Flat) -->
       <div class="flex items-center justify-between gap-3 pb-2 text-xs border-b border-gray-800/60 mb-2.5">
@@ -485,6 +496,12 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
           <textarea id="sheet-comment-input" rows="1" placeholder="Tambahkan komentar..." required maxlength="1000" oninput="handleCommentInput(this)" onkeydown="handleCommentKeyDown(event)"
             class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-0 w-full resize-none leading-relaxed max-h-28 overflow-y-auto block no-scrollbar"></textarea>
         </div>
+
+        <button type="button" id="sheet-btn-emoji" onclick="toggleEmojiPicker(event)"
+          class="w-9 h-9 rounded-full bg-[#1a2234] hover:bg-gray-800 text-gray-400 hover:text-[#00e599] flex items-center justify-center transition shadow-md shrink-0 active:scale-95 mb-0.5 border border-transparent hover:border-gray-700"
+          title="Pilih emoji">
+          <i class="fa-regular fa-face-smile text-lg"></i>
+        </button>
 
         <button type="submit" id="sheet-btn-send"
           class="w-9 h-9 rounded-full bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold flex items-center justify-center transition shadow-md shrink-0 active:scale-95 disabled:opacity-40 mb-0.5">
@@ -589,6 +606,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         sheet.classList.remove('translate-y-0');
         sheet.classList.add('translate-y-full');
         document.body.style.overflow = '';
+        closeEmojiPicker();
         cancelReplyMode();
       }
     }
@@ -637,14 +655,108 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
       }
     }
 
-    function insertEmoji(emoji) {
-      var inputEl = document.getElementById('sheet-comment-input');
-      if (inputEl) {
-        inputEl.value += emoji;
-        handleCommentInput(inputEl);
-        inputEl.focus();
+
+    // --- Full Categorized Emoji Picker Logic ---
+    var EMOJI_CATEGORIES = [
+      { name: 'Senyum', icon: '😀', emojis: ['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','😉','😊','😇','🥰','😍','🤩','😘','😗','😚','😙','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄','😬','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧','🥵','🥶','🥴','😵','🤯','🤠','🥳','🥸','😎','🤓','🧐','😕','😟','🙁','☹️','😮','😯','😲','😳','🥺','😦','😧','😰','😥','😢','😭','😱','😖','😣','😞','😓','😩','😫','🥱','😤','😡','😠','🤬','😈','👿','💀','☠️','💩','🤡','👻','👽','🤖'] },
+      { name: 'Gestur', icon: '👍', emojis: ['👋','🤚','🖐️','✋','🖖','👌','🤌','🤏','✌️','🤞','🫰','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','🫵','👍','👎','✊','👊','🤛','🤜','👏','🙌','🫶','👐','🤲','🤝','🙏','✍️','💅','🤳','💪','🦾','👂','👃','👀','👁️','👅','👄'] },
+      { name: 'Hati', icon: '❤️', emojis: ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❤️‍🔥','❤️‍🩹','❣️','💕','💞','💓','💗','💖','💘','💝','💟','💯','💢','💥','✨','💫','⭐️','🌟','⚡','🔥','🎉','🎊','🎈','🎁','🏆','🥇','🥈','🥉','💎','💸','💵','💳','💣','🔪','🪄','🔮','🧿','🔔','🔕','⚠️','⛔','🚫','✅','❌','❓','❗','‼️','💤','🎵','🎶'] },
+      { name: 'Makanan', icon: '🍔', emojis: ['🍏','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🥑','🌽','🌶️','🍕','🍔','🍟','🌭','🥓','🥞','🧇','🥪','🥙','🌮','🌯','🥗','🥘','🍝','🍜','🍲','🍣','🍱','🥟','🍦','🍧','🍨','🍩','🍪','🎂','🍰','🧁','🍫','🍬','🍭','🍿','☕','🧃','🥤','🧋','🍺','🍻','🥂','🍷','🍹'] },
+      { name: 'Aktivitas', icon: '⚽', emojis: ['⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🎱','🏓','🏸','🥊','🛹','🛼','🏋️','🚴','🎮','🕹️','🎲','🎯','🎨','🎬','🎤','🎧','🎼','🎹','🥁','🎷','🎺','🎸','📱','💻','🖥️','📷','📸','📹','📺','⏰','⏱️','💡','🔦','🕯️','🔑','🗝️','🔒','🔓','📦','🚀','✈️','🏎️','🚗','🛵','🏍️','🚲'] },
+      { name: 'Alam', icon: '🐶', emojis: ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐒','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🕷️','🐢','🐍','🦎','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🦈','🐊','🌲','🌴','🌱','🌿','☘️','🍀','🌸','🌹','🌻','🌺','🍁','🍄','🌈','☀️','⛅','🌧️','⛈️','❄️','🌊'] }
+    ];
+
+    var currentEmojiCategory = 0;
+
+    function toggleEmojiPicker(e) {
+      if (e) e.stopPropagation();
+      var container = document.getElementById('emoji-picker-container');
+      if (!container) return;
+      var isHidden = container.classList.contains('hidden');
+      if (isHidden) {
+        container.classList.remove('hidden');
+        renderEmojiTabs();
+        renderEmojiGrid(currentEmojiCategory);
+        var search = document.getElementById('emoji-search-input');
+        if (search) search.value = '';
+      } else {
+        container.classList.add('hidden');
       }
     }
+
+    function closeEmojiPicker() {
+      var container = document.getElementById('emoji-picker-container');
+      if (container) container.classList.add('hidden');
+    }
+
+    function selectEmojiCategory(index) {
+      currentEmojiCategory = index;
+      renderEmojiTabs();
+      renderEmojiGrid(index);
+    }
+
+    function renderEmojiTabs() {
+      var tabsEl = document.getElementById('emoji-category-tabs');
+      if (!tabsEl) return;
+      tabsEl.innerHTML = EMOJI_CATEGORIES.map(function(cat, idx) {
+        var activeClass = idx === currentEmojiCategory
+          ? 'bg-[#00e599]/20 text-[#00e599] border-[#00e599]/40 font-bold'
+          : 'text-gray-400 hover:text-white border-transparent';
+        return '<button type="button" onclick="selectEmojiCategory(' + idx + ')" class="px-2 py-1 rounded-lg border text-sm transition flex items-center space-x-1 shrink-0 ' + activeClass + '">' +
+          '<span>' + cat.icon + '</span>' +
+          '<span class="text-[11px] font-medium hidden sm:inline">' + cat.name + '</span>' +
+        '</button>';
+      }).join('');
+    }
+
+    function renderEmojiGrid(categoryIdx, filterText) {
+      var gridEl = document.getElementById('emoji-grid-list');
+      if (!gridEl) return;
+      var emojisToRender = [];
+      if (filterText && filterText.trim()) {
+        var q = filterText.trim().toLowerCase();
+        EMOJI_CATEGORIES.forEach(function(cat) {
+          cat.emojis.forEach(function(em) {
+            if (!emojisToRender.includes(em)) emojisToRender.push(em);
+          });
+        });
+      } else {
+        emojisToRender = EMOJI_CATEGORIES[categoryIdx] ? EMOJI_CATEGORIES[categoryIdx].emojis : [];
+      }
+
+      gridEl.innerHTML = emojisToRender.map(function(em) {
+        return '<button type="button" data-emoji="' + em + '" onclick="handleEmojiItemClick(this)" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-800 hover:scale-125 transition active:scale-95 text-lg cursor-pointer">' +
+          em +
+        '</button>';
+      }).join('');
+    }
+
+    function handleEmojiItemClick(btn) {
+      var emoji = btn.getAttribute('data-emoji');
+      if (emoji) insertEmoji(emoji);
+    }
+
+    function filterEmojis(val) {
+      renderEmojiGrid(currentEmojiCategory, val);
+    }
+
+    // Insert emoji at cursor position
+    function insertEmoji(emoji) {
+      var inputEl = document.getElementById('sheet-comment-input');
+      if (!inputEl) return;
+      var start = inputEl.selectionStart;
+      var end = inputEl.selectionEnd;
+      var val = inputEl.value;
+      if (typeof start === 'number' && typeof end === 'number') {
+        inputEl.value = val.substring(0, start) + emoji + val.substring(end);
+        inputEl.selectionStart = inputEl.selectionEnd = start + emoji.length;
+      } else {
+        inputEl.value += emoji;
+      }
+      handleCommentInput(inputEl);
+      inputEl.focus();
+    }
+
 
     function toggleSheetAnonymous(isChecked) {
       var nameInput = document.getElementById('sheet-author-name');
@@ -808,6 +920,17 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         btn.innerHTML = '<i class="fa-solid fa-arrow-up text-sm"></i>';
       }
     }
+
+
+    document.addEventListener('click', function(e) {
+      var picker = document.getElementById('emoji-picker-container');
+      var btn = document.getElementById('sheet-btn-emoji');
+      if (picker && !picker.classList.contains('hidden')) {
+        if (!picker.contains(e.target) && btn && !btn.contains(e.target)) {
+          closeEmojiPicker();
+        }
+      }
+    });
 
     window.addEventListener('resize', function() {
       if (window.innerWidth >= 1024) {

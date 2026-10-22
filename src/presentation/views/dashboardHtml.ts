@@ -26,15 +26,10 @@ function renderTikTokCommentServerSide(comment: CommentNode): string {
     <div id="comment-${comment.id}" class="flex items-start space-x-3 text-xs">
       <img src="${avatarUrl}" alt="Avatar" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-gray-700/80 object-cover shrink-0 mt-0.5">
       <div class="flex-1 min-w-0">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center flex-wrap">
-            <span class="font-semibold text-gray-400 text-xs">${safeName}</span>
-            ${replyTarget}
-            ${anonBadge}
-          </div>
-          <button type="button" onclick="toggleLike(this)" class="text-gray-500 hover:text-red-500 transition flex items-center space-x-1 pl-2">
-            <i class="fa-regular fa-heart text-xs"></i>
-          </button>
+        <div class="flex items-center flex-wrap">
+          <span class="font-semibold text-gray-400 text-xs">${safeName}</span>
+          ${replyTarget}
+          ${anonBadge}
         </div>
         <p class="text-xs sm:text-sm text-gray-100 font-normal mt-0.5 leading-relaxed break-words whitespace-pre-line">${safeContent}</p>
         <div class="flex items-center space-x-3 mt-1.5 text-[11px] text-gray-500">
@@ -95,7 +90,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
 
   <!-- TOP NAVBAR (MINIMALIST & MOBILE-OPTIMIZED) -->
   <header class="sticky top-0 z-30 border-b border-gray-800/80 bg-[#0d121f]/90 backdrop-blur-md">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3">
         <img src="${LOGO_DATA_URI}" alt="Alight Motion Logo" class="w-10 h-10 rounded-xl object-cover border border-[#00e599]/40 shadow-sm shadow-[#00e599]/20">
         <div class="flex flex-col items-start justify-center">
@@ -115,8 +110,11 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
     </div>
   </header>
 
-  <!-- MAIN DOCUMENTATION CONTAINER -->
-  <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
+  <!-- MAIN LAYOUT WRAPPER (DESKTOP 2-COLUMN / MOBILE SINGLE COLUMN) -->
+  <div class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col lg:flex-row gap-6 items-start">
+
+    <!-- MAIN DOCUMENTATION CONTAINER -->
+    <main class="flex-1 min-w-0 w-full space-y-6 sm:space-y-8">
 
     <!-- HERO INTRODUCTION -->
     <div class="doc-card p-5 sm:p-7 relative overflow-hidden">
@@ -407,49 +405,19 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
 }</code></pre>
       </section>
     </div>
-  </main>
+    </main>
 
-  <!-- TOAST NOTIFICATION -->
-  <div id="toast" class="fixed bottom-5 right-5 z-50 flex items-center space-x-2.5 px-4 py-2.5 rounded-xl bg-[#131927] text-white border border-[#00e599]/40 shadow-xl transition-all duration-300 transform translate-y-20 opacity-0 text-xs">
-    <i class="fa-solid fa-circle-check text-[#00e599]"></i>
-    <span id="toast-msg">Tersalin ke clipboard!</span>
-  </div>
-
-  <!-- MINIMALIST FOOTER -->
-  <footer class="border-t border-gray-800/80 py-6 mt-8 text-center text-xs text-gray-500 bg-[#0d121f]">
-    <div class="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-      <div class="flex items-center space-x-2">
-        <img src="${LOGO_DATA_URI}" alt="Logo" class="w-5 h-5 rounded-md object-cover">
-        <span class="text-gray-300 font-semibold">Alight Motion Pro API</span>
-      </div>
-      <p class="text-[11px] text-gray-500">Crafted with 💚 by <strong>Justdhif</strong> &copy; 2026. Clean Architecture.</p>
-    </div>
-  </footer>
-
-  <!-- TIKTOK-STYLE FLOATING COMMENT BUTTON (FAB) -->
-  <button id="fab-open-comments" type="button" onclick="openCommentSheet()"
-    class="fixed bottom-6 right-5 sm:right-8 z-40 flex items-center space-x-2 px-4 py-3 rounded-full bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm shadow-xl shadow-[#00e599]/30 transition-all duration-300 transform hover:scale-105 active:scale-95 group">
-    <i class="fa-solid fa-comment-dots text-base"></i>
-    <span class="font-bold">Komentar</span>
-    <span id="fab-count" class="px-2 py-0.5 rounded-full bg-gray-950/20 text-gray-950 text-xs font-black">
-      ${initialComments ? initialComments.length : '0'}
-    </span>
-  </button>
-
-  <!-- TIKTOK-STYLE COMMENT BOTTOM SHEET (DRAWER) -->
-  <div id="comment-sheet-backdrop" class="fixed inset-0 w-full h-full bg-black/80 backdrop-blur-md z-[99] opacity-0 pointer-events-none transition-opacity duration-300" onclick="closeCommentSheet()"></div>
-
-  <div id="comment-sheet" class="fixed bottom-0 left-0 right-0 z-[100] max-w-lg mx-auto w-full h-[85vh] max-h-[760px] bg-[#0d121f] text-white rounded-t-3xl border-t border-x border-gray-800/80 shadow-2xl flex flex-col transform translate-y-full transition-transform duration-300 ease-out">
+    <!-- TIKTOK-STYLE COMMENT CONTAINER (DESKTOP SIDEBAR / MOBILE BOTTOM SHEET) -->
+  <div id="comment-sheet" class="fixed bottom-0 left-0 right-0 z-[100] max-w-lg mx-auto w-full h-[85vh] max-h-[760px] bg-[#0d121f] text-white rounded-t-3xl border-t border-x border-gray-800/80 shadow-2xl flex flex-col transform translate-y-full transition-transform duration-300 ease-out lg:static lg:transform-none lg:translate-y-0 lg:z-auto lg:max-w-none lg:w-[380px] xl:w-[420px] lg:h-[calc(100vh-6.5rem)] lg:max-h-[850px] lg:rounded-2xl lg:border lg:border-gray-800/80 lg:shadow-xl lg:sticky lg:top-20 lg:shrink-0">
     
     <!-- Header Sheet (Handle & Counter ala TikTok) -->
     <div class="px-4 pt-2.5 pb-2 border-b border-gray-800/80 shrink-0 select-none">
-      <div class="w-10 h-1 bg-gray-600 rounded-full mx-auto mb-2 cursor-pointer" onclick="closeCommentSheet()"></div>
-      <div class="relative flex items-center justify-center">
+      <div class="w-10 h-1 bg-gray-600 rounded-full mx-auto mb-2 cursor-pointer lg:hidden" onclick="closeCommentSheet()"></div>
+      <div class="relative flex items-center justify-center lg:justify-between">
         <h3 class="font-bold text-sm sm:text-base text-white flex items-center">
           <span id="sheet-title-count">${initialComments ? initialComments.length : '0'}</span>&nbsp;komentar
-          <i class="fa-solid fa-bars-staggered ml-1.5 text-xs text-gray-400"></i>
-        </h3>
-        <button type="button" onclick="closeCommentSheet()" class="absolute right-0 p-1 text-gray-400 hover:text-white transition">
+          </h3>
+        <button type="button" onclick="closeCommentSheet()" class="lg:hidden absolute right-0 p-1 text-gray-400 hover:text-white transition">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
@@ -527,8 +495,41 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
     </div>
 
   </div>
+  </div>
 
-  <!-- LIGHTWEIGHT CLIENT SCRIPT -->
+
+
+<!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 flex items-center space-x-2.5 px-4 py-2.5 rounded-xl bg-[#131927] text-white border border-[#00e599]/40 shadow-xl transition-all duration-300 transform translate-y-20 opacity-0 text-xs">
+    <i class="fa-solid fa-circle-check text-[#00e599]"></i>
+    <span id="toast-msg">Tersalin ke clipboard!</span>
+  </div>
+
+  <!-- MINIMALIST FOOTER -->
+  <footer class="border-t border-gray-800/80 py-6 mt-8 text-center text-xs text-gray-500 bg-[#0d121f]">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center space-x-2">
+        <img src="${LOGO_DATA_URI}" alt="Logo" class="w-5 h-5 rounded-md object-cover">
+        <span class="text-gray-300 font-semibold">Alight Motion Pro API</span>
+      </div>
+      <p class="text-[11px] text-gray-500">Crafted with 💚 by <strong>Justdhif</strong> &copy; 2026. Clean Architecture.</p>
+    </div>
+  </footer>
+
+<!-- TIKTOK-STYLE FLOATING COMMENT BUTTON (FAB - MOBILE ONLY) -->
+  <button id="fab-open-comments" type="button" onclick="openCommentSheet()"
+    class="lg:hidden fixed bottom-6 right-5 sm:right-8 z-40 flex items-center space-x-2 px-4 py-3 rounded-full bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm shadow-xl shadow-[#00e599]/30 transition-all duration-300 transform hover:scale-105 active:scale-95 group">
+    <i class="fa-solid fa-comment-dots text-base"></i>
+    <span class="font-bold">Komentar</span>
+    <span id="fab-count" class="px-2 py-0.5 rounded-full bg-gray-950/20 text-gray-950 text-xs font-black">
+      ${initialComments ? initialComments.length : '0'}
+    </span>
+  </button>
+
+  <!-- TIKTOK-STYLE COMMENT BOTTOM SHEET BACKDROP (MOBILE ONLY) -->
+  <div id="comment-sheet-backdrop" class="lg:hidden fixed inset-0 w-full h-full bg-black/80 backdrop-blur-md z-[99] opacity-0 pointer-events-none transition-opacity duration-300" onclick="closeCommentSheet()"></div>
+
+    <!-- LIGHTWEIGHT CLIENT SCRIPT -->
   <script>
     function copySnippet(id) {
       const text = document.getElementById(id).value;
@@ -566,6 +567,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
     var activeParentId = null;
 
     function openCommentSheet() {
+      if (window.innerWidth >= 1024) return;
       var sheet = document.getElementById('comment-sheet');
       var backdrop = document.getElementById('comment-sheet-backdrop');
       if (sheet && backdrop) {
@@ -578,6 +580,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
     }
 
     function closeCommentSheet() {
+      if (window.innerWidth >= 1024) return;
       var sheet = document.getElementById('comment-sheet');
       var backdrop = document.getElementById('comment-sheet-backdrop');
       if (sheet && backdrop) {
@@ -653,19 +656,6 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
       var name = nameInput && nameInput.value.trim() ? nameInput.value.trim() : 'User';
       if (avatarImg) {
         avatarImg.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=00e599&color=0d121f&bold=true';
-      }
-    }
-
-    function toggleLike(btn) {
-      var icon = btn.querySelector('i');
-      if (icon) {
-        if (icon.classList.contains('fa-regular')) {
-          icon.classList.remove('fa-regular');
-          icon.classList.add('fa-solid', 'text-red-500');
-        } else {
-          icon.classList.remove('fa-solid', 'text-red-500');
-          icon.classList.add('fa-regular');
-        }
       }
     }
 
@@ -746,15 +736,10 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         '<div id="comment-' + comment.id + '" class="flex items-start space-x-3 text-xs">' +
           '<img src="' + escapeHtml(avatar) + '" alt="Avatar" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-gray-700/80 object-cover shrink-0 mt-0.5">' +
           '<div class="flex-1 min-w-0">' +
-            '<div class="flex items-center justify-between">' +
-              '<div class="flex items-center flex-wrap">' +
-                '<span class="font-semibold text-gray-400 text-xs">' + escapeHtml(comment.name) + '</span>' +
-                replyTarget +
-                anonBadge +
-              '</div>' +
-              '<button type="button" onclick="toggleLike(this)" class="text-gray-500 hover:text-red-500 transition flex items-center space-x-1 pl-2">' +
-                '<i class="fa-regular fa-heart text-xs"></i>' +
-              '</button>' +
+            '<div class="flex items-center flex-wrap">' +
+              '<span class="font-semibold text-gray-400 text-xs">' + escapeHtml(comment.name) + '</span>' +
+              replyTarget +
+              anonBadge +
             '</div>' +
             '<p class="text-xs sm:text-sm text-gray-100 font-normal mt-0.5 leading-relaxed break-words whitespace-pre-line">' + escapeHtml(comment.content) + '</p>' +
             '<div class="flex items-center space-x-3 mt-1.5 text-[11px] text-gray-500">' +
@@ -807,6 +792,17 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         btn.innerHTML = '<i class="fa-solid fa-arrow-up text-sm"></i>';
       }
     }
+
+    window.addEventListener('resize', function() {
+      if (window.innerWidth >= 1024) {
+        document.body.style.overflow = '';
+        var backdrop = document.getElementById('comment-sheet-backdrop');
+        if (backdrop) {
+          backdrop.classList.remove('opacity-100');
+          backdrop.classList.add('opacity-0', 'pointer-events-none');
+        }
+      }
+    });
 
     window.addEventListener('DOMContentLoaded', () => {
       loadComments();

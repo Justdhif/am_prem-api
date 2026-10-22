@@ -171,22 +171,6 @@ export function renderDashboardHtml(
       </div>
     </div>
 
-    <!-- MAIN NAVIGATION TABS (DOCS vs PLAYGROUND) -->
-    <div class="flex items-center space-x-2 border-b border-gray-800 pb-3">
-      <button type="button" id="main-tab-docs-btn" onclick="switchMainTab('docs')"
-        class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center space-x-2 bg-[#00e599] text-gray-950 shadow-md shadow-[#00e599]/20">
-        <i class="fa-solid fa-book-bookmark text-xs sm:text-sm"></i>
-        <span>Docs</span>
-      </button>
-      <button type="button" id="main-tab-playground-btn" onclick="switchMainTab('playground')"
-        class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center space-x-2 text-gray-400 hover:text-white hover:bg-gray-800/80">
-        <i class="fa-solid fa-flask text-xs sm:text-sm"></i>
-        <span>Playground</span>
-      </button>
-    </div>
-
-    <!-- MAIN TAB 1: DOCS CONTAINER -->
-    <div id="main-tab-content-docs" class="space-y-6 sm:space-y-8">
     <!-- HOW IT WORKS (ALUR 2 LANGKAH) -->
     <div class="doc-card p-5 sm:p-6 space-y-4">
       <h2 class="text-lg font-bold text-white flex items-center">
@@ -215,6 +199,22 @@ export function renderDashboardHtml(
       </div>
     </div>
 
+    <!-- MAIN NAVIGATION TABS (DOCS vs PLAYGROUND) -->
+    <div class="flex items-center space-x-2 border-b border-gray-800 pb-3">
+      <button type="button" id="main-tab-docs-btn" onclick="switchMainTab('docs')"
+        class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center space-x-2 bg-[#00e599] text-gray-950 shadow-md shadow-[#00e599]/20">
+        <i class="fa-solid fa-book-bookmark text-xs sm:text-sm"></i>
+        <span>Docs</span>
+      </button>
+      <button type="button" id="main-tab-playground-btn" onclick="switchMainTab('playground')"
+        class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center space-x-2 text-gray-400 hover:text-white hover:bg-gray-800/80">
+        <i class="fa-solid fa-flask text-xs sm:text-sm"></i>
+        <span>Playground</span>
+      </button>
+    </div>
+
+    <!-- MAIN TAB 1: DOCS CONTAINER -->
+    <div id="main-tab-content-docs" class="space-y-6 sm:space-y-8">
     <!-- ENDPOINTS SECTION -->
     <div class="space-y-6">
       <h2 class="text-lg font-bold text-white flex items-center">
@@ -414,11 +414,12 @@ export function renderDashboardHtml(
 }</code></pre>
         </div>
       </section>
-
+      </div>
+      <!-- END OF ENDPOINTS SECTION -->
     </div>
     <!-- END OF TAB 1: DOCS CONTAINER -->
 
-    <!-- MAIN TAB 2: PLAYGROUND CONTAINER (2 CARDS) -->
+    <!-- MAIN TAB 2: PLAYGROUND CONTAINER (3 CARDS) -->
     <div id="main-tab-content-playground" class="hidden space-y-6">
       <div class="p-4 rounded-xl bg-[#00e599]/10 border border-[#00e599]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-gray-300">
         <div class="flex items-center space-x-2.5">
@@ -717,7 +718,6 @@ export function renderDashboardHtml(
           </a>
         </div>
       </section>
-    </div>
     </main>
 
     <!-- TIKTOK-STYLE COMMENT CONTAINER (DESKTOP SIDEBAR / MOBILE BOTTOM SHEET) -->

@@ -106,15 +106,6 @@ async function runTests() {
     const logoRes = await axios.get(`${baseUrl}/logo.jpg`);
     assert.strictEqual(logoRes.status, 200);
 
-    // GET /api/am/help
-    const helpRes = await axios.get(`${baseUrl}/api/am/help`);
-    assert.strictEqual(helpRes.status, 200);
-    assert(helpRes.data.formattedText.includes('PANDUAN ALIGHT MOTION PRO'));
-
-    // GET /api/am/stats
-    const statsRes = await axios.get(`${baseUrl}/api/am/stats`);
-    assert.strictEqual(statsRes.status, 200);
-    assert(statsRes.data.formattedText.includes('STATISTIK ALIGHT MOTION PRO'));
 
     // POST /api/am/command (!amhelp) -> 200
     const cmdHelpRes = await axios.post(`${baseUrl}/api/am/command`, {
@@ -307,7 +298,7 @@ async function runTests() {
   console.log('\n🎉 ALL CLEAN ARCHITECTURE TESTS PASSED SUCCESSFULLY! 🎉\n');
 }
 
-runTests().catch((err) => {
+runTests().then(() => process.exit(0)).catch((err) => {
   console.error('❌ Test failed:', err);
   process.exit(1);
 });

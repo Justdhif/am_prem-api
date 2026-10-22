@@ -1,26 +1,38 @@
-import { LOGO_DATA_URI } from './logoAsset.js';
-import { CommentNode } from '../../domain/entities/Comment.js';
-
-
+import { LOGO_DATA_URI } from "./logoAsset.js";
+import { CommentNode } from "../../domain/entities/Comment.js";
 
 function renderTikTokCommentServerSide(comment: CommentNode): string {
   const anonBadge = comment.isAnonymous
     ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-normal border border-gray-700/60 ml-1.5">Anonim</span>'
-    : '';
+    : "";
 
   const replyTarget = comment.replyToName
-    ? '<span class="text-gray-400 mx-1 text-xs font-normal">&gt;</span><span class="text-[#00e599] font-semibold text-xs">' + comment.replyToName.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>'
-    : '';
+    ? '<span class="text-gray-400 mx-1 text-xs font-normal">&gt;</span><span class="text-[#00e599] font-semibold text-xs">' +
+      comment.replyToName
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;") +
+      "</span>"
+    : "";
 
-  const repliesHtml = (comment.replies && comment.replies.length > 0)
-    ? '<div class="mt-3 pl-3 sm:pl-4 space-y-3 border-l border-gray-800/80">' +
-        comment.replies.map(renderTikTokCommentServerSide).join('') +
-      '</div>'
-    : '';
+  const repliesHtml =
+    comment.replies && comment.replies.length > 0
+      ? '<div class="mt-3 pl-3 sm:pl-4 space-y-3 border-l border-gray-800/80">' +
+        comment.replies.map(renderTikTokCommentServerSide).join("") +
+        "</div>"
+      : "";
 
-  const safeName = (comment.name || 'Anonim').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const safeContent = (comment.content || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const avatarUrl = comment.avatarUrl || 'https://ui-avatars.com/api/?name=Anonim&background=1f2b42&color=94a3b8&bold=true';
+  const safeName = (comment.name || "Anonim")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  const safeContent = (comment.content || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  const avatarUrl =
+    comment.avatarUrl ||
+    "https://ui-avatars.com/api/?name=Anonim&background=1f2b42&color=94a3b8&bold=true";
 
   return `
     <div id="comment-${comment.id}" class="flex items-start space-x-3 text-xs">
@@ -33,7 +45,7 @@ function renderTikTokCommentServerSide(comment: CommentNode): string {
         </div>
         <p class="text-xs sm:text-sm text-gray-100 font-normal mt-0.5 leading-relaxed break-words whitespace-pre-line">${safeContent}</p>
         <div class="flex items-center space-x-3 mt-1.5 text-[11px] text-gray-500">
-          <span>${comment.formattedTime || 'Baru saja'}</span>
+          <span>${comment.formattedTime || "Baru saja"}</span>
           <button type="button" data-id="${comment.id}" data-name="${safeName}" onclick="handleReplyClick(this)" class="font-bold text-gray-400 hover:text-white transition">Balas</button>
         </div>
         ${repliesHtml}
@@ -42,7 +54,10 @@ function renderTikTokCommentServerSide(comment: CommentNode): string {
   `;
 }
 
-export function renderDashboardHtml(initialStats?: { total: number; today: number }, initialComments?: CommentNode[]): string {
+export function renderDashboardHtml(
+  initialStats?: { total: number; today: number },
+  initialComments?: CommentNode[],
+): string {
   return `<!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
@@ -142,11 +157,11 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-6 pt-5 border-t border-gray-800">
         <div class="bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
           <span class="text-[11px] text-gray-400 block">Total Aktivasi</span>
-          <span id="stat-total" class="text-base sm:text-lg font-bold text-white mt-0.5 block">${initialStats ? initialStats.total + ' Akun' : 'Loading...'}</span>
+          <span id="stat-total" class="text-base sm:text-lg font-bold text-white mt-0.5 block">${initialStats ? initialStats.total + " Akun" : "0 Akun"}</span>
         </div>
         <div class="bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
           <span class="text-[11px] text-gray-400 block">Aktivasi Hari Ini</span>
-          <span id="stat-today" class="text-base sm:text-lg font-bold text-[#00e599] mt-0.5 block">${initialStats ? initialStats.today + ' Akun' : 'Loading...'}</span>
+          <span id="stat-today" class="text-base sm:text-lg font-bold text-[#00e599] mt-0.5 block">${initialStats ? initialStats.today + " Akun" : "0 Akun"}</span>
         </div>
         <div class="col-span-2 sm:col-span-1 bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
           <span class="text-[11px] text-gray-400 block">Protokol</span>
@@ -383,28 +398,203 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         </div>
       </section>
 
-      <!-- ENDPOINT 4: STATS & HEALTH -->
-      <section class="doc-card p-5 sm:p-6 space-y-4">
+      <!-- INTERACTIVE API PLAYGROUND -->
+      <section class="doc-card p-5 sm:p-7 space-y-5 border-[#00e599]/30 relative overflow-hidden" id="api-playground">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-gray-800">
-          <div class="flex items-center space-x-2.5 flex-wrap">
-            <span class="badge-method bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">GET</span>
-            <code class="text-sm font-bold text-white break-all">/api/am/stats</code>
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-lg bg-[#00e599]/15 text-[#00e599] flex items-center justify-center text-sm">
+              <i class="fa-solid fa-flask"></i>
+            </div>
+            <div>
+              <h2 class="text-base sm:text-lg font-bold text-white flex items-center">
+                Interactive API Playground
+                <span class="ml-2 text-[10px] px-2 py-0.5 rounded-full bg-[#00e599]/20 text-[#00e599] font-semibold border border-[#00e599]/30">Live Test</span>
+              </h2>
+              <p class="text-xs text-gray-400">Uji coba langsung endpoint pengiriman link dan verifikasi lisensi di browser.</p>
+            </div>
           </div>
-          <span class="text-xs text-gray-400">Statistik Global</span>
         </div>
 
-        <p class="text-xs sm:text-sm text-gray-300">
-          Mengambil data jumlah total akun Pro yang berhasil diaktifkan secara global dan jumlah aktivasi hari ini.
-        </p>
+        <!-- Playground Tabs -->
+        <div class="flex items-center space-x-2 border-b border-gray-800 pb-2">
+          <button type="button" id="tab-btn-sendlink" onclick="switchPlaygroundTab('sendlink')"
+            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 bg-[#00e599] text-gray-950 shadow-md shadow-[#00e599]/20">
+            <i class="fa-regular fa-paper-plane text-xs"></i>
+            <span>1. Send Magic Link</span>
+          </button>
+          <button type="button" id="tab-btn-verify" onclick="switchPlaygroundTab('verify')"
+            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 text-gray-400 hover:text-white hover:bg-gray-800/80">
+            <i class="fa-solid fa-shield-halved text-xs"></i>
+            <span>2. Verify &amp; Activate</span>
+          </button>
+        </div>
 
-        <pre class="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs text-[#00e599] overflow-x-auto border border-gray-800/80"><code>{
-  "success": true,
-  "data": {
-    "totalPremium": 144,
-    "todayPremium": 20,
-    "status": "Online 🟢"
-  }
-}</code></pre>
+        <!-- Form 1: Send Magic Link -->
+        <div id="playground-sendlink-panel" class="space-y-4">
+          <form onsubmit="runPlaygroundSendLink(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-gray-300 mb-1.5">
+                Target Email <span class="text-[#00e599]">*</span>
+              </label>
+              <div class="flex items-center bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                <i class="fa-regular fa-envelope text-gray-500 mr-2.5 text-xs"></i>
+                <input type="email" id="pg-sendlink-email" required placeholder="user@gmail.com"
+                  class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full">
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-2 pt-1 flex-wrap">
+              <div class="flex items-center space-x-2">
+                <button type="submit" id="pg-sendlink-submit"
+                  class="px-4 py-2 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 disabled:opacity-50">
+                  <i class="fa-solid fa-paper-plane"></i>
+                  <span>Kirim Request (POST)</span>
+                </button>
+                <button type="button" onclick="fillSampleSendLink()"
+                  class="px-3 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition active:scale-95">
+                  Contoh Data
+                </button>
+              </div>
+              <button type="button" onclick="resetPlaygroundSendLink()" class="text-xs text-gray-500 hover:text-white transition">
+                Reset
+              </button>
+            </div>
+          </form>
+
+          <!-- Response Viewer -->
+          <div id="pg-sendlink-result" class="hidden space-y-2 pt-2 border-t border-gray-800/80">
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center space-x-2">
+                <span class="text-gray-400">Response Status:</span>
+                <span id="pg-sendlink-status" class="px-2 py-0.5 rounded font-mono font-bold text-[11px]">200 OK</span>
+              </div>
+              <span id="pg-sendlink-time" class="text-gray-500 font-mono text-[11px]">0 ms</span>
+            </div>
+            <pre class="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs overflow-x-auto border border-gray-800 font-mono text-gray-300 max-h-64"><code id="pg-sendlink-output">{}</code></pre>
+          </div>
+        </div>
+
+        <!-- Form 2: Verify & Activate Pro -->
+        <div id="playground-verify-panel" class="hidden space-y-4">
+          <form onsubmit="runPlaygroundVerify(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-gray-300 mb-1.5">
+                Target Email <span class="text-[#00e599]">*</span>
+              </label>
+              <div class="flex items-center bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                <i class="fa-regular fa-envelope text-gray-500 mr-2.5 text-xs"></i>
+                <input type="email" id="pg-verify-email" required placeholder="user@gmail.com"
+                  class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-gray-300 mb-1.5">
+                Magic Link / OOB Code dari Email <span class="text-[#00e599]">*</span>
+              </label>
+              <div class="flex items-center bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                <i class="fa-solid fa-link text-gray-500 mr-2.5 text-xs"></i>
+                <input type="text" id="pg-verify-link" required placeholder="https://alightcreative.com/?link=... atau oobCode"
+                  class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full">
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-2 pt-1 flex-wrap">
+              <div class="flex items-center space-x-2">
+                <button type="submit" id="pg-verify-submit"
+                  class="px-4 py-2 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 disabled:opacity-50">
+                  <i class="fa-solid fa-shield-halved"></i>
+                  <span>Verifikasi &amp; Aktivasi (POST)</span>
+                </button>
+                <button type="button" onclick="fillSampleVerify()"
+                  class="px-3 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition active:scale-95">
+                  Contoh Data
+                </button>
+              </div>
+              <button type="button" onclick="resetPlaygroundVerify()" class="text-xs text-gray-500 hover:text-white transition">
+                Reset
+              </button>
+            </div>
+          </form>
+
+          <!-- Response Viewer -->
+          <div id="pg-verify-result" class="hidden space-y-2 pt-2 border-t border-gray-800/80">
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center space-x-2">
+                <span class="text-gray-400">Response Status:</span>
+                <span id="pg-verify-status" class="px-2 py-0.5 rounded font-mono font-bold text-[11px]">200 OK</span>
+              </div>
+              <span id="pg-verify-time" class="text-gray-500 font-mono text-[11px]">0 ms</span>
+            </div>
+            <pre class="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs overflow-x-auto border border-gray-800 font-mono text-gray-300 max-h-64"><code id="pg-verify-output">{}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANDUAN BANTUAN & PANDUAN PENGGUNAAN (HELP CENTER DI WEB UI) -->
+      <section class="doc-card p-5 sm:p-6 space-y-5" id="help-center">
+        <div class="flex items-center space-x-2.5 pb-3 border-b border-gray-800">
+          <div class="w-8 h-8 rounded-lg bg-blue-500/15 text-blue-400 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-circle-question"></i>
+          </div>
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-white">Panduan Bantuan &amp; FAQ</h2>
+            <p class="text-xs text-gray-400">Petunjuk aktivasi, panduan bot, dan solusi kendala umum.</p>
+          </div>
+        </div>
+
+        <!-- FAQ Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
+            <span class="font-bold text-[#00e599] flex items-center">
+              <i class="fa-solid fa-envelope-circle-check mr-2"></i>Email tidak masuk?
+            </span>
+            <p class="text-gray-300 leading-relaxed">
+              Pastikan alamat email sudah terdaftar di Alight Motion. Periksa folder <strong>Spam</strong>, <strong>Junk</strong>, atau tab <strong>Promosi</strong> di Gmail. Tunggu 1&ndash;2 menit.
+            </p>
+          </div>
+
+          <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
+            <span class="font-bold text-[#00e599] flex items-center">
+              <i class="fa-solid fa-clock-rotate-left mr-2"></i>Link Kadaluarsa (Expired)?
+            </span>
+            <p class="text-gray-300 leading-relaxed">
+              Magic link dari Firebase hanya berlaku 15 menit. Jika kadaluarsa, cukup kirim ulang perintah <code class="text-[#00e599]">!amprem</code> atau submit ulang email di form.
+            </p>
+          </div>
+
+          <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
+            <span class="font-bold text-[#00e599] flex items-center">
+              <i class="fa-solid fa-star mr-2"></i>Fitur Pro yang Didapat?
+            </span>
+            <p class="text-gray-300 leading-relaxed">
+              Lisensi Alight Motion Pro VIP 1 Tahun resmi aktif: bebas watermark saat export video, akses penuh semua efek premium, import preset XML &amp; font tanpa batas.
+            </p>
+          </div>
+
+          <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
+            <span class="font-bold text-[#00e599] flex items-center">
+              <i class="fa-solid fa-robot mr-2"></i>Daftar Perintah Bot WhatsApp
+            </span>
+            <p class="text-gray-300 leading-relaxed">
+              Gunakan <code class="text-[#00e599]">!amprem &lt;email&gt;</code> untuk kirim link, <code class="text-[#00e599]">!ampreset &lt;url&gt;</code> untuk cari preset VT, dan balas link untuk aktivasi.
+            </p>
+          </div>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-[#00e599]/10 border border-[#00e599]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div class="flex items-center space-x-2.5">
+            <i class="fa-brands fa-whatsapp text-xl text-[#00e599]"></i>
+            <div>
+              <span class="font-bold text-white block">Butuh Bantuan Lebih Lanjut?</span>
+              <span class="text-gray-400 text-[11px]">Hubungi WhatsApp kami di +44 7762 422507 atau TikTok @justdhifbieber</span>
+            </div>
+          </div>
+          <a href="https://wa.me/447762422507" target="_blank" rel="noopener noreferrer"
+            class="px-3.5 py-1.5 rounded-lg bg-[#00e599] text-gray-950 font-bold text-xs hover:bg-[#1affaa] transition shrink-0 text-center">
+            Chat WhatsApp
+          </a>
+        </div>
       </section>
     </div>
     </main>
@@ -417,7 +607,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
       <div class="w-10 h-1 bg-gray-600 rounded-full mx-auto mb-2 cursor-pointer lg:hidden" onclick="closeCommentSheet()"></div>
       <div class="relative flex items-center justify-center lg:justify-between">
         <h3 class="font-bold text-sm sm:text-base text-white flex items-center">
-          <span id="sheet-title-count">${initialComments ? initialComments.length : '0'}</span>&nbsp;komentar
+          <span id="sheet-title-count">${initialComments ? initialComments.length : "0"}</span>&nbsp;komentar
           </h3>
         <button type="button" onclick="closeCommentSheet()" class="lg:hidden absolute right-0 p-1 text-gray-400 hover:text-white transition">
           <i class="fa-solid fa-xmark text-lg"></i>
@@ -431,13 +621,13 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         initialComments
           ? initialComments.length === 0
             ? '<div class="text-center py-16 text-gray-500 text-xs">' +
-                '<i class="fa-regular fa-comment-dots text-3xl block mb-2 text-gray-600"></i>' +
-                'Belum ada komentar. Jadilah yang pertama berkomentar!' +
-              '</div>'
-            : initialComments.map(renderTikTokCommentServerSide).join('')
+              '<i class="fa-regular fa-comment-dots text-3xl block mb-2 text-gray-600"></i>' +
+              "Belum ada komentar. Jadilah yang pertama berkomentar!" +
+              "</div>"
+            : initialComments.map(renderTikTokCommentServerSide).join("")
           : '<div class="text-center py-16 text-gray-500 text-xs">' +
-              '<i class="fa-solid fa-spinner fa-spin mr-1.5 text-[#00e599]"></i>Memuat komentar...' +
-            '</div>'
+            '<i class="fa-solid fa-spinner fa-spin mr-1.5 text-[#00e599]"></i>Memuat komentar...' +
+            "</div>"
       }
     </div>
 
@@ -542,7 +732,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
     <i class="fa-solid fa-comment-dots text-base"></i>
     <span class="font-bold">Komentar</span>
     <span id="fab-count" class="px-2 py-0.5 rounded-full bg-gray-950/20 text-gray-950 text-xs font-black">
-      ${initialComments ? initialComments.length : '0'}
+      ${initialComments ? initialComments.length : "0"}
     </span>
   </button>
 
@@ -566,18 +756,165 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
       }, 2500);
     }
 
-    // Fetch stats in background
-    async function loadStats() {
+    // --- Interactive API Playground Logic ---
+    function switchPlaygroundTab(tab) {
+      var sendBtn = document.getElementById('tab-btn-sendlink');
+      var verifyBtn = document.getElementById('tab-btn-verify');
+      var sendPanel = document.getElementById('playground-sendlink-panel');
+      var verifyPanel = document.getElementById('playground-verify-panel');
+
+      if (tab === 'sendlink') {
+        if (sendBtn) sendBtn.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 bg-[#00e599] text-gray-950 shadow-md shadow-[#00e599]/20';
+        if (verifyBtn) verifyBtn.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 text-gray-400 hover:text-white hover:bg-gray-800/80';
+        if (sendPanel) sendPanel.classList.remove('hidden');
+        if (verifyPanel) verifyPanel.classList.add('hidden');
+      } else {
+        if (sendBtn) sendBtn.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 text-gray-400 hover:text-white hover:bg-gray-800/80';
+        if (verifyBtn) verifyBtn.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 bg-[#00e599] text-gray-950 shadow-md shadow-[#00e599]/20';
+        if (sendPanel) sendPanel.classList.add('hidden');
+        if (verifyPanel) verifyPanel.classList.remove('hidden');
+      }
+    }
+
+    function fillSampleSendLink() {
+      var input = document.getElementById('pg-sendlink-email');
+      if (input) input.value = 'contoh.user@gmail.com';
+    }
+
+    function resetPlaygroundSendLink() {
+      var input = document.getElementById('pg-sendlink-email');
+      var result = document.getElementById('pg-sendlink-result');
+      if (input) input.value = '';
+      if (result) result.classList.add('hidden');
+    }
+
+    async function runPlaygroundSendLink(e) {
+      e.preventDefault();
+      var input = document.getElementById('pg-sendlink-email');
+      var submitBtn = document.getElementById('pg-sendlink-submit');
+      var resultBox = document.getElementById('pg-sendlink-result');
+      var statusBadge = document.getElementById('pg-sendlink-status');
+      var timeEl = document.getElementById('pg-sendlink-time');
+      var outputCode = document.getElementById('pg-sendlink-output');
+
+      var email = input ? input.value.trim() : '';
+      if (!email) return;
+
+      submitBtn.disabled = true;
+      var originalBtnHtml = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i><span>Mengirim...</span>';
+
+      var t0 = performance.now();
       try {
-        const res = await fetch('/api/am/stats');
-        const json = await res.json();
-        if (json.success && json.data) {
-          document.getElementById('stat-total').innerText = json.data.totalPremium + ' Akun';
-          document.getElementById('stat-today').innerText = json.data.todayPremium + ' Akun';
+        var res = await fetch('/api/am/send-link', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email })
+        });
+        var t1 = performance.now();
+        var json = await res.json();
+        var elapsed = Math.round(t1 - t0);
+
+        if (resultBox) resultBox.classList.remove('hidden');
+        if (timeEl) timeEl.innerText = elapsed + ' ms';
+        if (statusBadge) {
+          statusBadge.innerText = res.status + ' ' + (res.ok ? 'OK' : 'Error');
+          statusBadge.className = 'px-2 py-0.5 rounded font-mono font-bold text-[11px] ' +
+            (res.ok ? 'bg-emerald-500/20 text-[#00e599] border border-emerald-500/40' : 'bg-red-500/20 text-red-400 border border-red-500/40');
         }
-      } catch {
-        document.getElementById('stat-total').innerText = '-';
-        document.getElementById('stat-today').innerText = '-';
+        if (outputCode) {
+          outputCode.innerText = JSON.stringify(json, null, 2);
+          outputCode.className = res.ok ? 'text-[#00e599]' : 'text-red-300';
+        }
+      } catch (err) {
+        var elapsed = Math.round(performance.now() - t0);
+        if (resultBox) resultBox.classList.remove('hidden');
+        if (timeEl) timeEl.innerText = elapsed + ' ms';
+        if (statusBadge) {
+          statusBadge.innerText = 'Network Error';
+          statusBadge.className = 'px-2 py-0.5 rounded font-mono font-bold text-[11px] bg-red-500/20 text-red-400 border border-red-500/40';
+        }
+        if (outputCode) {
+          outputCode.innerText = JSON.stringify({ success: false, message: 'Gagal terhubung ke server', error: String(err) }, null, 2);
+          outputCode.className = 'text-red-300';
+        }
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
+      }
+    }
+
+    function fillSampleVerify() {
+      var emailInput = document.getElementById('pg-verify-email');
+      var linkInput = document.getElementById('pg-verify-link');
+      if (emailInput) emailInput.value = 'contoh.user@gmail.com';
+      if (linkInput) linkInput.value = 'https://alightcreative.com/?link=https%3A%2F%2Falightcreative.com%2F%3FoobCode%3Dsample_code_12345%26mode%3DsignIn';
+    }
+
+    function resetPlaygroundVerify() {
+      var emailInput = document.getElementById('pg-verify-email');
+      var linkInput = document.getElementById('pg-verify-link');
+      var result = document.getElementById('pg-verify-result');
+      if (emailInput) emailInput.value = '';
+      if (linkInput) linkInput.value = '';
+      if (result) result.classList.add('hidden');
+    }
+
+    async function runPlaygroundVerify(e) {
+      e.preventDefault();
+      var emailInput = document.getElementById('pg-verify-email');
+      var linkInput = document.getElementById('pg-verify-link');
+      var submitBtn = document.getElementById('pg-verify-submit');
+      var resultBox = document.getElementById('pg-verify-result');
+      var statusBadge = document.getElementById('pg-verify-status');
+      var timeEl = document.getElementById('pg-verify-time');
+      var outputCode = document.getElementById('pg-verify-output');
+
+      var email = emailInput ? emailInput.value.trim() : '';
+      var link = linkInput ? linkInput.value.trim() : '';
+      if (!email || !link) return;
+
+      submitBtn.disabled = true;
+      var originalBtnHtml = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i><span>Memverifikasi...</span>';
+
+      var t0 = performance.now();
+      try {
+        var res = await fetch('/api/am/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, link: link })
+        });
+        var t1 = performance.now();
+        var json = await res.json();
+        var elapsed = Math.round(t1 - t0);
+
+        if (resultBox) resultBox.classList.remove('hidden');
+        if (timeEl) timeEl.innerText = elapsed + ' ms';
+        if (statusBadge) {
+          statusBadge.innerText = res.status + ' ' + (res.ok ? 'OK' : 'Error');
+          statusBadge.className = 'px-2 py-0.5 rounded font-mono font-bold text-[11px] ' +
+            (res.ok ? 'bg-emerald-500/20 text-[#00e599] border border-emerald-500/40' : 'bg-red-500/20 text-red-400 border border-red-500/40');
+        }
+        if (outputCode) {
+          outputCode.innerText = JSON.stringify(json, null, 2);
+          outputCode.className = res.ok ? 'text-[#00e599]' : 'text-red-300';
+        }
+      } catch (err) {
+        var elapsed = Math.round(performance.now() - t0);
+        if (resultBox) resultBox.classList.remove('hidden');
+        if (timeEl) timeEl.innerText = elapsed + ' ms';
+        if (statusBadge) {
+          statusBadge.innerText = 'Network Error';
+          statusBadge.className = 'px-2 py-0.5 rounded font-mono font-bold text-[11px] bg-red-500/20 text-red-400 border border-red-500/40';
+        }
+        if (outputCode) {
+          outputCode.innerText = JSON.stringify({ success: false, message: 'Gagal terhubung ke server', error: String(err) }, null, 2);
+          outputCode.className = 'text-red-300';
+        }
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
       }
     }
 
@@ -1105,8 +1442,6 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
 
       window.addEventListener('DOMContentLoaded', () => {
       loadComments();
-      loadStats();
-      setInterval(loadStats, 10000); // Polling otomatis tiap 10 detik agar realtime
     });
   </script>
 </body>

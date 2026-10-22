@@ -77,10 +77,4 @@ router.post(
   presetController.findPresets.bind(presetController)
 );
 
-// Ambil Statistik Aktivasi
-router.get('/stats', alightMotionController.getStats.bind(alightMotionController));
-
-// Panduan Penggunaan API
-router.get('/help', alightMotionController.getHelp.bind(alightMotionController));
-
 export default router;

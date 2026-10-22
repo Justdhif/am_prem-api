@@ -6,7 +6,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>Alight Motion Pro VIP API Docs - by Justdhif</title>
+  <title>Alight Motion Pro API Docs - by Justdhif</title>
   <link rel="icon" type="image/jpeg" href="${LOGO_DATA_URI}">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -52,14 +52,14 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
       <div class="flex items-center space-x-3">
         <img src="${LOGO_DATA_URI}" alt="Alight Motion Logo" class="w-10 h-10 rounded-xl object-cover border border-[#00e599]/40 shadow-sm shadow-[#00e599]/20">
         <div class="flex flex-col items-start justify-center">
-          <span class="font-bold text-base text-white tracking-tight leading-none">AM Pro VIP API</span>
+          <span class="font-bold text-base text-white tracking-tight leading-none">AM Pro API</span>
           <span class="text-[10px] px-2 py-0.5 mt-1 rounded-full bg-[#00e599]/15 text-[#00e599] font-semibold border border-[#00e599]/30 leading-none">by Justdhif</span>
         </div>
       </div>
 
       <div class="flex items-center space-x-2">
-        <a href="https://github.com/Justdhif/am_prem-api" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-400 hover:text-white transition" title="GitHub Repository">
-          <i class="fa-brands fa-github text-xl"></i>
+        <a href="https://www.tiktok.com/@justdhif" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-400 hover:text-[#00e599] transition" title="TikTok">
+          <i class="fa-brands fa-tiktok text-xl"></i>
         </a>
       </div>
     </div>
@@ -77,10 +77,10 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
             <span>REST API Documentation</span>
           </div>
           <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2">
-            Dokumentasi <span class="text-[#00e599]">Alight Motion VIP</span>
+            Dokumentasi <span class="text-[#00e599]">Alight Motion Pro</span>
           </h1>
           <p class="text-gray-300 text-xs sm:text-sm leading-relaxed max-w-2xl">
-            Layanan REST API mandiri berbasis TypeScript untuk otomatisasi pengiriman magic link dan aktivasi lisensi <strong>Alight Motion Pro VIP 1 Tahun</strong> (bebas watermark &amp; full efek pro).
+            Layanan REST API mandiri berbasis TypeScript untuk otomatisasi pengiriman magic link dan aktivasi lisensi <strong>Alight Motion Pro 1 Tahun</strong> (bebas watermark &amp; full efek pro).
           </p>
         </div>
         <div class="hidden sm:block shrink-0">
@@ -124,10 +124,10 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
           <div class="flex items-center space-x-2">
             <span class="w-6 h-6 rounded-lg bg-[#00e599] text-gray-950 font-black flex items-center justify-center text-xs">2</span>
-            <span class="font-bold text-white text-sm">Verifikasi &amp; Aktivasi VIP</span>
+            <span class="font-bold text-white text-sm">Verifikasi &amp; Aktivasi Pro</span>
           </div>
           <p class="text-gray-400 leading-relaxed">
-            Salin link tombol verifikasi di email, lalu kirimkan ke <code class="text-[#00e599]">/api/am/verify</code>. Sistem otomatis mengaktifkan lisensi VIP 1 tahun.
+            Salin link tombol verifikasi di email, lalu kirimkan ke <code class="text-[#00e599]">/api/am/verify</code>. Sistem otomatis mengaktifkan lisensi Pro 1 tahun.
           </p>
         </div>
       </div>
@@ -193,11 +193,11 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
             <span class="badge-method bg-emerald-500/20 text-[#00e599] border border-emerald-500/30">POST</span>
             <code class="text-sm font-bold text-white break-all">/api/am/verify</code>
           </div>
-          <span class="text-xs text-gray-400">Aktivasi Lisensi VIP 1 Tahun</span>
+          <span class="text-xs text-gray-400">Aktivasi Lisensi Pro 1 Tahun</span>
         </div>
 
         <p class="text-xs sm:text-sm text-gray-300">
-          Memverifikasi tautan yang disalin dari email pengguna, lalu secara otomatis mengaktifkan paket <strong>Alight Motion Pro VIP Annual License</strong>.
+          Memverifikasi tautan yang disalin dari email pengguna, lalu secara otomatis mengaktifkan paket <strong>Alight Motion Pro Annual License</strong>.
         </p>
 
         <!-- Request Body -->
@@ -225,14 +225,14 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
           <pre class="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs text-[#00e599] overflow-x-auto border border-gray-800/80"><code>{
   "success": true,
   "isPremium": true,
-  "message": "Alight Motion Pro VIP berhasil diaktifkan!",
+  "message": "Alight Motion Pro berhasil diaktifkan!",
   "data": {
     "uid": "firebase_user_uid",
     "email": "user@gmail.com",
     "status": "ACTIVE",
     "membershipStatus": "PREMIUM_ACTIVE",
-    "tier": "Alight Motion Pro VIP",
-    "subscription": "Yearly VIP License"
+    "tier": "Alight Motion Pro",
+    "subscription": "Yearly License"
   }
 }</code></pre>
         </div>
@@ -344,7 +344,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
         </div>
 
         <p class="text-xs sm:text-sm text-gray-300">
-          Mengambil data jumlah total akun VIP yang berhasil diaktifkan secara global dan jumlah aktivasi hari ini.
+          Mengambil data jumlah total akun Pro yang berhasil diaktifkan secara global dan jumlah aktivasi hari ini.
         </p>
 
         <pre class="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs text-[#00e599] overflow-x-auto border border-gray-800/80"><code>{
@@ -371,7 +371,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
     <div class="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
       <div class="flex items-center space-x-2">
         <img src="${LOGO_DATA_URI}" alt="Logo" class="w-5 h-5 rounded-md object-cover">
-        <span class="text-gray-300 font-semibold">Alight Motion Pro VIP API</span>
+        <span class="text-gray-300 font-semibold">Alight Motion Pro API</span>
       </div>
       <p class="text-[11px] text-gray-500">Crafted with 💚 by <strong>Justdhif</strong> &copy; 2026. Clean Architecture.</p>
     </div>

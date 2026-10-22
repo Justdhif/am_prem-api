@@ -735,18 +735,18 @@ export function renderDashboardHtml(
     </div>
 
     <!-- Scrollable Comments Feed -->
-    <div id="comments-sheet-list" class="flex-1 overflow-y-auto px-4 py-3 space-y-4 overscroll-contain">
+    <div id="comments-sheet-list" class="flex-1 overflow-y-auto px-4 py-3 space-y-4 overscroll-contain flex flex-col">
       ${
         initialComments
           ? initialComments.length === 0
-            ? '<div class="text-center py-16 text-gray-500 text-xs">' +
+            ? '<div class="m-auto text-center py-16 text-gray-500 text-xs">' +
               '<i class="fa-regular fa-comment-dots text-3xl block mb-2 text-gray-600"></i>' +
               "Belum ada komentar. Jadilah yang pertama berkomentar!" +
               "</div>"
             : initialComments.map(renderTikTokCommentServerSide).join("")
-          : '<div class="flex flex-col items-center justify-center py-20 text-gray-400 space-y-3 select-none animate-in fade-in duration-150">' +
-              '<div class="relative w-11 h-11 flex items-center justify-center">' +
-                '<div class="absolute inset-0 rounded-full bg-[#00e599]/20 blur-md animate-pulse"></div>' +
+          : '<div class="m-auto flex flex-col items-center justify-center text-gray-400 space-y-4 select-none animate-in fade-in duration-150">' +
+              '<div class="relative w-16 h-16 flex items-center justify-center">' +
+                '<div class="absolute inset-0 rounded-full bg-[#00e599]/25 blur-lg animate-pulse"></div>' +
                 '' + LOGO_SVG_HTML + '' +
               '</div>' +
               '<span class="text-xs text-gray-400 font-medium tracking-wide">Memuat komentar...</span>' +
@@ -769,8 +769,8 @@ export function renderDashboardHtml(
       </button>
     </div>
 
-    <!-- Bottom Input Area (TikTok Style) -->
-    <div class="border-t border-gray-800/80 bg-[#0d121f] p-3 shrink-0 relative">
+    <!-- Bottom Input Area (TikTok Style) - Tanpa border-t di atas input nama -->
+    <div class="bg-[#0d121f] px-3 pb-3 pt-2 shrink-0 relative">
 
       <!-- FULL EMOJI KEYBOARD POPUP -->
       <div id="emoji-picker-container" class="hidden absolute bottom-full left-3 right-3 mb-2 bg-[#131927] border border-gray-700/80 rounded-2xl shadow-2xl p-3 z-50 flex flex-col max-h-80 select-none animate-in fade-in duration-150">
@@ -1545,10 +1545,10 @@ export function renderDashboardHtml(
       if (nextBtn) nextBtn.disabled = true;
       if (listEl) {
         listEl.innerHTML =
-          '<div class="flex flex-col items-center justify-center py-20 text-gray-400 space-y-3 select-none animate-in fade-in duration-150">' +
-            '<div class="relative w-11 h-11 flex items-center justify-center">' +
-              '<div class="absolute inset-0 rounded-full bg-[#00e599]/25 blur-md animate-pulse"></div>' +
-              '<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 448 448" class="w-10 h-10 animate-spin relative z-10 drop-shadow-[0_0_12px_rgba(0,229,153,0.6)]">' +
+          '<div class="m-auto flex flex-col items-center justify-center text-gray-400 space-y-4 select-none animate-in fade-in duration-150">' +
+            '<div class="relative w-16 h-16 flex items-center justify-center">' +
+              '<div class="absolute inset-0 rounded-full bg-[#00e599]/25 blur-lg animate-pulse"></div>' +
+              '<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 448 448" class="w-14 h-14 animate-spin relative z-10 drop-shadow-[0_0_15px_rgba(0,229,153,0.7)]">' +
                 '<path fill="#00e599" fill-rule="evenodd" d="M383.5 235Q383 246 380.5 247.5Q378 249 375.5 249Q373 249 370 246Q367 243 366.5 231Q366 219 364 209.5Q362 200 355 183.5Q348 167 342 158Q336 149 321 134.5Q306 120 287 110Q268 100 258 97Q248 94 236 92.5Q224 91 204 92.5Q184 94 176 96Q168 98 156 103Q144 108 133 115Q122 122 112 131Q102 140 104.5 136Q107 132 114.5 125Q122 118 133 110.5Q144 103 159 96.5Q174 90 192 86.5Q210 83 224.5 83Q239 83 256.5 86.5Q274 90 290.5 97.5Q307 105 321 115.5Q335 126 346.5 139.5Q358 153 365.5 167Q373 181 376.5 191.5Q380 202 382 213Q384 224 383.5 235Z"/>' +
                 '<path fill="#00e599" fill-rule="evenodd" d="M315 328.5Q309 334 306 334Q303 334 300.5 332Q298 330 298 326Q298 322 303 317Q308 312 314 303.5Q320 295 325 283Q330 271 332 261.5Q334 252 334 238Q334 224 329.5 207.5Q325 191 317 178Q309 165 295 152.5Q281 140 265.5 133Q250 126 240.5 124Q231 122 221.5 122Q212 122 212 121Q212 120 231 121Q250 122 260 125Q270 128 278.5 132Q287 136 301.5 147.5Q316 159 323 168Q330 177 335 186.5Q340 196 343 205Q346 214 347.5 223Q349 232 349 244Q349 256 347.5 264.5Q346 273 342 284.5Q338 296 334.5 302.5Q331 309 326 316Q321 323 315 328.5Z"/>' +
                 '<path fill="#00e599" fill-rule="evenodd" d="M230.5 335Q218 336 215 333Q212 330 212 327.5Q212 325 214 322.5Q216 320 229 318.5Q242 317 253.5 312Q265 307 273.5 300Q282 293 289.5 281.5Q297 270 300 259Q303 248 302.5 233.5Q302 219 299 210Q296 201 287.5 189Q279 177 286 183Q293 189 296.5 194Q300 199 305 211.5Q310 224 311 240Q312 256 309 267.5Q306 279 299 291Q292 303 280.5 313Q269 323 256 328.5Q243 334 230.5 335Z"/>' +

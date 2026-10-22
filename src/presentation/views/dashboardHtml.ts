@@ -58,7 +58,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
       </div>
 
       <div class="flex items-center space-x-2">
-        <a href="https://www.tiktok.com/@justdhif" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-400 hover:text-[#00e599] transition" title="TikTok">
+        <a href="https://www.tiktok.com/@justdhifbieber" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-400 hover:text-[#00e599] transition" title="TikTok">
           <i class="fa-brands fa-tiktok text-xl"></i>
         </a>
       </div>

@@ -444,24 +444,27 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
     <!-- Bottom Input Area (TikTok Style) -->
     <div class="border-t border-gray-800/80 bg-[#0d121f] p-3 shrink-0 relative">
 
-      <!-- FULL EMOJI PICKER POPUP (LENGKAP BERBAGAI KATEGORI) -->
-      <div id="emoji-picker-container" class="hidden absolute bottom-full left-3 right-3 mb-2 bg-[#131927] border border-gray-700/80 rounded-2xl shadow-2xl p-3 z-50 flex flex-col max-h-72 select-none animate-in fade-in duration-150">
-        <!-- Search bar & Close -->
-        <div class="flex items-center space-x-2 pb-2 mb-2 border-b border-gray-800">
+      <!-- FULL EMOJI KEYBOARD POPUP -->
+      <div id="emoji-picker-container" class="hidden absolute bottom-full left-3 right-3 mb-2 bg-[#131927] border border-gray-700/80 rounded-2xl shadow-2xl p-3 z-50 flex flex-col max-h-80 select-none animate-in fade-in duration-150">
+        <!-- Search bar, Backspace & Close -->
+        <div class="flex items-center space-x-2 pb-2 mb-2 border-b border-gray-800/80">
           <div class="flex-1 flex items-center bg-[#1a2234] rounded-lg px-2.5 py-1 text-xs text-gray-300">
             <i class="fa-solid fa-magnifying-glass text-gray-500 mr-2 text-[11px]"></i>
             <input type="text" id="emoji-search-input" oninput="filterEmojis(this.value)" placeholder="Cari emoji..." class="bg-transparent border-0 p-0 text-xs text-white placeholder-gray-500 focus:outline-none w-full">
           </div>
-          <button type="button" onclick="closeEmojiPicker()" class="text-gray-400 hover:text-white p-1 text-xs transition">
-            <i class="fa-solid fa-xmark"></i>
+          <button type="button" onclick="handleEmojiBackspace(event)" class="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-red-400 text-xs transition active:scale-90 shrink-0" title="Hapus (Backspace)">
+            <i class="fa-solid fa-delete-left text-xs"></i>
+          </button>
+          <button type="button" onclick="closeEmojiPicker(event)" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white text-xs transition active:scale-90 shrink-0" title="Tutup">
+            <i class="fa-solid fa-xmark text-sm"></i>
           </button>
         </div>
 
-        <!-- Category Tabs -->
-        <div id="emoji-category-tabs" class="flex items-center space-x-1 pb-2 overflow-x-auto no-scrollbar text-sm border-b border-gray-800/60 mb-2"></div>
+        <!-- Emoji Keyboard Category Tabs (9 Standard Categories) -->
+        <div id="emoji-category-tabs" class="flex items-center justify-between px-1 py-1 overflow-x-auto no-scrollbar text-lg border-b border-gray-800/80 mb-2 gap-1 bg-[#0d121f]/60 rounded-xl shrink-0"></div>
 
         <!-- Emoji Grid List (Scrollable) -->
-        <div id="emoji-grid-list" class="flex-1 overflow-y-auto max-h-48 grid grid-cols-7 sm:grid-cols-8 gap-1 text-xl py-1 pr-1 overscroll-contain"></div>
+        <div id="emoji-grid-list" class="flex-1 overflow-y-auto max-h-52 grid grid-cols-8 sm:grid-cols-9 gap-1 text-2xl py-1 pr-1 overscroll-contain no-scrollbar"></div>
       </div>
       
       <!-- Banner Reply Indicator (aktif jika sedang membalas) -->
@@ -656,14 +659,127 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
     }
 
 
-    // --- Full Categorized Emoji Picker Logic ---
+    // --- Complete 9-Category Emoji Keyboard Logic ---
     var EMOJI_CATEGORIES = [
-      { name: 'Senyum', icon: '😀', emojis: ['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','😉','😊','😇','🥰','😍','🤩','😘','😗','😚','😙','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄','😬','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧','🥵','🥶','🥴','😵','🤯','🤠','🥳','🥸','😎','🤓','🧐','😕','😟','🙁','☹️','😮','😯','😲','😳','🥺','😦','😧','😰','😥','😢','😭','😱','😖','😣','😞','😓','😩','😫','🥱','😤','😡','😠','🤬','😈','👿','💀','☠️','💩','🤡','👻','👽','🤖'] },
-      { name: 'Gestur', icon: '👍', emojis: ['👋','🤚','🖐️','✋','🖖','👌','🤌','🤏','✌️','🤞','🫰','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','🫵','👍','👎','✊','👊','🤛','🤜','👏','🙌','🫶','👐','🤲','🤝','🙏','✍️','💅','🤳','💪','🦾','👂','👃','👀','👁️','👅','👄'] },
-      { name: 'Hati', icon: '❤️', emojis: ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❤️‍🔥','❤️‍🩹','❣️','💕','💞','💓','💗','💖','💘','💝','💟','💯','💢','💥','✨','💫','⭐️','🌟','⚡','🔥','🎉','🎊','🎈','🎁','🏆','🥇','🥈','🥉','💎','💸','💵','💳','💣','🔪','🪄','🔮','🧿','🔔','🔕','⚠️','⛔','🚫','✅','❌','❓','❗','‼️','💤','🎵','🎶'] },
-      { name: 'Makanan', icon: '🍔', emojis: ['🍏','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🥑','🌽','🌶️','🍕','🍔','🍟','🌭','🥓','🥞','🧇','🥪','🥙','🌮','🌯','🥗','🥘','🍝','🍜','🍲','🍣','🍱','🥟','🍦','🍧','🍨','🍩','🍪','🎂','🍰','🧁','🍫','🍬','🍭','🍿','☕','🧃','🥤','🧋','🍺','🍻','🥂','🍷','🍹'] },
-      { name: 'Aktivitas', icon: '⚽', emojis: ['⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🎱','🏓','🏸','🥊','🛹','🛼','🏋️','🚴','🎮','🕹️','🎲','🎯','🎨','🎬','🎤','🎧','🎼','🎹','🥁','🎷','🎺','🎸','📱','💻','🖥️','📷','📸','📹','📺','⏰','⏱️','💡','🔦','🕯️','🔑','🗝️','🔒','🔓','📦','🚀','✈️','🏎️','🚗','🛵','🏍️','🚲'] },
-      { name: 'Alam', icon: '🐶', emojis: ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐒','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🕷️','🐢','🐍','🦎','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🦈','🐊','🌲','🌴','🌱','🌿','☘️','🍀','🌸','🌹','🌻','🌺','🍁','🍄','🌈','☀️','⛅','🌧️','⛈️','❄️','🌊'] }
+      {
+        name: 'Wajah & Emosi',
+        icon: '😀',
+        emojis: [
+          '😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','🫠','😉','😊','😇',
+          '🥰','😍','🤩','😘','😗','😚','😙','😋','😛','😜','🤪','😝','🤑','🤗',
+          '🤭','🫢','🫣','🤫','🤔','🫡','🤐','🤨','😐','😑','😶','🫥','😏','😒',
+          '🙄','😬','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧',
+          '🥵','🥶','🥴','😵','😵‍💫','🤯','🤠','🥳','🥸','😎','🤓','🧐','😕','🫤',
+          '😟','🙁','☹️','😮','😯','😲','😳','🥺','🥹','😦','😧','😰','😥','😢',
+          '😭','😱','😖','😣','😞','😓','😩','😫','🥱','😤','😡','😠','🤬','😈',
+          '👿','💀','☠️','💩','🤡','👹','👺','👻','👽','👾','🤖'
+        ]
+      },
+      {
+        name: 'Orang & Tubuh',
+        icon: '🧑',
+        emojis: [
+          '👋','🤚','🖐️','✋','🖖','👌','🤌','🤏','✌️','🤞','🫰','🤟','🤘','🤙',
+          '👈','👉','👆','🖕','👇','☝️','🫵','👍','👎','✊','👊','🤛','🤜','👏',
+          '🙌','🫶','👐','🤲','🤝','🙏','✍️','💅','🤳','💪','🦾','🦿','🦵','🦶',
+          '👂','🦻','👃','🧠','🫀','🫁','🦷','🦴','👀','👁️','👅','👄','🫦','👶',
+          '🧒','👦','👧','🧑','👱','👨','🧔','🧔‍♂️','🧔‍♀️','👩','🧓','👴','👵'
+        ]
+      },
+      {
+        name: 'Hewan & Alam',
+        icon: '🐶',
+        emojis: [
+          '🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐻‍❄️','🐨','🐯','🦁','🐮','🐷',
+          '🐽','🐸','🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🐤','🐣','🐥','🦆',
+          '🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🪱','🐛','🦋','🐌','🐞','🐜',
+          '🪰','🪲','🪳','🦟','🦗','🕷️','🕸️','🦂','🐢','🐍','🦎','🦖','🦕','🐙',
+          '🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆',
+          '🌲','🌳','🌴','🌱','🌿','☘️','🍀','🎍','🪴','🍃','🍂','🍁','🍄','🌾',
+          '💐','🌷','🌹','🥀','🌺','🌸','🌼','🌻','🌞','🌝','🌛','🌜','🌚','🌕',
+          '🌖','🌗','🌘','🌑','🌒','🌓','🌔','🌙','🪐','💫','⭐️','🌟','✨','⚡',
+          '☄️','💥','🔥','🌪️','🌈','☀️','🌤️','⛅','🌥️','☁️','🌧️','⛈️','🌩️','❄️',
+          '☃️','⛄','🌬️','💨','💧','💦','🫧','☔','☂️','🌊','🌫️'
+        ]
+      },
+      {
+        name: 'Makanan & Minuman',
+        icon: '🍔',
+        emojis: [
+          '🍏','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭',
+          '🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶️','🫑','🌽','🥕','🫒',
+          '🧄','🧅','🥔','🍠','🥐','🥯','🍞','🥖','🥨','🧀','🥚','🍳','🧈','🥞',
+          '🧇','🥓','🥩','🍗','🍖','🌭','🍔','🍟','🍕','🫓','🥪','🥙','🧆','🌮',
+          '🌯','🫔','🥗','🥘','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🦪','🍤','🍙',
+          '🍚','🍘','🍥','🥮','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮',
+          '🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜','🍯','🥛','🍼','🫖','☕','🍵',
+          '🧃','🥤','🧋','🍶','🍺','🍻','🥂','🍷','🥃','🍸','🍹','🧉','🍾','🧊'
+        ]
+      },
+      {
+        name: 'Aktivitas & Olahraga',
+        icon: '⚽',
+        emojis: [
+          '⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🥏','🎱','🪀','🏓','🏸','🏒',
+          '🏑','🥍','🏏','🪃','🥅','⛳','🪁','🏹','🎣','🤿','🥊','🥋','🎽','🛹',
+          '🛼','🛷','⛸️','🥌','🎿','⛷️','🏂','🪂','🏋️','🤼','🤸','⛹️','🤺','🤾',
+          '🏌️','🏇','🧘','🏄','🏊','🤽','🚣','🧗','🚵','🚴','🏆','🥇','🥈','🥉',
+          '🏅','🎖️','🎫','🎟️','🎪','🤹','🎭','🩰','🎨','🎬','🎤','🎧','🎼','🎹',
+          '🥁','🎷','🎺','🎸','🪕','🎻','🎲','♟️','🎯','🎳','🎮','🎰','🧩'
+        ]
+      },
+      {
+        name: 'Kendaraan & Tempat',
+        icon: '🚗',
+        emojis: [
+          '🚗','🚕','🚙','🚌','🚎','🏎️','🚓','🚑','🚒','🚐','🛻','🚚','🚛','🚜',
+          '🛵','🏍️','🛺','🚲','🛴','🚏','🛣️','🛤️','⛽','🚨','🚥','🚦','🛑','🚧',
+          '⚓','⛵','🛶','🚤','🛳️','⛴️','🚢','✈️','🛩️','🛫','🛬','💺','🚁','🚡',
+          '🛰️','🚀','🛸','🌋','🗻','🏔️','🏕️','🏖️','🏜️','🏝️','🏞️','🏟️','🏛️','🏗️',
+          '🏘️','🏠','🏡','🏢','🏥','🏦','🏨','🏪','🏫','🏬','🏭','🏰','🗼','🗽',
+          '⛪','🕌','⛩️','⛲','⛺','🌃','🏙️','🌄','🌅','🌆','🌇','🌉','🎡','🎢'
+        ]
+      },
+      {
+        name: 'Benda & Objek',
+        icon: '💡',
+        emojis: [
+          '💡','🔦','🕯️','🪔','📱','📲','💻','🖥️','🖨️','⌨️','🖱️','💾','💿','📀',
+          '📷','📸','📹','🎥','📽️','📻','🎙️','⏱️','⏲️','⏰','🕰️','⌛','⏳','📡',
+          '🔋','🔌','🪫','💸','💵','💴','💶','💷','🪙','💳','💎','⚖️','🧰','🔧',
+          '🔨','🛠️','⛏️','🪓','🪚','🔩','⚙️','🧲','💣','🧨','🔪','🗡️','⚔️','🛡️',
+          '🔮','🪄','🧿','🪬','💈','🔭','🔬','🩹','🩺','💊','💉','🩸','🧬','🧪',
+          '🌡️','🧹','🪣','🧼','🪥','🪒','📦','🎁','🎈','🧧','✉️','📧','💌','📦',
+          '🏷️','🔒','🔓','🔑','🗝️'
+        ]
+      },
+      {
+        name: 'Simbol & Hati',
+        icon: '❤️',
+        emojis: [
+          '❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❤️‍🔥','❤️‍🩹','❣️','💕',
+          '💞','💓','💗','💖','💘','💝','💟','☮️','✝️','☪️','🕉️','☸️','✡️','🔯',
+          '🕎','☯️','☦️','🛐','⛎','♈','♉','♊','♋','♌','♍','♎','♏','♐',
+          '♑','♒','♓','🆔','📴','📳','🈶','🈚','🈸','🈺','🈷️','✴️','🆚','💮',
+          '🉐','㊙️','㊗️','🈴','🈵','🈹','🈲','🅰️','🅱️','🆎','🆑','🅾️','🆘','❌',
+          '⭕','🛑','⛔','📛','🚫','💯','💢','♨️','🚷','🚯','🚳','🔞','📵','🚭',
+          '❗','❕','❓','❔','‼️','⁉️','🔅','🔆','⚠️','🚸','🔰','♻️','✅','❎',
+          '🌐','💠','💤','🏧','🚾','♿','🅿️','🚻','🎦','📶','🆖','🆗','🆙','🆒',
+          '🆕','🆓','🔟','🔢','0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣',
+          '9️⃣','🔘','🔴','🟠','🟡','🟢','🔵','🟣','⚫','⚪','🟤','🔺','🔻','🔸',
+          '🔹','🔶','🔷','🟥','🟧','🟨','🟩','🟦','🟪','⬛','⬜','🟫','🔔','🔕',
+          '🎵','🎶'
+        ]
+      },
+      {
+        name: 'Bendera',
+        icon: '🚩',
+        emojis: [
+          '🚩','🏁','🎌','🏴','🏳️','🏳️‍🌈','🏳️‍⚧️','🏴‍☠️','🇮🇩','🇲🇾','🇸🇬','🇵🇭','🇹🇭',
+          '🇻🇳','🇯🇵','🇰🇷','🇨🇳','🇺🇸','🇬🇧','🇦🇺','🇩🇪','🇫🇷','🇮🇹','🇪🇸','🇧🇷','🇦🇷',
+          '🇵🇸','🇸🇦','🇹🇷','🇮🇳','🇳🇱','🇷🇺','🇨🇦','🇲🇽','🇿🇦','🇪🇬'
+        ]
+      }
     ];
 
     var currentEmojiCategory = 0;
@@ -684,14 +800,28 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
       }
     }
 
-    function closeEmojiPicker() {
+    function closeEmojiPicker(e) {
+      if (e) e.stopPropagation();
       var container = document.getElementById('emoji-picker-container');
       if (container) container.classList.add('hidden');
     }
 
-    function selectEmojiCategory(index) {
+    function selectEmojiCategory(e, index) {
+      if (e) e.stopPropagation();
       currentEmojiCategory = index;
-      renderEmojiTabs();
+      var tabsEl = document.getElementById('emoji-category-tabs');
+      if (tabsEl) {
+        var buttons = tabsEl.querySelectorAll('button');
+        buttons.forEach(function(b, i) {
+          if (i === index) {
+            b.className = 'w-8 h-8 flex items-center justify-center rounded-lg text-lg transition active:scale-90 bg-[#00e599]/20 text-white border border-[#00e599]/40 shadow-sm shadow-[#00e599]/20 shrink-0';
+          } else {
+            b.className = 'w-8 h-8 flex items-center justify-center rounded-lg text-lg transition active:scale-90 text-gray-400 hover:text-white border border-transparent hover:bg-gray-800 shrink-0';
+          }
+        });
+      }
+      var search = document.getElementById('emoji-search-input');
+      if (search && search.value) search.value = '';
       renderEmojiGrid(index);
     }
 
@@ -700,11 +830,10 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
       if (!tabsEl) return;
       tabsEl.innerHTML = EMOJI_CATEGORIES.map(function(cat, idx) {
         var activeClass = idx === currentEmojiCategory
-          ? 'bg-[#00e599]/20 text-[#00e599] border-[#00e599]/40 font-bold'
-          : 'text-gray-400 hover:text-white border-transparent';
-        return '<button type="button" onclick="selectEmojiCategory(' + idx + ')" class="px-2 py-1 rounded-lg border text-sm transition flex items-center space-x-1 shrink-0 ' + activeClass + '">' +
-          '<span>' + cat.icon + '</span>' +
-          '<span class="text-[11px] font-medium hidden sm:inline">' + cat.name + '</span>' +
+          ? 'bg-[#00e599]/20 text-white border-[#00e599]/40 shadow-sm shadow-[#00e599]/20'
+          : 'text-gray-400 hover:text-white border-transparent hover:bg-gray-800';
+        return '<button type="button" onclick="selectEmojiCategory(event, ' + idx + ')" class="w-8 h-8 flex items-center justify-center rounded-lg text-lg transition active:scale-90 border shrink-0 ' + activeClass + '" title="' + cat.name + '">' +
+          cat.icon +
         '</button>';
       }).join('');
     }
@@ -725,19 +854,43 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
       }
 
       gridEl.innerHTML = emojisToRender.map(function(em) {
-        return '<button type="button" data-emoji="' + em + '" onclick="handleEmojiItemClick(this)" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-800 hover:scale-125 transition active:scale-95 text-lg cursor-pointer">' +
+        return '<button type="button" data-emoji="' + em + '" onclick="handleEmojiItemClick(event, this)" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-800 hover:scale-125 transition active:scale-90 text-xl cursor-pointer select-none">' +
           em +
         '</button>';
       }).join('');
     }
 
-    function handleEmojiItemClick(btn) {
+    function handleEmojiItemClick(e, btn) {
+      if (e) e.stopPropagation();
       var emoji = btn.getAttribute('data-emoji');
       if (emoji) insertEmoji(emoji);
     }
 
     function filterEmojis(val) {
       renderEmojiGrid(currentEmojiCategory, val);
+    }
+
+    function handleEmojiBackspace(e) {
+      if (e) e.stopPropagation();
+      var inputEl = document.getElementById('sheet-comment-input');
+      if (!inputEl) return;
+      var start = inputEl.selectionStart;
+      var end = inputEl.selectionEnd;
+      var val = inputEl.value;
+      if (start > 0 || end > 0) {
+        if (start === end) {
+          var chars = Array.from(val.substring(0, start));
+          chars.pop();
+          var newStart = chars.join('');
+          inputEl.value = newStart + val.substring(end);
+          inputEl.selectionStart = inputEl.selectionEnd = newStart.length;
+        } else {
+          inputEl.value = val.substring(0, start) + val.substring(end);
+          inputEl.selectionStart = inputEl.selectionEnd = start;
+        }
+        handleCommentInput(inputEl);
+        inputEl.focus();
+      }
     }
 
     // Insert emoji at cursor position
@@ -756,7 +909,6 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
       handleCommentInput(inputEl);
       inputEl.focus();
     }
-
 
     function toggleSheetAnonymous(isChecked) {
       var nameInput = document.getElementById('sheet-author-name');
@@ -943,7 +1095,15 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
       }
     });
 
-    window.addEventListener('DOMContentLoaded', () => {
+    // Prevent all clicks inside emoji picker from bubbling to document
+      var pickerEl = document.getElementById('emoji-picker-container');
+      if (pickerEl) {
+        pickerEl.addEventListener('click', function(e) {
+          e.stopPropagation();
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
       loadComments();
       loadStats();
       setInterval(loadStats, 10000); // Polling otomatis tiap 10 detik agar realtime

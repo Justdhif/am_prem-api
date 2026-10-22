@@ -39,7 +39,7 @@ function renderTikTokCommentServerSide(comment: CommentNode): string {
         <p class="text-xs sm:text-sm text-gray-100 font-normal mt-0.5 leading-relaxed break-words whitespace-pre-line">${safeContent}</p>
         <div class="flex items-center space-x-3 mt-1.5 text-[11px] text-gray-500">
           <span>${comment.formattedTime || 'Baru saja'}</span>
-          <button type="button" onclick="setReplyMode('${comment.id}', '${safeName}')" class="font-bold text-gray-400 hover:text-white transition">Balas</button>
+          <button type="button" data-id="${comment.id}" data-name="${safeName}" onclick="handleReplyClick(this)" class="font-bold text-gray-400 hover:text-white transition">Balas</button>
         </div>
         ${repliesHtml}
       </div>
@@ -594,6 +594,13 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
       }
     }
 
+    function handleReplyClick(btn) {
+      if (!btn) return;
+      var parentId = btn.getAttribute('data-id');
+      var targetName = btn.getAttribute('data-name');
+      setReplyMode(parentId, targetName);
+    }
+
     function setReplyMode(parentId, targetName) {
       activeParentId = parentId;
       var banner = document.getElementById('sheet-reply-banner');
@@ -743,7 +750,7 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
             '<p class="text-xs sm:text-sm text-gray-100 font-normal mt-0.5 leading-relaxed break-words whitespace-pre-line">' + escapeHtml(comment.content) + '</p>' +
             '<div class="flex items-center space-x-3 mt-1.5 text-[11px] text-gray-500">' +
               '<span>' + escapeHtml(comment.formattedTime || 'Baru saja') + '</span>' +
-              '<button type="button" onclick="setReplyMode(\'' + comment.id + '\', \'' + escapeHtml(comment.name) + '\')" class="font-bold text-gray-400 hover:text-white transition">Balas</button>' +
+              '<button type="button" data-id="' + comment.id + '" data-name="' + escapeHtml(comment.name) + '" onclick="handleReplyClick(this)" class="font-bold text-gray-400 hover:text-white transition">Balas</button>' +
             '</div>' +
             repliesHtml +
           '</div>' +
@@ -789,10 +796,6 @@ export function renderDashboardHtml(initialStats?: { total: number; today: numbe
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-arrow-up text-sm"></i>';
-      }
-    }
- catch (err) {
-        showToast('Gagal terhubung ke server.');
       }
     }
 

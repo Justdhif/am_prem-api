@@ -1,0 +1,24 @@
+{
+  "name": "alight-motion-prem-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Alight Motion Pro REST API & Modern Next.js Web View with shadcn/ui",
+  "scripts": {
+    "dev:api": "npm --prefix api run dev",
+    "dev:web": "npm --prefix web run dev",
+    "build:api": "npm --prefix api run build",
+    "build:web": "npm --prefix web run build",
+    "build": "npm run build:api && npm run build:web",
+    "test:api": "npm --prefix api test",
+    "test": "npm run test:api"
+  },
+  "keywords": [
+    "alight-motion",
+    "nextjs",
+    "express",
+    "clean-architecture",
+    "shadcn"
+  ],
+  "author": "Justdhif",
+  "license": "ISC"
+}

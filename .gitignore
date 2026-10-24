@@ -5,8 +5,10 @@ node_modules/
 
 # Build Output
 dist/
+.next/
+out/
 
-# Environment Variables & Secrets (JANGAN di-push ke GitHub)
+# Environment Variables & Secrets
 .env
 .env.local
 .env.development.local

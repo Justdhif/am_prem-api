@@ -65,8 +65,9 @@ export function renderDashboardHtml(
   <script>
     (function() {
       try {
-        var savedTheme = localStorage.getItem('am_theme') || 'dark';
-        document.documentElement.className = 'theme-' + savedTheme + (savedTheme !== 'light' ? ' dark' : '');
+        var savedTheme = localStorage.getItem('am_theme');
+        var theme = (savedTheme === 'light') ? 'light' : 'dark';
+        document.documentElement.className = 'theme-' + theme + (theme !== 'light' ? ' dark' : '');
       } catch (e) {}
     })();
   </script>
@@ -111,7 +112,7 @@ export function renderDashboardHtml(
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* --- THEME SYSTEM CSS (100% FULL COVERAGE) --- */
+    /* --- THEME SYSTEM CSS (DARK & LIGHT DUAL SYSTEM) --- */
     body {
       transition: background-color 0.25s ease, color 0.25s ease;
     }
@@ -221,12 +222,12 @@ export function renderDashboardHtml(
     html.theme-light textarea::placeholder {
       color: #94a3b8 !important;
     }
-    html.theme-light button.bg-gray-800 {
+    html.theme-light button.bg-gray-800:not(.btn-copy-curl) {
       background-color: #f1f5f9 !important;
       border: 1px solid #cbd5e1 !important;
       color: #334155 !important;
     }
-    html.theme-light button.bg-gray-800:hover {
+    html.theme-light button.bg-gray-800:not(.btn-copy-curl):hover {
       background-color: #e2e8f0 !important;
     }
     html.theme-light #main-tab-docs-btn:not(.bg-\[\#00e599\]),
@@ -234,21 +235,36 @@ export function renderDashboardHtml(
       color: #64748b !important;
     }
 
-    /* PRE CODE BLOCKS: Keep developer dark slate contrast */
+    /* ========================================================
+       JSON & CODE BLOCKS: DISAMAKAN SEPERTI KETIKA DI MODE GELAP
+       ======================================================== */
     html.theme-light pre {
-      background-color: #090d16 !important;
-      border-color: #1e293b !important;
+      background-color: #0d121f !important;
+      border-color: rgba(31, 41, 55, 0.8) !important;
+      color: #d1d5db !important;
     }
-    html.theme-light pre code,
-    html.theme-light pre span {
-      color: #e2e8f0 !important;
+    html.theme-light pre code {
+      color: inherit !important;
     }
+    html.theme-light pre.text-\[\#00e599\],
+    html.theme-light pre.text-\[\#00e599\] code,
     html.theme-light pre code.text-\[\#00e599\] {
       color: #00e599 !important;
     }
+    html.theme-light .btn-copy-curl,
+    html.theme-light button[onclick*="copySnippet"] {
+      background-color: #1f2937 !important;
+      border: 1px solid rgba(55, 65, 81, 0.6) !important;
+      color: #d1d5db !important;
+    }
+    html.theme-light .btn-copy-curl:hover,
+    html.theme-light button[onclick*="copySnippet"]:hover {
+      background-color: #374151 !important;
+      color: #ffffff !important;
+    }
 
     /* ========================================================
-       COMMENTS SHEET IN LIGHT THEME (100% LIGHT SUPPORT)
+       COMMENTS SHEET IN LIGHT THEME
        ======================================================== */
     html.theme-light #comment-sheet {
       background-color: #ffffff !important;
@@ -295,31 +311,59 @@ export function renderDashboardHtml(
       border: 1px solid #cbd5e1 !important;
       color: #334155 !important;
     }
-    html.theme-light #comment-sheet div.bg-\[\#0d121f\] {
-      background-color: #f8fafc !important;
+
+    /* Comment Bottom Input Area (Foto 1 Fix) */
+    html.theme-light #sheet-input-container,
+    html.theme-light .sheet-input-box {
+      background-color: #ffffff !important;
+      border-top: 1px solid #e2e8f0 !important;
+    }
+    html.theme-light .sheet-author-row {
+      border-color: #e2e8f0 !important;
     }
     html.theme-light #sheet-author-name {
       color: #0f172a !important;
     }
-    html.theme-light #sheet-comment-form div.bg-\[\#1a2234\] {
+    html.theme-light #sheet-author-name::placeholder {
+      color: #94a3b8 !important;
+    }
+    html.theme-light #sheet-toggle-anon + span {
+      color: #64748b !important;
+    }
+    html.theme-light .sheet-input-pill {
       background-color: #f1f5f9 !important;
       border: 1px solid #cbd5e1 !important;
     }
     html.theme-light #sheet-comment-input {
       color: #0f172a !important;
     }
+    html.theme-light #sheet-comment-input::placeholder {
+      color: #94a3b8 !important;
+    }
     html.theme-light #sheet-btn-emoji {
       background-color: #f1f5f9 !important;
       border: 1px solid #cbd5e1 !important;
       color: #64748b !important;
+    }
+    html.theme-light #sheet-btn-emoji:hover {
+      background-color: #e2e8f0 !important;
+      color: #0f172a !important;
+    }
+    html.theme-light #sheet-reply-banner {
+      background-color: #f8fafc !important;
+      border-color: #e2e8f0 !important;
     }
     html.theme-light #emoji-picker-container {
       background-color: #ffffff !important;
       border-color: #e2e8f0 !important;
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
     }
-    html.theme-light #emoji-picker-container div.bg-\[\#1a2234\] {
+    html.theme-light #emoji-picker-container > div:first-child > div {
       background-color: #f1f5f9 !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+    html.theme-light #emoji-search-input {
+      color: #0f172a !important;
     }
     html.theme-light #emoji-category-tabs {
       background-color: #f8fafc !important;
@@ -341,52 +385,6 @@ export function renderDashboardHtml(
       border-color: #00e599 !important;
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
     }
-
-    /* ========================================================
-       AMOLED THEME (TRUE OLED BLACK)
-       ======================================================== */
-    html.theme-amoled body {
-      background-color: #000000 !important;
-    }
-    html.theme-amoled header {
-      background-color: rgba(0, 0, 0, 0.96) !important;
-      border-color: #181818 !important;
-    }
-    html.theme-amoled .doc-card {
-      background-color: #070707 !important;
-      border-color: #1a1a1a !important;
-    }
-    html.theme-amoled .doc-card:hover {
-      border-color: rgba(0, 229, 153, 0.5) !important;
-    }
-    html.theme-amoled .stat-box,
-    html.theme-amoled .step-box,
-    html.theme-amoled .command-box,
-    html.theme-amoled .input-container,
-    html.theme-amoled div.bg-\[\#0d121f\] {
-      background-color: #000000 !important;
-      border-color: #1a1a1a !important;
-    }
-    html.theme-amoled #comment-sheet {
-      background-color: #040404 !important;
-      border-color: #181818 !important;
-    }
-    html.theme-amoled #comment-pagination-bar {
-      background-color: #000000 !important;
-      border-color: #181818 !important;
-    }
-    html.theme-amoled #sheet-comment-form div.bg-\[\#1a2234\] {
-      background-color: #0a0a0a !important;
-      border-color: #1c1c1c !important;
-    }
-    html.theme-amoled footer {
-      background-color: #000000 !important;
-      border-color: #181818 !important;
-    }
-    html.theme-amoled pre {
-      background-color: #040404 !important;
-      border-color: #181818 !important;
-    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-[#00e599] selection:text-gray-950">
@@ -406,7 +404,7 @@ export function renderDashboardHtml(
         <!-- THEME MODE TOGGLE BUTTON -->
         <button type="button" id="theme-toggle-btn" onclick="cycleTheme()"
           class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-gray-700/80 bg-gray-800/40 hover:bg-gray-800 text-gray-300 hover:text-white transition active:scale-95 text-xs font-semibold shadow-sm mr-1 cursor-pointer"
-          title="Ubah Tema (Dark / Light / AMOLED)">
+          title="Ubah Tema (Dark / Light)">
           <span id="theme-mode-icon" class="text-sm">🌙</span>
           <span id="theme-mode-label" class="hidden sm:inline font-mono text-[11px] font-bold">Dark</span>
         </button>
@@ -535,7 +533,7 @@ export function renderDashboardHtml(
             <pre class="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs text-gray-300 overflow-x-auto border border-gray-800/80"><code>{
   "email": "user@gmail.com"
 }</code></pre>
-            <button onclick="copySnippet('send-link-curl')" class="absolute top-2 right-2 px-2.5 py-1 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition">
+            <button onclick="copySnippet('send-link-curl')" class="btn-copy-curl absolute top-2 right-2 px-2.5 py-1 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition">
               <i class="fa-regular fa-copy mr-1"></i>Salin cURL
             </button>
           </div>
@@ -583,7 +581,7 @@ export function renderDashboardHtml(
   "link": "https://alightcreative.com/?link=...&oobCode=xxxxxx",
   "email": "user@gmail.com" // opsional jika sebelumnya memanggil /send-link
 }</code></pre>
-            <button onclick="copySnippet('verify-link-curl')" class="absolute top-2 right-2 px-2.5 py-1 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition">
+            <button onclick="copySnippet('verify-link-curl')" class="btn-copy-curl absolute top-2 right-2 px-2.5 py-1 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition">
               <i class="fa-regular fa-copy mr-1"></i>Salin cURL
             </button>
           </div>
@@ -634,7 +632,7 @@ export function renderDashboardHtml(
             <pre class="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs text-gray-300 overflow-x-auto border border-gray-800/80"><code>{
   "url": "https://vt.tiktok.com/ZSxxxxxxx/"
 }</code></pre>
-            <button onclick="copySnippet('find-preset-curl')" class="absolute top-2 right-2 px-2.5 py-1 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition">
+            <button onclick="copySnippet('find-preset-curl')" class="btn-copy-curl absolute top-2 right-2 px-2.5 py-1 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition">
               <i class="fa-regular fa-copy mr-1"></i>Salin cURL
             </button>
           </div>
@@ -1063,7 +1061,7 @@ export function renderDashboardHtml(
     </div>
 
     <!-- Bottom Input Area (TikTok Style) - Tanpa border-t di atas input nama -->
-    <div class="bg-[#0d121f] px-3 pb-3 pt-2 shrink-0 relative">
+    <div id="sheet-input-container" class="sheet-input-box bg-[#0d121f] px-3 pb-3 pt-2 shrink-0 relative">
 
       <!-- FULL EMOJI KEYBOARD POPUP -->
       <div id="emoji-picker-container" class="hidden absolute bottom-full left-3 right-3 mb-2 bg-[#131927] border border-gray-700/80 rounded-2xl shadow-2xl p-3 z-50 flex flex-col max-h-80 select-none animate-in fade-in duration-150">
@@ -1102,7 +1100,7 @@ export function renderDashboardHtml(
 
 
       <!-- Header Input: Nama & Toggle Anonim (TANPA BOX INPUT - Borderless & Flat) -->
-      <div class="flex items-center justify-between gap-3 pb-2 text-xs border-b border-gray-800/60 mb-2.5">
+      <div class="sheet-author-row flex items-center justify-between gap-3 pb-2 text-xs border-b border-gray-800/60 mb-2.5">
         <div class="flex items-center space-x-2 flex-1 min-w-0">
           <img id="sheet-user-avatar" src="https://ui-avatars.com/api/?name=User&background=00e599&color=0d121f&bold=true" alt="Avatar" class="w-6 h-6 rounded-full border border-gray-700/80 object-cover shrink-0">
           <input type="text" id="sheet-author-name" oninput="updateSheetAvatar()" placeholder="Nama kamu..." maxlength="50"
@@ -1116,7 +1114,7 @@ export function renderDashboardHtml(
 
       <!-- Main Input Bar (TikTok Rounded Pill Style with Auto Break Line) -->
       <form id="sheet-comment-form" onsubmit="submitSheetComment(event)" class="flex items-end space-x-2">
-        <div class="flex-1 bg-[#1a2234] rounded-2xl px-4 py-2 flex items-center border border-transparent focus-within:border-[#00e599]/60 transition min-h-[38px]">
+        <div class="sheet-input-pill flex-1 bg-[#1a2234] rounded-2xl px-4 py-2 flex items-center border border-transparent focus-within:border-[#00e599]/60 transition min-h-[38px]">
           <textarea id="sheet-comment-input" rows="1" placeholder="Tambahkan komentar..." required maxlength="1000" oninput="handleCommentInput(this)" onkeydown="handleCommentKeyDown(event)"
             class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-0 w-full resize-none leading-relaxed max-h-28 overflow-y-auto block no-scrollbar"></textarea>
         </div>
@@ -1172,24 +1170,24 @@ export function renderDashboardHtml(
 
     <!-- LIGHTWEIGHT CLIENT SCRIPT -->
   <script>
-    // --- Theme Mode System (Dark / Light / AMOLED) ---
-    var availableThemes = ['dark', 'light', 'amoled'];
+    // --- Theme Mode System (Dark / Light) ---
+    var availableThemes = ['dark', 'light'];
     var themeMeta = {
       dark: { icon: '🌙', label: 'Dark', name: 'Dark Mode' },
-      light: { icon: '☀️', label: 'Light', name: 'Light Mode' },
-      amoled: { icon: '⚡', label: 'AMOLED', name: 'AMOLED Black' }
+      light: { icon: '☀️', label: 'Light', name: 'Light Mode' }
     };
 
     function getActiveTheme() {
       try {
-        return localStorage.getItem('am_theme') || 'dark';
+        var saved = localStorage.getItem('am_theme');
+        return (saved === 'light') ? 'light' : 'dark';
       } catch (e) {
         return 'dark';
       }
     }
 
     function applyTheme(theme) {
-      if (!themeMeta[theme]) theme = 'dark';
+      if (theme !== 'light') theme = 'dark';
       try {
         localStorage.setItem('am_theme', theme);
       } catch (e) {}
@@ -1204,8 +1202,7 @@ export function renderDashboardHtml(
 
     function cycleTheme() {
       var current = getActiveTheme();
-      var nextIndex = (availableThemes.indexOf(current) + 1) % availableThemes.length;
-      var nextTheme = availableThemes[nextIndex];
+      var nextTheme = (current === 'light') ? 'dark' : 'light';
       applyTheme(nextTheme);
       showToast('Tema diubah ke ' + themeMeta[nextTheme].name + ' ' + themeMeta[nextTheme].icon);
     }
@@ -1213,7 +1210,7 @@ export function renderDashboardHtml(
     // Sync button on load
     applyTheme(getActiveTheme());
 
-    function copySnippet(id) {
+        function copySnippet(id) {
       const text = document.getElementById(id).value;
       navigator.clipboard.writeText(text);
       showToast('Perintah cURL berhasil disalin!');

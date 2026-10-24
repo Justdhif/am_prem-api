@@ -40,6 +40,29 @@ export function CommentDrawer() {
     loadComments(1);
   }, [loadComments]);
 
+  // Lock body scroll when drawer/sheet is open
+  useEffect(() => {
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isOpen]);
+
+  // Close drawer on Escape key press
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
   const handleReplyClick = (id: string, name: string) => {
     setReplyTarget({ id, name });
   };
@@ -88,7 +111,7 @@ export function CommentDrawer() {
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Backdrop */}
+            {/* Backdrop with touch-none to prevent touch scrolling leak */}
             <motion.div
               id="commentBackdrop"
               aria-hidden="true"
@@ -97,7 +120,7 @@ export function CommentDrawer() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="fixed inset-0 bg-black/65 backdrop-blur-sm z-50"
+              className="fixed inset-0 bg-black/65 backdrop-blur-sm z-50 touch-none"
             />
 
             {/* Right Drawer */}
@@ -139,8 +162,8 @@ export function CommentDrawer() {
                 </button>
               </div>
 
-              {/* Comment List Container */}
-              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3.5 custom-scrollbar relative">
+              {/* Comment List Container (Scrollable independently) */}
+              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3.5 custom-scrollbar relative overscroll-contain">
                 {loading ? (
                   <div className="py-20 flex flex-col items-center justify-center text-center">
                     <LogoLoader />

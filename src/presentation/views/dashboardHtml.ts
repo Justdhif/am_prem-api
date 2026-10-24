@@ -62,6 +62,14 @@ export function renderDashboardHtml(
   return `<!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
+  <script>
+    (function() {
+      try {
+        var savedTheme = localStorage.getItem('am_theme') || 'dark';
+        document.documentElement.className = 'theme-' + savedTheme + (savedTheme !== 'light' ? ' dark' : '');
+      } catch (e) {}
+    })();
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Alight Motion Pro API Docs - by Justdhif</title>
@@ -102,6 +110,153 @@ export function renderDashboardHtml(
     ::-webkit-scrollbar-thumb:hover { background: #00e599; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* --- THEME SYSTEM CSS --- */
+    body {
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* LIGHT THEME OVERRIDES */
+    html.theme-light body {
+      background-color: #f8fafc !important;
+      color: #1e293b !important;
+    }
+    html.theme-light header {
+      background-color: rgba(255, 255, 255, 0.92) !important;
+      border-color: #e2e8f0 !important;
+    }
+    html.theme-light .doc-card {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+    }
+    html.theme-light .doc-card:hover {
+      border-color: rgba(0, 200, 130, 0.5) !important;
+    }
+    html.theme-light header span.text-white,
+    html.theme-light .doc-card h3.text-white,
+    html.theme-light h1.text-white,
+    html.theme-light h2.text-white {
+      color: #0f172a !important;
+    }
+    html.theme-light .doc-card p.text-gray-300,
+    html.theme-light .doc-card p.text-gray-400 {
+      color: #475569 !important;
+    }
+    html.theme-light code.text-white {
+      color: #0f172a !important;
+    }
+    html.theme-light .border-gray-800,
+    html.theme-light .border-gray-800\/80,
+    html.theme-light .border-gray-800\/60,
+    html.theme-light .border-gray-700\/80 {
+      border-color: #e2e8f0 !important;
+    }
+    html.theme-light div.bg-\[\#0d121f\] {
+      background-color: #f1f5f9 !important;
+      border-color: #cbd5e1 !important;
+    }
+    html.theme-light input.bg-transparent,
+    html.theme-light textarea.bg-transparent {
+      color: #0f172a !important;
+    }
+    html.theme-light input::placeholder,
+    html.theme-light textarea::placeholder {
+      color: #94a3b8 !important;
+    }
+    html.theme-light button.bg-gray-800 {
+      background-color: #f1f5f9 !important;
+      border: 1px solid #cbd5e1 !important;
+      color: #334155 !important;
+    }
+    html.theme-light button.bg-gray-800:hover {
+      background-color: #e2e8f0 !important;
+    }
+    html.theme-light .bg-gradient-to-r {
+      background: linear-gradient(135deg, rgba(0, 229, 153, 0.12) 0%, #ffffff 50%, #f8fafc 100%) !important;
+      border-color: #cbd5e1 !important;
+    }
+    html.theme-light .bg-gradient-to-r h3.text-white {
+      color: #0f172a !important;
+    }
+    html.theme-light #comment-sheet-container {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    }
+    html.theme-light #comment-sheet-container .text-white {
+      color: #0f172a !important;
+    }
+    html.theme-light #comment-sheet-container .text-gray-100 {
+      color: #1e293b !important;
+    }
+    html.theme-light #comment-pagination-bar {
+      background-color: #f8fafc !important;
+      border-color: #e2e8f0 !important;
+    }
+    html.theme-light #sheet-comment-form div.bg-\[\#1a2234\] {
+      background-color: #f1f5f9 !important;
+      border: 1px solid #e2e8f0 !important;
+    }
+    html.theme-light #sheet-btn-emoji {
+      background-color: #f1f5f9 !important;
+      border: 1px solid #e2e8f0 !important;
+      color: #64748b !important;
+    }
+    html.theme-light #emoji-picker-container {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+    }
+    html.theme-light #emoji-picker-container div.bg-\[\#1a2234\] {
+      background-color: #f1f5f9 !important;
+    }
+    html.theme-light footer {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      color: #64748b !important;
+    }
+    html.theme-light #toast {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border-color: #00e599 !important;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* AMOLED THEME OVERRIDES (PURE OLED BLACK) */
+    html.theme-amoled body {
+      background-color: #000000 !important;
+    }
+    html.theme-amoled header {
+      background-color: rgba(0, 0, 0, 0.95) !important;
+      border-color: #181818 !important;
+    }
+    html.theme-amoled .doc-card {
+      background-color: #070707 !important;
+      border-color: #1a1a1a !important;
+    }
+    html.theme-amoled .doc-card:hover {
+      border-color: rgba(0, 229, 153, 0.5) !important;
+    }
+    html.theme-amoled div.bg-\[\#0d121f\] {
+      background-color: #000000 !important;
+      border-color: #1c1c1c !important;
+    }
+    html.theme-amoled #comment-sheet-container {
+      background-color: #050505 !important;
+      border-color: #1c1c1c !important;
+    }
+    html.theme-amoled #comment-pagination-bar {
+      background-color: #000000 !important;
+      border-color: #181818 !important;
+    }
+    html.theme-amoled footer {
+      background-color: #000000 !important;
+      border-color: #181818 !important;
+    }
+    html.theme-amoled pre {
+      background-color: #040404 !important;
+      border-color: #181818 !important;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-[#00e599] selection:text-gray-950">
@@ -118,6 +273,14 @@ export function renderDashboardHtml(
       </div>
 
       <div class="flex items-center space-x-2">
+        <!-- THEME MODE TOGGLE BUTTON -->
+        <button type="button" id="theme-toggle-btn" onclick="cycleTheme()"
+          class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-gray-700/80 bg-gray-800/40 hover:bg-gray-800 text-gray-300 hover:text-white transition active:scale-95 text-xs font-semibold shadow-sm mr-1 cursor-pointer"
+          title="Ubah Tema (Dark / Light / AMOLED)">
+          <span id="theme-mode-icon" class="text-sm">🌙</span>
+          <span id="theme-mode-label" class="hidden sm:inline font-mono text-[11px] font-bold">Dark</span>
+        </button>
+
         <a href="https://www.tiktok.com/@justdhifbieber" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-400 hover:text-[#00e599] transition" title="TikTok">
           <i class="fa-brands fa-tiktok text-xl"></i>
         </a>
@@ -879,6 +1042,47 @@ export function renderDashboardHtml(
 
     <!-- LIGHTWEIGHT CLIENT SCRIPT -->
   <script>
+    // --- Theme Mode System (Dark / Light / AMOLED) ---
+    var availableThemes = ['dark', 'light', 'amoled'];
+    var themeMeta = {
+      dark: { icon: '🌙', label: 'Dark', name: 'Dark Mode' },
+      light: { icon: '☀️', label: 'Light', name: 'Light Mode' },
+      amoled: { icon: '⚡', label: 'AMOLED', name: 'AMOLED Black' }
+    };
+
+    function getActiveTheme() {
+      try {
+        return localStorage.getItem('am_theme') || 'dark';
+      } catch (e) {
+        return 'dark';
+      }
+    }
+
+    function applyTheme(theme) {
+      if (!themeMeta[theme]) theme = 'dark';
+      try {
+        localStorage.setItem('am_theme', theme);
+      } catch (e) {}
+
+      document.documentElement.className = 'theme-' + theme + (theme !== 'light' ? ' dark' : '');
+
+      var iconEl = document.getElementById('theme-mode-icon');
+      var labelEl = document.getElementById('theme-mode-label');
+      if (iconEl) iconEl.textContent = themeMeta[theme].icon;
+      if (labelEl) labelEl.textContent = themeMeta[theme].label;
+    }
+
+    function cycleTheme() {
+      var current = getActiveTheme();
+      var nextIndex = (availableThemes.indexOf(current) + 1) % availableThemes.length;
+      var nextTheme = availableThemes[nextIndex];
+      applyTheme(nextTheme);
+      showToast('Tema diubah ke ' + themeMeta[nextTheme].name + ' ' + themeMeta[nextTheme].icon);
+    }
+
+    // Sync button on load
+    applyTheme(getActiveTheme());
+
     function copySnippet(id) {
       const text = document.getElementById(id).value;
       navigator.clipboard.writeText(text);

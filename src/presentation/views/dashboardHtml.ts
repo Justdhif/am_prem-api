@@ -3,7 +3,7 @@ import { CommentNode } from "../../domain/entities/Comment.js";
 
 function renderTikTokCommentServerSide(comment: CommentNode): string {
   const anonBadge = comment.isAnonymous
-    ? '<span class="badge-anon text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-normal border border-gray-700/60 ml-1.5">Anonim</span>'
+    ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-normal border border-gray-700/60 ml-1.5">Anonim</span>'
     : "";
 
   const replyTarget = comment.replyToName
@@ -62,15 +62,6 @@ export function renderDashboardHtml(
   return `<!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
-  <script>
-    (function() {
-      try {
-        var savedTheme = localStorage.getItem('am_theme');
-        var theme = (savedTheme === 'light') ? 'light' : 'dark';
-        document.documentElement.className = 'theme-' + theme + (theme !== 'light' ? ' dark' : '');
-      } catch (e) {}
-    })();
-  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Alight Motion Pro API Docs - by Justdhif</title>
@@ -111,385 +102,6 @@ export function renderDashboardHtml(
     ::-webkit-scrollbar-thumb:hover { background: #00e599; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-    /* --- THEME SYSTEM CSS (DARK & LIGHT DUAL SYSTEM) --- */
-    body {
-      transition: background-color 0.25s ease, color 0.25s ease;
-    }
-
-    /* ========================================================
-       LIGHT THEME (CLEAN SLATE & PROFESSIONAL NON-NEON GREEN)
-       ======================================================== */
-    html.theme-light body {
-      background-color: #f8fafc !important;
-      color: #1e293b !important;
-    }
-
-    /* NAVBAR HEADER */
-    html.theme-light header {
-      background-color: rgba(255, 255, 255, 0.95) !important;
-      border-color: #e2e8f0 !important;
-    }
-    html.theme-light header span.text-white {
-      color: #0f172a !important;
-    }
-    html.theme-light header span.bg-\[\#00e599\]\/15 {
-      background-color: rgba(0, 168, 107, 0.12) !important;
-      color: #00a86b !important;
-      border-color: rgba(0, 168, 107, 0.25) !important;
-    }
-    html.theme-light #theme-toggle-btn {
-      background-color: #f1f5f9 !important;
-      border-color: #cbd5e1 !important;
-      color: #334155 !important;
-    }
-
-    /* CARDS & CONTAINERS */
-    html.theme-light .doc-card {
-      background-color: #ffffff !important;
-      border-color: #e2e8f0 !important;
-      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
-    }
-    html.theme-light .doc-card:hover {
-      border-color: rgba(0, 168, 107, 0.4) !important;
-    }
-
-    /* HEADINGS & TEXT */
-    html.theme-light h1,
-    html.theme-light h2,
-    html.theme-light h3,
-    html.theme-light .text-white {
-      color: #0f172a !important;
-    }
-    html.theme-light p.text-gray-300,
-    html.theme-light p.text-gray-400,
-    html.theme-light span.text-gray-400,
-    html.theme-light span.text-gray-500 {
-      color: #64748b !important;
-    }
-    html.theme-light code.text-white {
-      color: #0f172a !important;
-    }
-    html.theme-light span.text-gray-200 {
-      color: #334155 !important;
-    }
-
-    /* ========================================================
-       WARNA HIJAU LIGHT MODE: ELEGAN, SEJUK & TIDAK NEON (#00a86b)
-       ======================================================== */
-    /* Tombol-tombol berlatar hijau di light mode: hijau jade non-neon dengan teks putih bersih */
-    html.theme-light .bg-\[\#00e599\],
-    html.theme-light button.bg-\[\#00e599\],
-    html.theme-light a.bg-\[\#00e599\],
-    html.theme-light #sheet-btn-send,
-    html.theme-light #fab-open-comments {
-      background-color: #00a86b !important;
-      color: #ffffff !important;
-    }
-    html.theme-light .bg-\[\#00e599\]:hover,
-    html.theme-light button.bg-\[\#00e599\]:hover,
-    html.theme-light a.bg-\[\#00e599\]:hover,
-    html.theme-light #sheet-btn-send:hover,
-    html.theme-light #fab-open-comments:hover {
-      background-color: #008f5a !important;
-      color: #ffffff !important;
-    }
-    html.theme-light .bg-\[\#00e599\] *,
-    html.theme-light button.bg-\[\#00e599\] *,
-    html.theme-light a.bg-\[\#00e599\] * {
-      color: #ffffff !important;
-    }
-
-    /* Step numbers (1 & 2 di Alur Aktivasi) */
-    html.theme-light .step-box span.bg-\[\#00e599\] {
-      background-color: #00a86b !important;
-      color: #ffffff !important;
-    }
-
-    /* Teks / Icon / Aksen hijau di light mode (bukan neon, tapi jade/emerald berdaya baca tinggi) */
-    html.theme-light .text-\[\#00e599\]:not(pre .text-\[\#00e599\]),
-    html.theme-light i.text-\[\#00e599\] {
-      color: #00a86b !important;
-    }
-    html.theme-light code.text-\[\#00e599\]:not(pre code) {
-      color: #00a86b !important;
-      background-color: rgba(0, 168, 107, 0.08) !important;
-      border: 1px solid rgba(0, 168, 107, 0.15) !important;
-      padding: 1px 5px !important;
-      border-radius: 4px !important;
-    }
-
-    /* Border & Banner bernuansa hijau di light mode */
-    html.theme-light .border-\[\#00e599\] {
-      border-color: #00a86b !important;
-    }
-    html.theme-light .border-\[\#00e599\]\/30,
-    html.theme-light .border-\[\#00e599\]\/40 {
-      border-color: rgba(0, 168, 107, 0.25) !important;
-    }
-    html.theme-light .bg-\[\#00e599\]\/10 {
-      background-color: rgba(0, 168, 107, 0.08) !important;
-      border-color: rgba(0, 168, 107, 0.22) !important;
-    }
-
-    /* INNER STATS, STEP, COMMAND & FAQ BOXES */
-    html.theme-light .stat-box,
-    html.theme-light .step-box,
-    html.theme-light .command-box,
-    html.theme-light .faq-box {
-      background-color: #f8fafc !important;
-      border-color: #e2e8f0 !important;
-    }
-    html.theme-light .stat-box span.text-white,
-    html.theme-light .step-box span.text-white,
-    html.theme-light .faq-box span.text-white {
-      color: #0f172a !important;
-    }
-    html.theme-light .faq-box span.text-\[\#00e599\] {
-      color: #00a86b !important;
-    }
-    html.theme-light .faq-box p {
-      color: #334155 !important;
-    }
-    html.theme-light .faq-box strong {
-      color: #0f172a !important;
-    }
-    html.theme-light .command-box {
-      color: #00a86b !important;
-    }
-
-    /* WHATSAPP BANNER */
-    html.theme-light .whatsapp-banner {
-      background-color: rgba(0, 168, 107, 0.08) !important;
-      border-color: rgba(0, 168, 107, 0.25) !important;
-    }
-    html.theme-light .whatsapp-banner i.fa-whatsapp {
-      color: #00a86b !important;
-    }
-    html.theme-light .whatsapp-banner span.text-white {
-      color: #0f172a !important;
-    }
-    html.theme-light .whatsapp-banner span.text-gray-400 {
-      color: #64748b !important;
-    }
-    html.theme-light .whatsapp-banner a {
-      background-color: #00a86b !important;
-      color: #ffffff !important;
-    }
-    html.theme-light .whatsapp-banner a:hover {
-      background-color: #008f5a !important;
-    }
-
-    /* TOP BANNER GRADIENT */
-    html.theme-light .bg-gradient-to-r {
-      background: linear-gradient(135deg, rgba(0, 168, 107, 0.08) 0%, #ffffff 50%, #f8fafc 100%) !important;
-      border-color: #cbd5e1 !important;
-    }
-    html.theme-light .bg-gradient-to-r h3.text-white {
-      color: #0f172a !important;
-    }
-
-    /* BORDERS & DIVIDERS */
-    html.theme-light .border-gray-800,
-    html.theme-light .border-gray-800\/80,
-    html.theme-light .border-gray-800\/60,
-    html.theme-light .border-gray-700\/80 {
-      border-color: #e2e8f0 !important;
-    }
-
-    /* FORM INPUTS & TEXTAREAS (PLAYGROUND) */
-    html.theme-light .input-container {
-      background-color: #f8fafc !important;
-      border-color: #cbd5e1 !important;
-    }
-    html.theme-light input,
-    html.theme-light textarea {
-      color: #0f172a !important;
-    }
-    html.theme-light input::placeholder,
-    html.theme-light textarea::placeholder {
-      color: #94a3b8 !important;
-    }
-    html.theme-light button.bg-gray-800:not(.btn-copy-curl) {
-      background-color: #f1f5f9 !important;
-      border: 1px solid #cbd5e1 !important;
-      color: #334155 !important;
-    }
-    html.theme-light button.bg-gray-800:not(.btn-copy-curl):hover {
-      background-color: #e2e8f0 !important;
-    }
-    html.theme-light #main-tab-docs-btn:not(.bg-\[\#00e599\]),
-    html.theme-light #main-tab-playground-btn:not(.bg-\[\#00e599\]) {
-      color: #64748b !important;
-    }
-
-    /* ========================================================
-       JSON & CODE BLOCKS: DISAMAKAN SEPERTI KETIKA DI MODE GELAP
-       ======================================================== */
-    html.theme-light pre {
-      background-color: #0d121f !important;
-      border-color: rgba(31, 41, 55, 0.8) !important;
-      color: #d1d5db !important;
-    }
-    html.theme-light pre code {
-      color: inherit !important;
-    }
-    html.theme-light pre.text-\[\#00e599\],
-    html.theme-light pre.text-\[\#00e599\] code,
-    html.theme-light pre code.text-\[\#00e599\] {
-      color: #00e599 !important;
-    }
-    html.theme-light .btn-copy-curl,
-    html.theme-light button[onclick*="copySnippet"] {
-      background-color: #1f2937 !important;
-      border: 1px solid rgba(55, 65, 81, 0.6) !important;
-      color: #d1d5db !important;
-    }
-    html.theme-light .btn-copy-curl:hover,
-    html.theme-light button[onclick*="copySnippet"]:hover {
-      background-color: #374151 !important;
-      color: #ffffff !important;
-    }
-
-    /* ========================================================
-       COMMENTS SHEET IN LIGHT THEME
-       ======================================================== */
-    html.theme-light #comment-sheet {
-      background-color: #ffffff !important;
-      border-color: #e2e8f0 !important;
-      color: #0f172a !important;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08) !important;
-    }
-    html.theme-light #comment-sheet > div:first-child {
-      background-color: #ffffff !important;
-      border-color: #e2e8f0 !important;
-    }
-    html.theme-light #comment-sheet h3,
-    html.theme-light #comment-sheet h3 span {
-      color: #0f172a !important;
-    }
-    html.theme-light #comments-sheet-list {
-      background-color: #ffffff !important;
-    }
-    html.theme-light #comments-sheet-list span.font-semibold {
-      color: #0f172a !important;
-    }
-    html.theme-light #comments-sheet-list p.text-gray-100 {
-      color: #1e293b !important;
-    }
-    html.theme-light #comments-sheet-list .text-gray-400:not(.badge-anon) {
-      color: #64748b !important;
-    }
-    html.theme-light #comments-sheet-list .border-l {
-      border-color: #e2e8f0 !important;
-    }
-    html.theme-light #comments-sheet-list button {
-      color: #64748b !important;
-    }
-    html.theme-light #comments-sheet-list button:hover {
-      color: #0f172a !important;
-    }
-    html.theme-light #comment-pagination-bar {
-      background-color: #f8fafc !important;
-      border-color: #e2e8f0 !important;
-      color: #64748b !important;
-    }
-    html.theme-light #comment-pagination-bar button {
-      background-color: #f1f5f9 !important;
-      border: 1px solid #cbd5e1 !important;
-      color: #334155 !important;
-    }
-
-    /* ========================================================
-       BADGE ANONIM: SAMA PERSIS DESIGN DENGAN DI MODE GELAP
-       ======================================================== */
-    .badge-anon,
-    html.theme-light .badge-anon,
-    html.theme-light #comments-sheet-list .badge-anon {
-      background-color: #1f2937 !important;
-      color: #9ca3af !important;
-      border: 1px solid rgba(55, 65, 81, 0.6) !important;
-      font-size: 9px !important;
-      font-weight: 400 !important;
-      padding: 2px 6px !important;
-      border-radius: 4px !important;
-      display: inline-block !important;
-      line-height: normal !important;
-    }
-
-    /* Comment Bottom Input Area */
-    html.theme-light #sheet-input-container,
-    html.theme-light .sheet-input-box {
-      background-color: #ffffff !important;
-      border-top: 1px solid #e2e8f0 !important;
-    }
-    html.theme-light .sheet-author-row {
-      border-color: #e2e8f0 !important;
-    }
-    html.theme-light #sheet-author-name {
-      color: #0f172a !important;
-    }
-    html.theme-light #sheet-author-name::placeholder {
-      color: #94a3b8 !important;
-    }
-    html.theme-light #sheet-toggle-anon + span {
-      color: #64748b !important;
-    }
-    html.theme-light .sheet-input-pill {
-      background-color: #f1f5f9 !important;
-      border: 1px solid #cbd5e1 !important;
-    }
-    html.theme-light #sheet-comment-input {
-      color: #0f172a !important;
-    }
-    html.theme-light #sheet-comment-input::placeholder {
-      color: #94a3b8 !important;
-    }
-    html.theme-light #sheet-btn-emoji {
-      background-color: #f1f5f9 !important;
-      border: 1px solid #cbd5e1 !important;
-      color: #64748b !important;
-    }
-    html.theme-light #sheet-btn-emoji:hover {
-      background-color: #e2e8f0 !important;
-      color: #0f172a !important;
-    }
-    html.theme-light #sheet-reply-banner {
-      background-color: #f8fafc !important;
-      border-color: #e2e8f0 !important;
-    }
-    html.theme-light #emoji-picker-container {
-      background-color: #ffffff !important;
-      border-color: #e2e8f0 !important;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
-    }
-    html.theme-light #emoji-picker-container > div:first-child > div {
-      background-color: #f1f5f9 !important;
-      border: 1px solid #cbd5e1 !important;
-    }
-    html.theme-light #emoji-search-input {
-      color: #0f172a !important;
-    }
-    html.theme-light #emoji-category-tabs {
-      background-color: #f8fafc !important;
-      border-color: #e2e8f0 !important;
-    }
-
-    /* FOOTER & TOAST */
-    html.theme-light footer {
-      background-color: #ffffff !important;
-      border-color: #e2e8f0 !important;
-      color: #64748b !important;
-    }
-    html.theme-light footer span.text-gray-300 {
-      color: #0f172a !important;
-    }
-    html.theme-light #toast {
-      background-color: #ffffff !important;
-      color: #0f172a !important;
-      border-color: #00a86b !important;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
-    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-[#00e599] selection:text-gray-950">
@@ -506,14 +118,6 @@ export function renderDashboardHtml(
       </div>
 
       <div class="flex items-center space-x-2">
-        <!-- THEME MODE TOGGLE BUTTON -->
-        <button type="button" id="theme-toggle-btn" onclick="cycleTheme()"
-          class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-gray-700/80 bg-gray-800/40 hover:bg-gray-800 text-gray-300 hover:text-white transition active:scale-95 text-xs font-semibold shadow-sm mr-1 cursor-pointer"
-          title="Ubah Tema (Dark / Light)">
-          <span id="theme-mode-icon" class="text-sm">🌙</span>
-          <span id="theme-mode-label" class="hidden sm:inline font-mono text-[11px] font-bold">Dark</span>
-        </button>
-
         <a href="https://www.tiktok.com/@justdhifbieber" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-400 hover:text-[#00e599] transition" title="TikTok">
           <i class="fa-brands fa-tiktok text-xl"></i>
         </a>
@@ -552,15 +156,15 @@ export function renderDashboardHtml(
 
       <!-- Quick Stats Pills -->
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-6 pt-5 border-t border-gray-800">
-        <div class="stat-box bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
+        <div class="bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
           <span class="text-[11px] text-gray-400 block">Total Aktivasi</span>
           <span id="stat-total" class="text-base sm:text-lg font-bold text-white mt-0.5 block">${initialStats ? initialStats.total + " Akun" : "0 Akun"}</span>
         </div>
-        <div class="stat-box bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
+        <div class="bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
           <span class="text-[11px] text-gray-400 block">Aktivasi Hari Ini</span>
           <span id="stat-today" class="text-base sm:text-lg font-bold text-[#00e599] mt-0.5 block">${initialStats ? initialStats.today + " Akun" : "0 Akun"}</span>
         </div>
-        <div class="stat-box col-span-2 sm:col-span-1 bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
+        <div class="col-span-2 sm:col-span-1 bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
           <span class="text-[11px] text-gray-400 block">Protokol</span>
           <span class="text-xs sm:text-sm font-semibold text-gray-200 mt-1 block">JSON &middot; POST / GET</span>
         </div>
@@ -573,7 +177,7 @@ export function renderDashboardHtml(
         <i class="fa-solid fa-route text-[#00e599] mr-2.5 text-sm"></i>Alur Aktivasi 2 Langkah
       </h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-        <div class="step-box bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
+        <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
           <div class="flex items-center space-x-2">
             <span class="w-6 h-6 rounded-lg bg-[#00e599] text-gray-950 font-black flex items-center justify-center text-xs">1</span>
             <span class="font-bold text-white text-sm">Kirim Link ke Email</span>
@@ -583,7 +187,7 @@ export function renderDashboardHtml(
           </p>
         </div>
 
-        <div class="step-box bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
+        <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
           <div class="flex items-center space-x-2">
             <span class="w-6 h-6 rounded-lg bg-[#00e599] text-gray-950 font-black flex items-center justify-center text-xs">2</span>
             <span class="font-bold text-white text-sm">Verifikasi &amp; Aktivasi Pro</span>
@@ -638,7 +242,7 @@ export function renderDashboardHtml(
             <pre class="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs text-gray-300 overflow-x-auto border border-gray-800/80"><code>{
   "email": "user@gmail.com"
 }</code></pre>
-            <button onclick="copySnippet('send-link-curl')" class="btn-copy-curl absolute top-2 right-2 px-2.5 py-1 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition">
+            <button onclick="copySnippet('send-link-curl')" class="absolute top-2 right-2 px-2.5 py-1 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition">
               <i class="fa-regular fa-copy mr-1"></i>Salin cURL
             </button>
           </div>
@@ -686,7 +290,7 @@ export function renderDashboardHtml(
   "link": "https://alightcreative.com/?link=...&oobCode=xxxxxx",
   "email": "user@gmail.com" // opsional jika sebelumnya memanggil /send-link
 }</code></pre>
-            <button onclick="copySnippet('verify-link-curl')" class="btn-copy-curl absolute top-2 right-2 px-2.5 py-1 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition">
+            <button onclick="copySnippet('verify-link-curl')" class="absolute top-2 right-2 px-2.5 py-1 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition">
               <i class="fa-regular fa-copy mr-1"></i>Salin cURL
             </button>
           </div>
@@ -737,7 +341,7 @@ export function renderDashboardHtml(
             <pre class="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs text-gray-300 overflow-x-auto border border-gray-800/80"><code>{
   "url": "https://vt.tiktok.com/ZSxxxxxxx/"
 }</code></pre>
-            <button onclick="copySnippet('find-preset-curl')" class="btn-copy-curl absolute top-2 right-2 px-2.5 py-1 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition">
+            <button onclick="copySnippet('find-preset-curl')" class="absolute top-2 right-2 px-2.5 py-1 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition">
               <i class="fa-regular fa-copy mr-1"></i>Salin cURL
             </button>
           </div>
@@ -795,10 +399,10 @@ export function renderDashboardHtml(
         <div class="space-y-2">
           <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider block">Contoh Perintah Teks yang Didukung</span>
           <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs">
-            <div class="command-box bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!amprem user@gmail.com</div>
-            <div class="command-box bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!ampreset &lt;url_tiktok&gt;</div>
-            <div class="command-box bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!amstats</div>
-            <div class="command-box bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!amhelp</div>
+            <div class="bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!amprem user@gmail.com</div>
+            <div class="bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!ampreset &lt;url_tiktok&gt;</div>
+            <div class="bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!amstats</div>
+            <div class="bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!amhelp</div>
           </div>
         </div>
 
@@ -857,7 +461,7 @@ export function renderDashboardHtml(
                 <label class="block text-xs font-semibold text-gray-300 mb-1.5">
                   Target Email <span class="text-[#00e599]">*</span>
                 </label>
-                <div class="input-container flex items-center bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                <div class="flex items-center bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
                   <i class="fa-regular fa-envelope text-gray-500 mr-2.5 text-xs"></i>
                   <input type="email" id="pg-sendlink-email" required placeholder="user@gmail.com"
                     class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full">
@@ -923,7 +527,7 @@ export function renderDashboardHtml(
                 <label class="block text-xs font-semibold text-gray-300 mb-1.5">
                   Target Email <span class="text-[#00e599]">*</span>
                 </label>
-                <div class="input-container flex items-center bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                <div class="flex items-center bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
                   <i class="fa-regular fa-envelope text-gray-500 mr-2.5 text-xs"></i>
                   <input type="email" id="pg-verify-email" required placeholder="user@gmail.com"
                     class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full">
@@ -934,7 +538,7 @@ export function renderDashboardHtml(
                 <label class="block text-xs font-semibold text-gray-300 mb-1.5">
                   Magic Link / OOB Code dari Email <span class="text-[#00e599]">*</span>
                 </label>
-                <div class="input-container flex items-start bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                <div class="flex items-start bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
                   <i class="fa-solid fa-link text-gray-500 mr-2.5 mt-1 text-xs shrink-0"></i>
                   <textarea id="pg-verify-link" required rows="1" placeholder="https://alightcreative.com/?link=... atau oobCode"
                     oninput="handleLinkTextareaInput(this)"
@@ -1002,7 +606,7 @@ export function renderDashboardHtml(
                 <label class="block text-xs font-semibold text-gray-300 mb-1.5">
                   URL Video TikTok / YouTube <span class="text-[#00e599]">*</span>
                 </label>
-                <div class="input-container flex items-start bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                <div class="flex items-start bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
                   <i class="fa-brands fa-tiktok text-gray-500 mr-2.5 mt-1 text-xs shrink-0"></i>
                   <textarea id="pg-preset-url" required rows="1" placeholder="https://vt.tiktok.com/ZSxxxxxxx/ atau https://youtu.be/xxxx atau link YouTube/TikTok"
                     oninput="handlePresetTextareaInput(this)"
@@ -1061,7 +665,7 @@ export function renderDashboardHtml(
 
         <!-- FAQ Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-          <div class="faq-box bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
+          <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
             <span class="font-bold text-[#00e599] flex items-center">
               <i class="fa-solid fa-envelope-circle-check mr-2"></i>Email tidak masuk?
             </span>
@@ -1070,7 +674,7 @@ export function renderDashboardHtml(
             </p>
           </div>
 
-          <div class="faq-box bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
+          <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
             <span class="font-bold text-[#00e599] flex items-center">
               <i class="fa-solid fa-clock-rotate-left mr-2"></i>Link Kadaluarsa (Expired)?
             </span>
@@ -1079,7 +683,7 @@ export function renderDashboardHtml(
             </p>
           </div>
 
-          <div class="faq-box bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
+          <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
             <span class="font-bold text-[#00e599] flex items-center">
               <i class="fa-solid fa-star mr-2"></i>Fitur Pro yang Didapat?
             </span>
@@ -1088,7 +692,7 @@ export function renderDashboardHtml(
             </p>
           </div>
 
-          <div class="faq-box bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
+          <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
             <span class="font-bold text-[#00e599] flex items-center">
               <i class="fa-solid fa-robot mr-2"></i>Daftar Perintah Bot WhatsApp
             </span>
@@ -1098,7 +702,7 @@ export function renderDashboardHtml(
           </div>
         </div>
 
-        <div class="whatsapp-banner p-3.5 rounded-xl bg-[#00e599]/10 border border-[#00e599]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div class="p-3.5 rounded-xl bg-[#00e599]/10 border border-[#00e599]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <div class="flex items-center space-x-2.5">
             <i class="fa-brands fa-whatsapp text-xl text-[#00e599]"></i>
             <div>
@@ -1166,7 +770,7 @@ export function renderDashboardHtml(
     </div>
 
     <!-- Bottom Input Area (TikTok Style) - Tanpa border-t di atas input nama -->
-    <div id="sheet-input-container" class="sheet-input-box bg-[#0d121f] px-3 pb-3 pt-2 shrink-0 relative">
+    <div class="bg-[#0d121f] px-3 pb-3 pt-2 shrink-0 relative">
 
       <!-- FULL EMOJI KEYBOARD POPUP -->
       <div id="emoji-picker-container" class="hidden absolute bottom-full left-3 right-3 mb-2 bg-[#131927] border border-gray-700/80 rounded-2xl shadow-2xl p-3 z-50 flex flex-col max-h-80 select-none animate-in fade-in duration-150">
@@ -1205,7 +809,7 @@ export function renderDashboardHtml(
 
 
       <!-- Header Input: Nama & Toggle Anonim (TANPA BOX INPUT - Borderless & Flat) -->
-      <div class="sheet-author-row flex items-center justify-between gap-3 pb-2 text-xs border-b border-gray-800/60 mb-2.5">
+      <div class="flex items-center justify-between gap-3 pb-2 text-xs border-b border-gray-800/60 mb-2.5">
         <div class="flex items-center space-x-2 flex-1 min-w-0">
           <img id="sheet-user-avatar" src="https://ui-avatars.com/api/?name=User&background=00e599&color=0d121f&bold=true" alt="Avatar" class="w-6 h-6 rounded-full border border-gray-700/80 object-cover shrink-0">
           <input type="text" id="sheet-author-name" oninput="updateSheetAvatar()" placeholder="Nama kamu..." maxlength="50"
@@ -1219,7 +823,7 @@ export function renderDashboardHtml(
 
       <!-- Main Input Bar (TikTok Rounded Pill Style with Auto Break Line) -->
       <form id="sheet-comment-form" onsubmit="submitSheetComment(event)" class="flex items-end space-x-2">
-        <div class="sheet-input-pill flex-1 bg-[#1a2234] rounded-2xl px-4 py-2 flex items-center border border-transparent focus-within:border-[#00e599]/60 transition min-h-[38px]">
+        <div class="flex-1 bg-[#1a2234] rounded-2xl px-4 py-2 flex items-center border border-transparent focus-within:border-[#00e599]/60 transition min-h-[38px]">
           <textarea id="sheet-comment-input" rows="1" placeholder="Tambahkan komentar..." required maxlength="1000" oninput="handleCommentInput(this)" onkeydown="handleCommentKeyDown(event)"
             class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-0 w-full resize-none leading-relaxed max-h-28 overflow-y-auto block no-scrollbar"></textarea>
         </div>
@@ -1275,47 +879,7 @@ export function renderDashboardHtml(
 
     <!-- LIGHTWEIGHT CLIENT SCRIPT -->
   <script>
-    // --- Theme Mode System (Dark / Light) ---
-    var availableThemes = ['dark', 'light'];
-    var themeMeta = {
-      dark: { icon: '🌙', label: 'Dark', name: 'Dark Mode' },
-      light: { icon: '☀️', label: 'Light', name: 'Light Mode' }
-    };
-
-    function getActiveTheme() {
-      try {
-        var saved = localStorage.getItem('am_theme');
-        return (saved === 'light') ? 'light' : 'dark';
-      } catch (e) {
-        return 'dark';
-      }
-    }
-
-    function applyTheme(theme) {
-      if (theme !== 'light') theme = 'dark';
-      try {
-        localStorage.setItem('am_theme', theme);
-      } catch (e) {}
-
-      document.documentElement.className = 'theme-' + theme + (theme !== 'light' ? ' dark' : '');
-
-      var iconEl = document.getElementById('theme-mode-icon');
-      var labelEl = document.getElementById('theme-mode-label');
-      if (iconEl) iconEl.textContent = themeMeta[theme].icon;
-      if (labelEl) labelEl.textContent = themeMeta[theme].label;
-    }
-
-    function cycleTheme() {
-      var current = getActiveTheme();
-      var nextTheme = (current === 'light') ? 'dark' : 'light';
-      applyTheme(nextTheme);
-      showToast('Tema diubah ke ' + themeMeta[nextTheme].name + ' ' + themeMeta[nextTheme].icon);
-    }
-
-    // Sync button on load
-    applyTheme(getActiveTheme());
-
-        function copySnippet(id) {
+    function copySnippet(id) {
       const text = document.getElementById(id).value;
       navigator.clipboard.writeText(text);
       showToast('Perintah cURL berhasil disalin!');
@@ -2076,7 +1640,7 @@ export function renderDashboardHtml(
 
     function renderTikTokCommentHtml(comment) {
       var anonBadge = comment.isAnonymous
-        ? '<span class="badge-anon text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-normal border border-gray-700/60 ml-1.5">Anonim</span>'
+        ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-normal border border-gray-700/60 ml-1.5">Anonim</span>'
         : '';
 
       var replyTarget = comment.replyToName

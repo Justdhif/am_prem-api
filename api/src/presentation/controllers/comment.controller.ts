@@ -9,7 +9,15 @@ export class CommentController {
       const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 5;
 
       const result = await container.getCommentsUseCase.execute({ page, limit });
-      res.status(200).json(result);
+      res.status(200).json({
+        ...result,
+        pagination: {
+          page: result.page,
+          limit: result.limit,
+          totalComments: result.totalComments,
+          totalPages: result.totalPages,
+        },
+      });
     } catch (err: any) {
       res.status(500).json({
         success: false,

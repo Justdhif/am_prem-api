@@ -16,7 +16,14 @@ export interface CommentItem {
 export interface CommentsResponse {
   success: boolean;
   comments: CommentItem[];
-  pagination: {
+  page?: number;
+  limit?: number;
+  totalRootComments?: number;
+  totalComments?: number;
+  totalPages?: number;
+  hasNextPage?: boolean;
+  hasPrevPage?: boolean;
+  pagination?: {
     page: number;
     limit: number;
     totalComments: number;
@@ -29,6 +36,7 @@ export interface StatsResponse {
   totalActivations: number;
   todayActivations: number;
   status: string;
+  formattedText?: string;
 }
 
 export const apiClient = {
@@ -37,7 +45,14 @@ export const apiClient = {
       cache: "no-store",
     });
     if (!res.ok) throw new Error("Gagal mengambil data statistik");
-    return res.json();
+    const json = await res.json();
+    return {
+      success: Boolean(json.success),
+      totalActivations: json.data?.totalPremium ?? json.totalActivations ?? json.totalPremium ?? 0,
+      todayActivations: json.data?.todayPremium ?? json.todayActivations ?? json.todayPremium ?? 0,
+      status: json.data?.status ?? json.status ?? "ready",
+      formattedText: json.formattedText,
+    };
   },
 
   async sendLink(email: string) {

@@ -4,7 +4,7 @@ export interface LyricLine {
 }
 
 export const NERVOUSNESS_LYRICS: LyricLine[] = [
-  { time: 0, text: "🎵 (Intro Instrumental)" },
+  { time: 0, text: "..." },
   { time: 19.5, text: "Stay a little longer so I'll let you know" },
   { time: 23.5, text: "If we could've been" },
   { time: 26.5, text: "(Ah, ah, ah, ah, ah)" },
@@ -32,7 +32,7 @@ export const NERVOUSNESS_LYRICS: LyricLine[] = [
   { time: 111.5, text: "I guess it's funny when I'm talking to you" },
   { time: 115.0, text: "Everything feels like a sin, oh-oh" },
   { time: 119.0, text: "(Ah, ah, ah, ah, ah)" },
-  { time: 124.0, text: "🎸 (Guitar & Beats Break)" },
+  { time: 124.0, text: "..." },
   { time: 140.0, text: "Oh, things would never feel like fiction" },
   { time: 144.0, text: "If we read between the lines" },
   { time: 148.0, text: "Well it might've helped to keep some peace of mind, oh" },
@@ -40,5 +40,5 @@ export const NERVOUSNESS_LYRICS: LyricLine[] = [
   { time: 160.0, text: "If we could've been" },
   { time: 165.0, text: "(Ah, ah, ah, ah, ah...)" },
   { time: 175.0, text: "Stay a little longer..." },
-  { time: 195.0, text: "🎵 (Outro - Fading out)" },
+  { time: 195.0, text: "..." },
 ];

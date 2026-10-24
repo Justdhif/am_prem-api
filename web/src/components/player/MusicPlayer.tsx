@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { NERVOUSNESS_LYRICS } from "./lyricsData";
-import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 export function MusicPlayer() {
@@ -142,7 +141,7 @@ export function MusicPlayer() {
       : null;
 
   return (
-    <Card className="p-4 sm:p-5 bg-[#131927] border-gray-800/80 shadow-xl overflow-hidden relative group">
+    <div className="w-full bg-transparent border-0 shadow-none relative text-left">
       {/* Hidden Native Audio Element */}
       <audio
         ref={audioRef}
@@ -155,12 +154,9 @@ export function MusicPlayer() {
         }}
       />
 
-      {/* Background Ambient Glow */}
-      <div className="absolute top-0 right-0 w-44 h-44 bg-[#00e599]/10 rounded-full blur-2xl pointer-events-none -mr-10 -mt-10"></div>
-
       {/* Header Bar */}
       <div className="flex items-center justify-between pb-3 border-b border-gray-800/80 mb-4">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 text-left">
           {/* Animated equalizer bars */}
           <div className="flex items-end space-x-0.5 h-3.5">
             <span
@@ -182,7 +178,7 @@ export function MusicPlayer() {
               )}
             />
           </div>
-          <span className="text-xs font-bold text-gray-200 uppercase tracking-wider">
+          <span className="text-xs font-bold text-gray-200 uppercase tracking-wider text-left">
             Now Playing
           </span>
         </div>
@@ -225,10 +221,10 @@ export function MusicPlayer() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="space-y-3.5"
+            className="space-y-3.5 text-left"
           >
             {/* 1. Album Cover */}
-            <div className="relative aspect-video sm:aspect-square w-full rounded-2xl overflow-hidden border border-gray-800 shadow-lg bg-[#0d121f] group/cover">
+            <div className="relative aspect-video sm:aspect-square w-full rounded-2xl overflow-hidden border border-gray-800 shadow-md bg-[#0d121f] group/cover">
               <Image
                 src="/audio/cover.jpg"
                 alt="Joon - nervousness"
@@ -257,28 +253,28 @@ export function MusicPlayer() {
               </button>
             </div>
 
-            {/* 2. 3-Line Dynamic Synchronized Lyrics (Between Cover & Song Title) */}
-            <div className="p-3 rounded-2xl bg-[#0d121f] border border-gray-800/80 shadow-inner space-y-1 text-center select-none overflow-hidden min-h-[96px] flex flex-col justify-center">
+            {/* 2. 3-Line Dynamic Synchronized Lyrics (Rata Kiri & Tanpa Border Card) */}
+            <div className="py-2.5 px-0.5 space-y-1.5 text-left select-none overflow-hidden min-h-[92px] flex flex-col justify-center">
               {/* Previous Line */}
               <div
                 onClick={() => prevLine && handleLyricClick(prevLine.time)}
                 className={cn(
-                  "text-[11px] transition-all duration-300 truncate cursor-pointer",
-                  prevLine ? "text-gray-500 hover:text-gray-300" : "opacity-0 select-none"
+                  "text-xs transition-all duration-300 truncate cursor-pointer text-left",
+                  prevLine ? "text-gray-500 hover:text-gray-300 font-medium" : "opacity-0 select-none"
                 )}
                 title={prevLine?.text}
               >
                 {prevLine?.text || "—"}
               </div>
 
-              {/* Active Line (Larger font, Bolder, Neon Mint Glow) */}
+              {/* Active Line (Rata Kiri, Lebih Besar, Lebih Bold, Neon Mint Highlight) */}
               <motion.div
                 key={currentLyricIndex}
-                initial={{ opacity: 0, y: 3, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
+                initial={{ opacity: 0, y: 3 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.22, ease: "easeOut" }}
                 onClick={() => activeLine && handleLyricClick(activeLine.time)}
-                className="text-xs sm:text-[13px] font-black text-[#00e599] drop-shadow-[0_0_12px_rgba(0,229,153,0.35)] cursor-pointer py-0.5 line-clamp-2 px-1 leading-snug"
+                className="text-sm sm:text-base font-black text-[#00e599] text-left drop-shadow-[0_0_12px_rgba(0,229,153,0.35)] cursor-pointer line-clamp-2 leading-snug"
                 title="Klik untuk loncat ke bait ini"
               >
                 {activeLine?.text || "..."}
@@ -288,8 +284,8 @@ export function MusicPlayer() {
               <div
                 onClick={() => nextLine && handleLyricClick(nextLine.time)}
                 className={cn(
-                  "text-[11px] transition-all duration-300 truncate cursor-pointer",
-                  nextLine ? "text-gray-400 hover:text-gray-200" : "opacity-0 select-none"
+                  "text-xs transition-all duration-300 truncate cursor-pointer text-left",
+                  nextLine ? "text-gray-400 hover:text-gray-200 font-medium" : "opacity-0 select-none"
                 )}
                 title={nextLine?.text}
               >
@@ -297,13 +293,13 @@ export function MusicPlayer() {
               </div>
             </div>
 
-            {/* 3. Song Info Bar (Title & Artist) */}
-            <div className="flex items-center justify-between pt-0.5">
-              <div className="min-w-0 pr-2">
-                <h3 className="text-base font-bold text-white tracking-tight truncate hover:text-[#00e599] transition cursor-pointer">
+            {/* 3. Song Info Bar (Title & Artist, Rata Kiri) */}
+            <div className="flex items-center justify-between pt-0.5 text-left">
+              <div className="min-w-0 pr-2 text-left">
+                <h3 className="text-base font-bold text-white tracking-tight truncate hover:text-[#00e599] transition cursor-pointer text-left">
                   nervousness
                 </h3>
-                <p className="text-xs text-gray-400 font-medium truncate flex items-center space-x-1.5 mt-0.5">
+                <p className="text-xs text-gray-400 font-medium truncate flex items-center space-x-1.5 mt-0.5 text-left">
                   <span>Joon</span>
                   <span className="w-1 h-1 rounded-full bg-gray-600"></span>
                   <span className="text-[10px] px-1.5 py-0.2 rounded bg-gray-800 text-gray-400 font-semibold border border-gray-700/60">
@@ -464,11 +460,11 @@ export function MusicPlayer() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="space-y-3"
+            className="space-y-3 text-left"
           >
             {/* Lyrics Header with Mini Play/Pause */}
             <div className="flex items-center justify-between p-2 rounded-xl bg-[#0d121f] border border-gray-800">
-              <div className="flex items-center space-x-2 min-w-0">
+              <div className="flex items-center space-x-2 min-w-0 text-left">
                 <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-gray-800">
                   <Image
                     src="/audio/cover.jpg"
@@ -478,9 +474,9 @@ export function MusicPlayer() {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="min-w-0">
-                  <span className="text-xs font-bold text-white block truncate">nervousness</span>
-                  <span className="text-[10px] text-gray-400 block truncate">Joon</span>
+                <div className="min-w-0 text-left">
+                  <span className="text-xs font-bold text-white block truncate text-left">nervousness</span>
+                  <span className="text-[10px] text-gray-400 block truncate text-left">Joon</span>
                 </div>
               </div>
 
@@ -494,12 +490,12 @@ export function MusicPlayer() {
               </button>
             </div>
 
-            {/* Dynamic Scrollable Full Lyrics List */}
+            {/* Dynamic Scrollable Full Lyrics List (Rata Kiri, Tanpa Emoji) */}
             <div
               ref={lyricsContainerRef}
-              className="h-80 overflow-y-auto px-2 py-3 space-y-3 custom-scrollbar rounded-xl bg-[#0d121f]/60 border border-gray-800/80 relative select-none"
+              className="h-80 overflow-y-auto px-1 py-3 space-y-2.5 custom-scrollbar rounded-xl bg-[#0d121f]/40 border border-gray-800/60 relative select-none text-left"
             >
-              <div className="text-[10px] text-gray-500 uppercase tracking-widest text-center pb-2 border-b border-gray-800/60 font-semibold">
+              <div className="text-[10px] text-gray-500 uppercase tracking-widest text-left px-2 pb-2 border-b border-gray-800/60 font-semibold">
                 Klik lirik untuk loncat ke bait
               </div>
 
@@ -513,20 +509,15 @@ export function MusicPlayer() {
                     ref={isActive ? activeLyricRef : null}
                     onClick={() => handleLyricClick(line.time)}
                     className={cn(
-                      "p-2.5 rounded-xl transition-all duration-300 cursor-pointer text-left leading-relaxed",
+                      "px-2.5 py-1.5 rounded-lg transition-all duration-300 cursor-pointer text-left leading-relaxed",
                       isActive
-                        ? "bg-[#00e599]/15 border border-[#00e599]/40 text-[#00e599] font-extrabold text-sm shadow-[0_0_15px_rgba(0,229,153,0.15)] scale-[1.02]"
+                        ? "text-[#00e599] font-black text-sm drop-shadow-[0_0_10px_rgba(0,229,153,0.3)]"
                         : isPassed
                         ? "text-gray-500 hover:text-gray-300 font-medium text-xs hover:bg-gray-800/40"
                         : "text-gray-400 hover:text-gray-200 font-medium text-xs hover:bg-gray-800/40"
                     )}
                   >
-                    <div className="flex items-start space-x-2">
-                      {isActive && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#00e599] mt-1.5 shrink-0 animate-ping"></span>
-                      )}
-                      <span>{line.text}</span>
-                    </div>
+                    <span>{line.text}</span>
                   </div>
                 );
               })}
@@ -544,6 +535,6 @@ export function MusicPlayer() {
           </motion.div>
         )}
       </AnimatePresence>
-    </Card>
+    </div>
   );
 }

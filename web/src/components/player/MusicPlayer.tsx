@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { NERVOUSNESS_LYRICS } from "./lyricsData";
@@ -42,15 +42,15 @@ export function MusicPlayer() {
     }
   }, [currentTime, currentLyricIndex]);
 
-  // Auto-scroll active lyric into center of lyrics container
+  // Auto-scroll active lyric in full lyrics tab
   useEffect(() => {
-    if (activeLyricRef.current && lyricsContainerRef.current) {
+    if (activeTab === "lyrics" && activeLyricRef.current && lyricsContainerRef.current) {
       activeLyricRef.current.scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
     }
-  }, [currentLyricIndex]);
+  }, [currentLyricIndex, activeTab]);
 
   // Audio Event Listeners
   const handleTimeUpdate = () => {
@@ -133,6 +133,14 @@ export function MusicPlayer() {
 
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
+  // 3 visible lyrics: previous, active, and next
+  const prevLine = currentLyricIndex > 0 ? NERVOUSNESS_LYRICS[currentLyricIndex - 1] : null;
+  const activeLine = NERVOUSNESS_LYRICS[currentLyricIndex] || NERVOUSNESS_LYRICS[0];
+  const nextLine =
+    currentLyricIndex < NERVOUSNESS_LYRICS.length - 1
+      ? NERVOUSNESS_LYRICS[currentLyricIndex + 1]
+      : null;
+
   return (
     <Card className="p-4 sm:p-5 bg-[#131927] border-gray-800/80 shadow-xl overflow-hidden relative group">
       {/* Hidden Native Audio Element */}
@@ -153,7 +161,7 @@ export function MusicPlayer() {
       {/* Header Bar */}
       <div className="flex items-center justify-between pb-3 border-b border-gray-800/80 mb-4">
         <div className="flex items-center space-x-2">
-          {/* Animated Spotify-style equalizer bars */}
+          {/* Animated equalizer bars */}
           <div className="flex items-end space-x-0.5 h-3.5">
             <span
               className={cn(
@@ -175,11 +183,11 @@ export function MusicPlayer() {
             />
           </div>
           <span className="text-xs font-bold text-gray-200 uppercase tracking-wider">
-            Spotify Player
+            Now Playing
           </span>
         </div>
 
-        {/* Tab Switcher: Player vs Lyrics */}
+        {/* Tab Switcher: Player vs Full Lyrics */}
         <div className="flex items-center bg-[#0d121f] p-0.5 rounded-lg border border-gray-800 text-[11px]">
           <button
             type="button"
@@ -217,9 +225,9 @@ export function MusicPlayer() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="space-y-4"
+            className="space-y-3.5"
           >
-            {/* Album Cover with Vinyl Effect */}
+            {/* 1. Album Cover */}
             <div className="relative aspect-video sm:aspect-square w-full rounded-2xl overflow-hidden border border-gray-800 shadow-lg bg-[#0d121f] group/cover">
               <Image
                 src="/audio/cover.jpg"
@@ -234,7 +242,7 @@ export function MusicPlayer() {
               />
 
               {/* Overlay Gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
 
               {/* Quick Play Overlay Button */}
               <button
@@ -247,20 +255,50 @@ export function MusicPlayer() {
                   <i className={cn("fa-solid text-lg", isPlaying ? "fa-pause" : "fa-play ml-0.5")}></i>
                 </div>
               </button>
+            </div>
 
-              {/* Current Lyric Preview Pill on Top of Cover */}
-              <div className="absolute bottom-2.5 left-2.5 right-2.5 p-2 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 text-left">
-                <span className="text-[10px] text-[#00e599] font-bold block uppercase tracking-wider">
-                  Lirik Sekarang
-                </span>
-                <p className="text-xs text-white font-medium truncate mt-0.5">
-                  {NERVOUSNESS_LYRICS[currentLyricIndex]?.text || "..."}
-                </p>
+            {/* 2. 3-Line Dynamic Synchronized Lyrics (Between Cover & Song Title) */}
+            <div className="p-3 rounded-2xl bg-[#0d121f] border border-gray-800/80 shadow-inner space-y-1 text-center select-none overflow-hidden min-h-[96px] flex flex-col justify-center">
+              {/* Previous Line */}
+              <div
+                onClick={() => prevLine && handleLyricClick(prevLine.time)}
+                className={cn(
+                  "text-[11px] transition-all duration-300 truncate cursor-pointer",
+                  prevLine ? "text-gray-500 hover:text-gray-300" : "opacity-0 select-none"
+                )}
+                title={prevLine?.text}
+              >
+                {prevLine?.text || "—"}
+              </div>
+
+              {/* Active Line (Larger font, Bolder, Neon Mint Glow) */}
+              <motion.div
+                key={currentLyricIndex}
+                initial={{ opacity: 0, y: 3, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+                onClick={() => activeLine && handleLyricClick(activeLine.time)}
+                className="text-xs sm:text-[13px] font-black text-[#00e599] drop-shadow-[0_0_12px_rgba(0,229,153,0.35)] cursor-pointer py-0.5 line-clamp-2 px-1 leading-snug"
+                title="Klik untuk loncat ke bait ini"
+              >
+                {activeLine?.text || "..."}
+              </motion.div>
+
+              {/* Next Line */}
+              <div
+                onClick={() => nextLine && handleLyricClick(nextLine.time)}
+                className={cn(
+                  "text-[11px] transition-all duration-300 truncate cursor-pointer",
+                  nextLine ? "text-gray-400 hover:text-gray-200" : "opacity-0 select-none"
+                )}
+                title={nextLine?.text}
+              >
+                {nextLine?.text || "—"}
               </div>
             </div>
 
-            {/* Song Info Bar */}
-            <div className="flex items-center justify-between pt-1">
+            {/* 3. Song Info Bar (Title & Artist) */}
+            <div className="flex items-center justify-between pt-0.5">
               <div className="min-w-0 pr-2">
                 <h3 className="text-base font-bold text-white tracking-tight truncate hover:text-[#00e599] transition cursor-pointer">
                   nervousness
@@ -290,8 +328,8 @@ export function MusicPlayer() {
               </button>
             </div>
 
-            {/* Progress Bar & Timestamps */}
-            <div className="space-y-1.5 pt-1">
+            {/* 4. Progress Bar & Timestamps */}
+            <div className="space-y-1.5 pt-0.5">
               <div className="relative w-full h-1.5 bg-gray-800 rounded-full overflow-hidden cursor-pointer group/bar">
                 {/* Visual Progress Fill */}
                 <div
@@ -317,8 +355,8 @@ export function MusicPlayer() {
               </div>
             </div>
 
-            {/* Main Audio Controls */}
-            <div className="flex items-center justify-between pt-1">
+            {/* 5. Main Audio Controls */}
+            <div className="flex items-center justify-between pt-0.5">
               {/* Loop / Repeat */}
               <button
                 type="button"
@@ -370,16 +408,16 @@ export function MusicPlayer() {
               {/* Open Lyrics Tab Shortcut */}
               <button
                 type="button"
-                aria-label="Lihat Lirik"
+                aria-label="Lihat Lirik Penuh"
                 onClick={() => setActiveTab("lyrics")}
                 className="p-2 text-gray-500 hover:text-[#00e599] transition active:scale-90 cursor-pointer"
-                title="Buka Lirik"
+                title="Buka Lirik Penuh"
               >
                 <i className="fa-solid fa-bars-staggered text-sm"></i>
               </button>
             </div>
 
-            {/* Volume Slider Bar */}
+            {/* 6. Volume Slider Bar */}
             <div className="flex items-center space-x-2.5 pt-2 px-1 border-t border-gray-800/60">
               <button
                 type="button"
@@ -456,10 +494,10 @@ export function MusicPlayer() {
               </button>
             </div>
 
-            {/* Dynamic Scrollable Lyrics List */}
+            {/* Dynamic Scrollable Full Lyrics List */}
             <div
               ref={lyricsContainerRef}
-              className="h-72 overflow-y-auto px-2 py-3 space-y-3 custom-scrollbar rounded-xl bg-[#0d121f]/60 border border-gray-800/80 relative select-none"
+              className="h-80 overflow-y-auto px-2 py-3 space-y-3 custom-scrollbar rounded-xl bg-[#0d121f]/60 border border-gray-800/80 relative select-none"
             >
               <div className="text-[10px] text-gray-500 uppercase tracking-widest text-center pb-2 border-b border-gray-800/60 font-semibold">
                 Klik lirik untuk loncat ke bait

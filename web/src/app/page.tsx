@@ -5,6 +5,7 @@ import { StepsCard } from "@/components/dashboard/StepsCard";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { DocsTab } from "@/components/docs/DocsTab";
 import { PlaygroundTab } from "@/components/playground/PlaygroundTab";
+import { CommentDrawer } from "@/components/comments/CommentDrawer";
 
 export default function Home() {
   return (
@@ -37,6 +38,9 @@ export default function Home() {
             </TabsContent>
           </Tabs>
         </main>
+
+        {/* Comment Drawer Sidebar (Desktop & Mobile) */}
+        <CommentDrawer />
       </div>
       <Footer />
     </>

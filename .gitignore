@@ -43,3 +43,6 @@ Thumbs.db
 # Temporary / Scratch Files
 tmp/
 temp/
+
+# Documentation & Plans
+docs/

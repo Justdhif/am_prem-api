@@ -95,12 +95,11 @@ async function runTests() {
       'Clean Architecture (Domain, Application, Infrastructure, Presentation)'
     );
 
-    // Web UI Test: GET /dashboard (Documentation Only)
+    // Web UI / Dashboard Info Test: GET /dashboard
     const dashboardRes = await axios.get(`${baseUrl}/dashboard`);
     assert.strictEqual(dashboardRes.status, 200);
-    assert(dashboardRes.data.includes('Alight Motion Pro'));
-    assert(dashboardRes.data.includes('Dokumentasi'));
-    assert(dashboardRes.data.includes('by Justdhif'));
+    assert.strictEqual(dashboardRes.data.service, 'alight-motion-premium-api');
+    assert.strictEqual(dashboardRes.data.author, 'Justdhif');
 
     // Static Asset Test: GET /logo.jpg
     const logoRes = await axios.get(`${baseUrl}/logo.jpg`);

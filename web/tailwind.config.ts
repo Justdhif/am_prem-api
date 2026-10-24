@@ -3,6 +3,7 @@ import type { Config } from "tailwindcss";
 const config: Config = {
   darkMode: ["class"],
   content: [
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -45,7 +46,7 @@ const config: Config = {
         ring: "hsl(var(--ring))",
         am: {
           400: "#1affaa",
-          500: "#00e599", // Alight Motion Neon Mint
+          500: "#00e599",
           600: "#00c784",
         },
         midnight: "#0d121f",

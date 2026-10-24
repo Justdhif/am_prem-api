@@ -116,13 +116,14 @@ export function CommentInput({
       {/* Author Name & Anonymous Toggle */}
       <div className="flex items-center justify-between gap-3 pb-2 text-xs border-b border-gray-800/60 mb-2.5">
         <div className="flex items-center space-x-2 flex-1 min-w-0">
-          <div className="relative w-6 h-6 rounded-full overflow-hidden border border-gray-700/80 shrink-0">
+          <div className="w-6 h-6 rounded-full overflow-hidden border border-gray-700/80 shrink-0">
             <Image
               src={avatarUrl}
               alt="Avatar"
-              fill
+              width={24}
+              height={24}
               unoptimized
-              className="object-cover"
+              className="w-full h-full object-cover"
             />
           </div>
           <input

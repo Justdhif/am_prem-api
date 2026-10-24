@@ -5,12 +5,13 @@ export function Header() {
     <header className="sticky top-0 z-30 border-b border-gray-800/80 bg-[#0d121f]/90 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="relative w-10 h-10 rounded-xl overflow-hidden border border-[#00e599]/40 shadow-sm shadow-[#00e599]/20 shrink-0">
+          <div className="w-10 h-10 rounded-xl overflow-hidden border border-[#00e599]/40 shadow-sm shadow-[#00e599]/20 shrink-0">
             <Image
               src="/logo.jpg"
               alt="Alight Motion Logo"
-              fill
-              className="object-cover"
+              width={40}
+              height={40}
+              className="w-full h-full object-cover"
               priority
             />
           </div>

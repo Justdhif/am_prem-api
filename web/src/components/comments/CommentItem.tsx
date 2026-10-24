@@ -24,13 +24,14 @@ export function CommentItem({ comment, onReply }: CommentItemProps) {
       transition={{ duration: 0.22, ease: "easeOut" }}
       className="flex items-start space-x-3 text-xs"
     >
-      <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border border-gray-700/80 shrink-0 mt-0.5">
+      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border border-gray-700/80 shrink-0 mt-0.5">
         <Image
           src={avatarUrl}
           alt={comment.name || "Avatar"}
-          fill
+          width={36}
+          height={36}
           unoptimized
-          className="object-cover"
+          className="w-full h-full object-cover"
         />
       </div>
 

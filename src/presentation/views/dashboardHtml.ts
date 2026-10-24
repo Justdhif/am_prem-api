@@ -111,53 +111,110 @@ export function renderDashboardHtml(
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* --- THEME SYSTEM CSS --- */
+    /* --- THEME SYSTEM CSS (100% FULL COVERAGE) --- */
     body {
-      transition: background-color 0.2s ease, color 0.2s ease;
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
 
-    /* LIGHT THEME OVERRIDES */
+    /* ========================================================
+       LIGHT THEME (100% CLEAN SLATE & CRISP WHITE SYSTEM)
+       ======================================================== */
     html.theme-light body {
       background-color: #f8fafc !important;
       color: #1e293b !important;
     }
+
+    /* NAVBAR HEADER */
     html.theme-light header {
-      background-color: rgba(255, 255, 255, 0.92) !important;
+      background-color: rgba(255, 255, 255, 0.95) !important;
       border-color: #e2e8f0 !important;
     }
+    html.theme-light header span.text-white {
+      color: #0f172a !important;
+    }
+    html.theme-light #theme-toggle-btn {
+      background-color: #f1f5f9 !important;
+      border-color: #cbd5e1 !important;
+      color: #334155 !important;
+    }
+
+    /* CARDS & CONTAINERS */
     html.theme-light .doc-card {
       background-color: #ffffff !important;
       border-color: #e2e8f0 !important;
-      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
     }
     html.theme-light .doc-card:hover {
-      border-color: rgba(0, 200, 130, 0.5) !important;
+      border-color: rgba(0, 200, 130, 0.45) !important;
     }
-    html.theme-light header span.text-white,
-    html.theme-light .doc-card h3.text-white,
-    html.theme-light h1.text-white,
-    html.theme-light h2.text-white {
+
+    /* HEADINGS & TEXT */
+    html.theme-light h1,
+    html.theme-light h2,
+    html.theme-light h3,
+    html.theme-light .text-white {
       color: #0f172a !important;
     }
-    html.theme-light .doc-card p.text-gray-300,
-    html.theme-light .doc-card p.text-gray-400 {
-      color: #475569 !important;
+    html.theme-light p.text-gray-300,
+    html.theme-light p.text-gray-400,
+    html.theme-light span.text-gray-400,
+    html.theme-light span.text-gray-500 {
+      color: #64748b !important;
     }
     html.theme-light code.text-white {
       color: #0f172a !important;
     }
+    html.theme-light span.text-gray-200 {
+      color: #334155 !important;
+    }
+
+    /* BUTTONS & BADGES EXCEPTIONS: KEEP DARK TEXT ON NEON MINT */
+    html.theme-light button[type="submit"] span,
+    html.theme-light button[type="submit"] i,
+    html.theme-light .bg-\[\#00e599\],
+    html.theme-light .bg-\[\#00e599\] * {
+      color: #090d16 !important;
+    }
+    html.theme-light .badge-method {
+      color: inherit !important;
+    }
+
+    /* INNER STATS & STEP BOXES */
+    html.theme-light .stat-box,
+    html.theme-light .step-box,
+    html.theme-light .command-box {
+      background-color: #f8fafc !important;
+      border-color: #e2e8f0 !important;
+    }
+    html.theme-light .stat-box span.text-white,
+    html.theme-light .step-box span.text-white {
+      color: #0f172a !important;
+    }
+
+    /* TOP BANNER GRADIENT */
+    html.theme-light .bg-gradient-to-r {
+      background: linear-gradient(135deg, rgba(0, 229, 153, 0.12) 0%, #ffffff 50%, #f8fafc 100%) !important;
+      border-color: #cbd5e1 !important;
+    }
+    html.theme-light .bg-gradient-to-r h3.text-white {
+      color: #0f172a !important;
+    }
+
+    /* BORDERS & DIVIDERS */
     html.theme-light .border-gray-800,
     html.theme-light .border-gray-800\/80,
     html.theme-light .border-gray-800\/60,
     html.theme-light .border-gray-700\/80 {
       border-color: #e2e8f0 !important;
     }
-    html.theme-light div.bg-\[\#0d121f\] {
-      background-color: #f1f5f9 !important;
+
+    /* FORM INPUTS & TEXTAREAS (PLAYGROUND) */
+    html.theme-light .input-container {
+      background-color: #f8fafc !important;
       border-color: #cbd5e1 !important;
     }
-    html.theme-light input.bg-transparent,
-    html.theme-light textarea.bg-transparent {
+    html.theme-light input,
+    html.theme-light textarea {
       color: #0f172a !important;
     }
     html.theme-light input::placeholder,
@@ -172,62 +229,127 @@ export function renderDashboardHtml(
     html.theme-light button.bg-gray-800:hover {
       background-color: #e2e8f0 !important;
     }
-    html.theme-light .bg-gradient-to-r {
-      background: linear-gradient(135deg, rgba(0, 229, 153, 0.12) 0%, #ffffff 50%, #f8fafc 100%) !important;
-      border-color: #cbd5e1 !important;
+    html.theme-light #main-tab-docs-btn:not(.bg-\[\#00e599\]),
+    html.theme-light #main-tab-playground-btn:not(.bg-\[\#00e599\]) {
+      color: #64748b !important;
     }
-    html.theme-light .bg-gradient-to-r h3.text-white {
-      color: #0f172a !important;
+
+    /* PRE CODE BLOCKS: Keep developer dark slate contrast */
+    html.theme-light pre {
+      background-color: #090d16 !important;
+      border-color: #1e293b !important;
     }
-    html.theme-light #comment-sheet-container {
+    html.theme-light pre code,
+    html.theme-light pre span {
+      color: #e2e8f0 !important;
+    }
+    html.theme-light pre code.text-\[\#00e599\] {
+      color: #00e599 !important;
+    }
+
+    /* ========================================================
+       COMMENTS SHEET IN LIGHT THEME (100% LIGHT SUPPORT)
+       ======================================================== */
+    html.theme-light #comment-sheet {
       background-color: #ffffff !important;
       border-color: #e2e8f0 !important;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      color: #0f172a !important;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08) !important;
     }
-    html.theme-light #comment-sheet-container .text-white {
+    html.theme-light #comment-sheet > div:first-child {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+    }
+    html.theme-light #comment-sheet h3,
+    html.theme-light #comment-sheet h3 span {
       color: #0f172a !important;
     }
-    html.theme-light #comment-sheet-container .text-gray-100 {
+    html.theme-light #comments-sheet-list {
+      background-color: #ffffff !important;
+    }
+    html.theme-light #comments-sheet-list span.font-semibold {
+      color: #0f172a !important;
+    }
+    html.theme-light #comments-sheet-list p.text-gray-100 {
       color: #1e293b !important;
+    }
+    html.theme-light #comments-sheet-list .text-gray-400 {
+      color: #64748b !important;
+    }
+    html.theme-light #comments-sheet-list .border-l {
+      border-color: #e2e8f0 !important;
+    }
+    html.theme-light #comments-sheet-list button {
+      color: #64748b !important;
+    }
+    html.theme-light #comments-sheet-list button:hover {
+      color: #0f172a !important;
     }
     html.theme-light #comment-pagination-bar {
       background-color: #f8fafc !important;
       border-color: #e2e8f0 !important;
+      color: #64748b !important;
+    }
+    html.theme-light #comment-pagination-bar button {
+      background-color: #f1f5f9 !important;
+      border: 1px solid #cbd5e1 !important;
+      color: #334155 !important;
+    }
+    html.theme-light #comment-sheet div.bg-\[\#0d121f\] {
+      background-color: #f8fafc !important;
+    }
+    html.theme-light #sheet-author-name {
+      color: #0f172a !important;
     }
     html.theme-light #sheet-comment-form div.bg-\[\#1a2234\] {
       background-color: #f1f5f9 !important;
-      border: 1px solid #e2e8f0 !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+    html.theme-light #sheet-comment-input {
+      color: #0f172a !important;
     }
     html.theme-light #sheet-btn-emoji {
       background-color: #f1f5f9 !important;
-      border: 1px solid #e2e8f0 !important;
+      border: 1px solid #cbd5e1 !important;
       color: #64748b !important;
     }
     html.theme-light #emoji-picker-container {
       background-color: #ffffff !important;
       border-color: #e2e8f0 !important;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
     }
     html.theme-light #emoji-picker-container div.bg-\[\#1a2234\] {
       background-color: #f1f5f9 !important;
     }
+    html.theme-light #emoji-category-tabs {
+      background-color: #f8fafc !important;
+      border-color: #e2e8f0 !important;
+    }
+
+    /* FOOTER & TOAST */
     html.theme-light footer {
       background-color: #ffffff !important;
       border-color: #e2e8f0 !important;
       color: #64748b !important;
     }
+    html.theme-light footer span.text-gray-300 {
+      color: #0f172a !important;
+    }
     html.theme-light #toast {
       background-color: #ffffff !important;
       color: #0f172a !important;
       border-color: #00e599 !important;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
     }
 
-    /* AMOLED THEME OVERRIDES (PURE OLED BLACK) */
+    /* ========================================================
+       AMOLED THEME (TRUE OLED BLACK)
+       ======================================================== */
     html.theme-amoled body {
       background-color: #000000 !important;
     }
     html.theme-amoled header {
-      background-color: rgba(0, 0, 0, 0.95) !important;
+      background-color: rgba(0, 0, 0, 0.96) !important;
       border-color: #181818 !important;
     }
     html.theme-amoled .doc-card {
@@ -237,17 +359,25 @@ export function renderDashboardHtml(
     html.theme-amoled .doc-card:hover {
       border-color: rgba(0, 229, 153, 0.5) !important;
     }
+    html.theme-amoled .stat-box,
+    html.theme-amoled .step-box,
+    html.theme-amoled .command-box,
+    html.theme-amoled .input-container,
     html.theme-amoled div.bg-\[\#0d121f\] {
       background-color: #000000 !important;
-      border-color: #1c1c1c !important;
+      border-color: #1a1a1a !important;
     }
-    html.theme-amoled #comment-sheet-container {
-      background-color: #050505 !important;
-      border-color: #1c1c1c !important;
+    html.theme-amoled #comment-sheet {
+      background-color: #040404 !important;
+      border-color: #181818 !important;
     }
     html.theme-amoled #comment-pagination-bar {
       background-color: #000000 !important;
       border-color: #181818 !important;
+    }
+    html.theme-amoled #sheet-comment-form div.bg-\[\#1a2234\] {
+      background-color: #0a0a0a !important;
+      border-color: #1c1c1c !important;
     }
     html.theme-amoled footer {
       background-color: #000000 !important;
@@ -319,15 +449,15 @@ export function renderDashboardHtml(
 
       <!-- Quick Stats Pills -->
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-6 pt-5 border-t border-gray-800">
-        <div class="bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
+        <div class="stat-box bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
           <span class="text-[11px] text-gray-400 block">Total Aktivasi</span>
           <span id="stat-total" class="text-base sm:text-lg font-bold text-white mt-0.5 block">${initialStats ? initialStats.total + " Akun" : "0 Akun"}</span>
         </div>
-        <div class="bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
+        <div class="stat-box bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
           <span class="text-[11px] text-gray-400 block">Aktivasi Hari Ini</span>
           <span id="stat-today" class="text-base sm:text-lg font-bold text-[#00e599] mt-0.5 block">${initialStats ? initialStats.today + " Akun" : "0 Akun"}</span>
         </div>
-        <div class="col-span-2 sm:col-span-1 bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
+        <div class="stat-box col-span-2 sm:col-span-1 bg-[#0d121f] p-3 rounded-xl border border-gray-800/80">
           <span class="text-[11px] text-gray-400 block">Protokol</span>
           <span class="text-xs sm:text-sm font-semibold text-gray-200 mt-1 block">JSON &middot; POST / GET</span>
         </div>
@@ -340,7 +470,7 @@ export function renderDashboardHtml(
         <i class="fa-solid fa-route text-[#00e599] mr-2.5 text-sm"></i>Alur Aktivasi 2 Langkah
       </h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-        <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
+        <div class="step-box bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
           <div class="flex items-center space-x-2">
             <span class="w-6 h-6 rounded-lg bg-[#00e599] text-gray-950 font-black flex items-center justify-center text-xs">1</span>
             <span class="font-bold text-white text-sm">Kirim Link ke Email</span>
@@ -350,7 +480,7 @@ export function renderDashboardHtml(
           </p>
         </div>
 
-        <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
+        <div class="step-box bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
           <div class="flex items-center space-x-2">
             <span class="w-6 h-6 rounded-lg bg-[#00e599] text-gray-950 font-black flex items-center justify-center text-xs">2</span>
             <span class="font-bold text-white text-sm">Verifikasi &amp; Aktivasi Pro</span>
@@ -562,10 +692,10 @@ export function renderDashboardHtml(
         <div class="space-y-2">
           <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider block">Contoh Perintah Teks yang Didukung</span>
           <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs">
-            <div class="bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!amprem user@gmail.com</div>
-            <div class="bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!ampreset &lt;url_tiktok&gt;</div>
-            <div class="bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!amstats</div>
-            <div class="bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!amhelp</div>
+            <div class="command-box bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!amprem user@gmail.com</div>
+            <div class="command-box bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!ampreset &lt;url_tiktok&gt;</div>
+            <div class="command-box bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!amstats</div>
+            <div class="command-box bg-[#0d121f] p-2.5 rounded-lg border border-gray-800 font-mono text-[#00e599]">!amhelp</div>
           </div>
         </div>
 
@@ -624,7 +754,7 @@ export function renderDashboardHtml(
                 <label class="block text-xs font-semibold text-gray-300 mb-1.5">
                   Target Email <span class="text-[#00e599]">*</span>
                 </label>
-                <div class="flex items-center bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                <div class="input-container flex items-center bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
                   <i class="fa-regular fa-envelope text-gray-500 mr-2.5 text-xs"></i>
                   <input type="email" id="pg-sendlink-email" required placeholder="user@gmail.com"
                     class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full">
@@ -690,7 +820,7 @@ export function renderDashboardHtml(
                 <label class="block text-xs font-semibold text-gray-300 mb-1.5">
                   Target Email <span class="text-[#00e599]">*</span>
                 </label>
-                <div class="flex items-center bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                <div class="input-container flex items-center bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
                   <i class="fa-regular fa-envelope text-gray-500 mr-2.5 text-xs"></i>
                   <input type="email" id="pg-verify-email" required placeholder="user@gmail.com"
                     class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full">
@@ -701,7 +831,7 @@ export function renderDashboardHtml(
                 <label class="block text-xs font-semibold text-gray-300 mb-1.5">
                   Magic Link / OOB Code dari Email <span class="text-[#00e599]">*</span>
                 </label>
-                <div class="flex items-start bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                <div class="input-container flex items-start bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
                   <i class="fa-solid fa-link text-gray-500 mr-2.5 mt-1 text-xs shrink-0"></i>
                   <textarea id="pg-verify-link" required rows="1" placeholder="https://alightcreative.com/?link=... atau oobCode"
                     oninput="handleLinkTextareaInput(this)"
@@ -769,7 +899,7 @@ export function renderDashboardHtml(
                 <label class="block text-xs font-semibold text-gray-300 mb-1.5">
                   URL Video TikTok / YouTube <span class="text-[#00e599]">*</span>
                 </label>
-                <div class="flex items-start bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                <div class="input-container flex items-start bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
                   <i class="fa-brands fa-tiktok text-gray-500 mr-2.5 mt-1 text-xs shrink-0"></i>
                   <textarea id="pg-preset-url" required rows="1" placeholder="https://vt.tiktok.com/ZSxxxxxxx/ atau https://youtu.be/xxxx atau link YouTube/TikTok"
                     oninput="handlePresetTextareaInput(this)"

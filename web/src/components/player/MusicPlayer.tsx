@@ -29,11 +29,12 @@ export function MusicPlayer() {
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // Sync current lyric index as audio plays
+  // Sync current lyric index as audio plays (sesuai menit mulai & berhenti)
   useEffect(() => {
     const idx = NERVOUSNESS_LYRICS.findIndex((item, i) => {
-      const nextTime = NERVOUSNESS_LYRICS[i + 1]?.time ?? Infinity;
-      return currentTime >= item.time && currentTime < nextTime;
+      const start = item.startTime ?? item.time;
+      const end = item.endTime ?? NERVOUSNESS_LYRICS[i + 1]?.startTime ?? NERVOUSNESS_LYRICS[i + 1]?.time ?? Infinity;
+      return currentTime >= start && currentTime < end;
     });
 
     if (idx !== -1 && idx !== currentLyricIndex) {

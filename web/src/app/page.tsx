@@ -4,6 +4,7 @@ import { HeroStats } from "@/components/dashboard/HeroStats";
 import { StepsCard } from "@/components/dashboard/StepsCard";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { DocsTab } from "@/components/docs/DocsTab";
+import { PlaygroundTab } from "@/components/playground/PlaygroundTab";
 
 export default function Home() {
   return (
@@ -32,7 +33,7 @@ export default function Home() {
             </TabsContent>
 
             <TabsContent value="playground">
-              <div className="text-gray-400 text-sm">Playground section loading...</div>
+              <PlaygroundTab />
             </TabsContent>
           </Tabs>
         </main>

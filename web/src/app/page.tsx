@@ -6,12 +6,18 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { DocsTab } from "@/components/docs/DocsTab";
 import { PlaygroundTab } from "@/components/playground/PlaygroundTab";
 import { CommentDrawer } from "@/components/comments/CommentDrawer";
+import { MusicPlayer } from "@/components/player/MusicPlayer";
 
 export default function Home() {
   return (
     <>
       <Header />
       <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col lg:flex-row gap-6 items-start">
+        {/* Left Sidebar: Spotify-style Music Player & Dynamic Synchronized Lyrics */}
+        <aside className="w-full lg:w-80 xl:w-[340px] shrink-0 lg:sticky lg:top-20 z-20">
+          <MusicPlayer />
+        </aside>
+
         {/* Main Content Area */}
         <main className="flex-1 w-full space-y-6 sm:space-y-8 min-w-0">
           <HeroStats />

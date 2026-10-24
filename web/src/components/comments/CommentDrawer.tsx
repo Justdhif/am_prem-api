@@ -101,7 +101,7 @@ export function CommentDrawer() {
         >
           <i className="fa-solid fa-comments text-xl"></i>
           {totalComments > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white font-extrabold text-[10px] min-w-5 h-5 rounded-full px-1 flex items-center justify-center border-2 border-[#090d16] shadow-sm animate-pulse">
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white font-extrabold text-[10px] min-w-5 h-5 rounded-full px-1 flex items-center justify-center border-2 border-[#090d16] shadow-sm">
               {totalComments > 99 ? "99+" : totalComments}
             </span>
           )}

@@ -36,8 +36,11 @@ alight_motion-prem/
 ## 🚀 Panduan Memulai (Getting Started)
 
 ### 1. Instalasi Dependensi
-Jalankan instalasi dependensi pada masing-masing sub-project:
+Jalankan instalasi dependensi:
 ```bash
+# Install root orchestrator
+npm install
+
 # Install backend dependencies
 cd api && npm install
 
@@ -45,25 +48,30 @@ cd api && npm install
 cd ../web && npm install
 ```
 
-### 2. Menjalankan Mode Development
-Dari root direktori, Anda dapat menjalankan:
+### 2. Menjalankan Backend & Frontend Bersamaan (1 Perintah)
+Dari root direktori, cukup jalankan **satu perintah**:
 
 ```bash
-# Menjalankan Express API (port 3000)
-npm run dev:api
+npm run dev
+```
 
-# Menjalankan Next.js Web View (port 3001 atau 3000)
-npm run dev:web
+Perintah di atas akan secara otomatis menjalankan:
+- **`[api]` Express API Backend** di `http://localhost:3000`
+- **`[web]` Next.js Frontend Dashboard** di `http://localhost:3001`
+
+*(Atau jika ingin menjalankan secara terpisah)*:
+```bash
+npm run dev:api   # hanya backend
+npm run dev:web   # hanya frontend
 ```
 
 ### 3. Menjalankan Automated Tests & Build
 ```bash
 # Menjalankan 8 automated test suites backend API
-npm run test:api
+npm test
 
 # Build kedua sub-project
-npm run build:api
-npm run build:web
+npm run build
 ```
 
 ---

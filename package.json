@@ -4,6 +4,7 @@
   "private": true,
   "description": "Alight Motion Pro REST API & Modern Next.js Web View with shadcn/ui",
   "scripts": {
+    "dev": "concurrently -n \"api,web\" -c \"cyan,green\" \"npm run dev:api\" \"npm run dev:web\"",
     "dev:api": "npm --prefix api run dev",
     "dev:web": "npm --prefix web run dev",
     "build:api": "npm --prefix api run build",
@@ -20,5 +21,8 @@
     "shadcn"
   ],
   "author": "Justdhif",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
 }

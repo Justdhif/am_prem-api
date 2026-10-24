@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { apiClient } from "@/lib/api";
 import { Card } from "@/components/ui/card";
+import { ActivationChart } from "./ActivationChart";
 
 export function HeroStats() {
   const [stats, setStats] = useState({
@@ -62,36 +63,48 @@ export function HeroStats() {
           </p>
         </div>
 
-        {/* Quick Stats Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {/* Primary Stats Grid (2 Columns: Total & Today, Protokol removed) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <motion.div
             whileHover={{ y: -2, transition: { duration: 0.2 } }}
-            className="bg-[#0d121f] p-3.5 rounded-xl border border-gray-800/80 transition-colors hover:border-[#00e599]/40"
+            className="bg-[#0d121f] p-4 rounded-xl border border-gray-800/80 transition-colors hover:border-[#00e599]/40 flex items-center justify-between"
           >
-            <span className="text-[11px] text-gray-400 block font-medium">Total Aktivasi</span>
-            <span className="text-xl sm:text-2xl font-extrabold text-[#00e599] mt-0.5 block font-mono">
-              {stats.loading ? "..." : stats.total.toLocaleString()}
-            </span>
+            <div>
+              <span className="text-xs text-gray-400 block font-medium">Total Akun VIP Aktif</span>
+              <span className="text-2xl sm:text-3xl font-extrabold text-[#00e599] mt-1 block font-mono">
+                {stats.loading ? "..." : stats.total.toLocaleString()}
+              </span>
+            </div>
+            <div className="w-11 h-11 rounded-xl bg-[#00e599]/10 border border-[#00e599]/20 flex items-center justify-center text-[#00e599]">
+              <i className="fa-solid fa-crown text-lg"></i>
+            </div>
           </motion.div>
+
           <motion.div
             whileHover={{ y: -2, transition: { duration: 0.2 } }}
-            className="bg-[#0d121f] p-3.5 rounded-xl border border-gray-800/80 transition-colors hover:border-gray-700"
+            className="bg-[#0d121f] p-4 rounded-xl border border-gray-800/80 transition-colors hover:border-gray-700 flex items-center justify-between"
           >
-            <span className="text-[11px] text-gray-400 block font-medium">Aktivasi Hari Ini</span>
-            <span className="text-xl sm:text-2xl font-extrabold text-white mt-0.5 block font-mono">
-              {stats.loading ? "..." : stats.today.toLocaleString()}
-            </span>
-          </motion.div>
-          <motion.div
-            whileHover={{ y: -2, transition: { duration: 0.2 } }}
-            className="col-span-2 sm:col-span-1 bg-[#0d121f] p-3.5 rounded-xl border border-gray-800/80 transition-colors hover:border-blue-500/40"
-          >
-            <span className="text-[11px] text-gray-400 block font-medium">Protokol</span>
-            <span className="text-xl sm:text-2xl font-extrabold text-blue-400 mt-0.5 block font-mono">
-              REST API
-            </span>
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="text-xs text-gray-400 block font-medium">Aktivasi Hari Ini</span>
+                <span className="w-2 h-2 rounded-full bg-[#00e599] animate-ping"></span>
+              </div>
+              <span className="text-2xl sm:text-3xl font-extrabold text-white mt-1 block font-mono">
+                {stats.loading ? "..." : stats.today.toLocaleString()}
+              </span>
+            </div>
+            <div className="w-11 h-11 rounded-xl bg-gray-800/80 border border-gray-700/60 flex items-center justify-center text-gray-300">
+              <i className="fa-solid fa-bolt-lightning text-lg text-amber-400"></i>
+            </div>
           </motion.div>
         </div>
+
+        {/* Spline Wave Neon Area Chart */}
+        <ActivationChart
+          totalActivations={stats.total}
+          todayActivations={stats.today}
+          loading={stats.loading}
+        />
       </Card>
     </motion.div>
   );

@@ -2,6 +2,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { HeroStats } from "@/components/dashboard/HeroStats";
 import { StepsCard } from "@/components/dashboard/StepsCard";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { DocsTab } from "@/components/docs/DocsTab";
 
 export default function Home() {
   return (
@@ -12,6 +14,27 @@ export default function Home() {
         <main className="flex-1 w-full space-y-6 sm:space-y-8 min-w-0">
           <HeroStats />
           <StepsCard />
+
+          <Tabs defaultValue="docs" className="w-full">
+            <TabsList>
+              <TabsTrigger value="docs">
+                <i className="fa-solid fa-book-bookmark text-xs sm:text-sm mr-1.5"></i>
+                <span>Docs</span>
+              </TabsTrigger>
+              <TabsTrigger value="playground">
+                <i className="fa-solid fa-flask text-xs sm:text-sm mr-1.5"></i>
+                <span>Playground</span>
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="docs">
+              <DocsTab />
+            </TabsContent>
+
+            <TabsContent value="playground">
+              <div className="text-gray-400 text-sm">Playground section loading...</div>
+            </TabsContent>
+          </Tabs>
         </main>
       </div>
       <Footer />

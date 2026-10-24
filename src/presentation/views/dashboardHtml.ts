@@ -3,7 +3,7 @@ import { CommentNode } from "../../domain/entities/Comment.js";
 
 function renderTikTokCommentServerSide(comment: CommentNode): string {
   const anonBadge = comment.isAnonymous
-    ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-normal border border-gray-700/60 ml-1.5">Anonim</span>'
+    ? '<span class="badge-anon text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-normal border border-gray-700/60 ml-1.5">Anonim</span>'
     : "";
 
   const replyTarget = comment.replyToName
@@ -118,7 +118,7 @@ export function renderDashboardHtml(
     }
 
     /* ========================================================
-       LIGHT THEME (100% CLEAN SLATE & CRISP WHITE SYSTEM)
+       LIGHT THEME (CLEAN SLATE & PROFESSIONAL NON-NEON GREEN)
        ======================================================== */
     html.theme-light body {
       background-color: #f8fafc !important;
@@ -133,6 +133,11 @@ export function renderDashboardHtml(
     html.theme-light header span.text-white {
       color: #0f172a !important;
     }
+    html.theme-light header span.bg-\[\#00e599\]\/15 {
+      background-color: rgba(0, 168, 107, 0.12) !important;
+      color: #00a86b !important;
+      border-color: rgba(0, 168, 107, 0.25) !important;
+    }
     html.theme-light #theme-toggle-btn {
       background-color: #f1f5f9 !important;
       border-color: #cbd5e1 !important;
@@ -146,7 +151,7 @@ export function renderDashboardHtml(
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
     }
     html.theme-light .doc-card:hover {
-      border-color: rgba(0, 200, 130, 0.45) !important;
+      border-color: rgba(0, 168, 107, 0.4) !important;
     }
 
     /* HEADINGS & TEXT */
@@ -169,32 +174,115 @@ export function renderDashboardHtml(
       color: #334155 !important;
     }
 
-    /* BUTTONS & BADGES EXCEPTIONS: KEEP DARK TEXT ON NEON MINT */
-    html.theme-light button[type="submit"] span,
-    html.theme-light button[type="submit"] i,
+    /* ========================================================
+       WARNA HIJAU LIGHT MODE: ELEGAN, SEJUK & TIDAK NEON (#00a86b)
+       ======================================================== */
+    /* Tombol-tombol berlatar hijau di light mode: hijau jade non-neon dengan teks putih bersih */
     html.theme-light .bg-\[\#00e599\],
-    html.theme-light .bg-\[\#00e599\] * {
-      color: #090d16 !important;
+    html.theme-light button.bg-\[\#00e599\],
+    html.theme-light a.bg-\[\#00e599\],
+    html.theme-light #sheet-btn-send,
+    html.theme-light #fab-open-comments {
+      background-color: #00a86b !important;
+      color: #ffffff !important;
     }
-    html.theme-light .badge-method {
-      color: inherit !important;
+    html.theme-light .bg-\[\#00e599\]:hover,
+    html.theme-light button.bg-\[\#00e599\]:hover,
+    html.theme-light a.bg-\[\#00e599\]:hover,
+    html.theme-light #sheet-btn-send:hover,
+    html.theme-light #fab-open-comments:hover {
+      background-color: #008f5a !important;
+      color: #ffffff !important;
+    }
+    html.theme-light .bg-\[\#00e599\] *,
+    html.theme-light button.bg-\[\#00e599\] *,
+    html.theme-light a.bg-\[\#00e599\] * {
+      color: #ffffff !important;
     }
 
-    /* INNER STATS & STEP BOXES */
+    /* Step numbers (1 & 2 di Alur Aktivasi) */
+    html.theme-light .step-box span.bg-\[\#00e599\] {
+      background-color: #00a86b !important;
+      color: #ffffff !important;
+    }
+
+    /* Teks / Icon / Aksen hijau di light mode (bukan neon, tapi jade/emerald berdaya baca tinggi) */
+    html.theme-light .text-\[\#00e599\]:not(pre .text-\[\#00e599\]),
+    html.theme-light i.text-\[\#00e599\] {
+      color: #00a86b !important;
+    }
+    html.theme-light code.text-\[\#00e599\]:not(pre code) {
+      color: #00a86b !important;
+      background-color: rgba(0, 168, 107, 0.08) !important;
+      border: 1px solid rgba(0, 168, 107, 0.15) !important;
+      padding: 1px 5px !important;
+      border-radius: 4px !important;
+    }
+
+    /* Border & Banner bernuansa hijau di light mode */
+    html.theme-light .border-\[\#00e599\] {
+      border-color: #00a86b !important;
+    }
+    html.theme-light .border-\[\#00e599\]\/30,
+    html.theme-light .border-\[\#00e599\]\/40 {
+      border-color: rgba(0, 168, 107, 0.25) !important;
+    }
+    html.theme-light .bg-\[\#00e599\]\/10 {
+      background-color: rgba(0, 168, 107, 0.08) !important;
+      border-color: rgba(0, 168, 107, 0.22) !important;
+    }
+
+    /* INNER STATS, STEP, COMMAND & FAQ BOXES */
     html.theme-light .stat-box,
     html.theme-light .step-box,
-    html.theme-light .command-box {
+    html.theme-light .command-box,
+    html.theme-light .faq-box {
       background-color: #f8fafc !important;
       border-color: #e2e8f0 !important;
     }
     html.theme-light .stat-box span.text-white,
-    html.theme-light .step-box span.text-white {
+    html.theme-light .step-box span.text-white,
+    html.theme-light .faq-box span.text-white {
       color: #0f172a !important;
+    }
+    html.theme-light .faq-box span.text-\[\#00e599\] {
+      color: #00a86b !important;
+    }
+    html.theme-light .faq-box p {
+      color: #334155 !important;
+    }
+    html.theme-light .faq-box strong {
+      color: #0f172a !important;
+    }
+    html.theme-light .command-box {
+      color: #00a86b !important;
+    }
+
+    /* WHATSAPP BANNER */
+    html.theme-light .whatsapp-banner {
+      background-color: rgba(0, 168, 107, 0.08) !important;
+      border-color: rgba(0, 168, 107, 0.25) !important;
+    }
+    html.theme-light .whatsapp-banner i.fa-whatsapp {
+      color: #00a86b !important;
+    }
+    html.theme-light .whatsapp-banner span.text-white {
+      color: #0f172a !important;
+    }
+    html.theme-light .whatsapp-banner span.text-gray-400 {
+      color: #64748b !important;
+    }
+    html.theme-light .whatsapp-banner a {
+      background-color: #00a86b !important;
+      color: #ffffff !important;
+    }
+    html.theme-light .whatsapp-banner a:hover {
+      background-color: #008f5a !important;
     }
 
     /* TOP BANNER GRADIENT */
     html.theme-light .bg-gradient-to-r {
-      background: linear-gradient(135deg, rgba(0, 229, 153, 0.12) 0%, #ffffff 50%, #f8fafc 100%) !important;
+      background: linear-gradient(135deg, rgba(0, 168, 107, 0.08) 0%, #ffffff 50%, #f8fafc 100%) !important;
       border-color: #cbd5e1 !important;
     }
     html.theme-light .bg-gradient-to-r h3.text-white {
@@ -289,7 +377,7 @@ export function renderDashboardHtml(
     html.theme-light #comments-sheet-list p.text-gray-100 {
       color: #1e293b !important;
     }
-    html.theme-light #comments-sheet-list .text-gray-400 {
+    html.theme-light #comments-sheet-list .text-gray-400:not(.badge-anon) {
       color: #64748b !important;
     }
     html.theme-light #comments-sheet-list .border-l {
@@ -312,7 +400,24 @@ export function renderDashboardHtml(
       color: #334155 !important;
     }
 
-    /* Comment Bottom Input Area (Foto 1 Fix) */
+    /* ========================================================
+       BADGE ANONIM: SAMA PERSIS DESIGN DENGAN DI MODE GELAP
+       ======================================================== */
+    .badge-anon,
+    html.theme-light .badge-anon,
+    html.theme-light #comments-sheet-list .badge-anon {
+      background-color: #1f2937 !important;
+      color: #9ca3af !important;
+      border: 1px solid rgba(55, 65, 81, 0.6) !important;
+      font-size: 9px !important;
+      font-weight: 400 !important;
+      padding: 2px 6px !important;
+      border-radius: 4px !important;
+      display: inline-block !important;
+      line-height: normal !important;
+    }
+
+    /* Comment Bottom Input Area */
     html.theme-light #sheet-input-container,
     html.theme-light .sheet-input-box {
       background-color: #ffffff !important;
@@ -382,7 +487,7 @@ export function renderDashboardHtml(
     html.theme-light #toast {
       background-color: #ffffff !important;
       color: #0f172a !important;
-      border-color: #00e599 !important;
+      border-color: #00a86b !important;
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
     }
   </style>
@@ -956,7 +1061,7 @@ export function renderDashboardHtml(
 
         <!-- FAQ Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-          <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
+          <div class="faq-box bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
             <span class="font-bold text-[#00e599] flex items-center">
               <i class="fa-solid fa-envelope-circle-check mr-2"></i>Email tidak masuk?
             </span>
@@ -965,7 +1070,7 @@ export function renderDashboardHtml(
             </p>
           </div>
 
-          <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
+          <div class="faq-box bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
             <span class="font-bold text-[#00e599] flex items-center">
               <i class="fa-solid fa-clock-rotate-left mr-2"></i>Link Kadaluarsa (Expired)?
             </span>
@@ -974,7 +1079,7 @@ export function renderDashboardHtml(
             </p>
           </div>
 
-          <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
+          <div class="faq-box bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
             <span class="font-bold text-[#00e599] flex items-center">
               <i class="fa-solid fa-star mr-2"></i>Fitur Pro yang Didapat?
             </span>
@@ -983,7 +1088,7 @@ export function renderDashboardHtml(
             </p>
           </div>
 
-          <div class="bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
+          <div class="faq-box bg-[#0d121f] p-4 rounded-xl border border-gray-800 space-y-2">
             <span class="font-bold text-[#00e599] flex items-center">
               <i class="fa-solid fa-robot mr-2"></i>Daftar Perintah Bot WhatsApp
             </span>
@@ -993,7 +1098,7 @@ export function renderDashboardHtml(
           </div>
         </div>
 
-        <div class="p-3.5 rounded-xl bg-[#00e599]/10 border border-[#00e599]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div class="whatsapp-banner p-3.5 rounded-xl bg-[#00e599]/10 border border-[#00e599]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <div class="flex items-center space-x-2.5">
             <i class="fa-brands fa-whatsapp text-xl text-[#00e599]"></i>
             <div>
@@ -1971,7 +2076,7 @@ export function renderDashboardHtml(
 
     function renderTikTokCommentHtml(comment) {
       var anonBadge = comment.isAnonymous
-        ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-normal border border-gray-700/60 ml-1.5">Anonim</span>'
+        ? '<span class="badge-anon text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-normal border border-gray-700/60 ml-1.5">Anonim</span>'
         : '';
 
       var replyTarget = comment.replyToName

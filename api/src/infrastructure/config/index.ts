@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const config = {
-  port: parseInt(process.env.PORT || '3000', 10),
+  port: parseInt(process.env.PORT || '8000', 10),
   nodeEnv: process.env.NODE_ENV || 'development',
   statsFilePath: process.env.STATS_FILE_PATH
     ? path.resolve(process.cwd(), process.env.STATS_FILE_PATH)

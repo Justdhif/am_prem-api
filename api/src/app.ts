@@ -64,9 +64,9 @@ export function createApp(): Application {
       service: 'alight-motion-premium-api',
       name: 'Alight Motion Pro API Dashboard',
       author: 'Justdhif',
-      webUrl: process.env.WEB_URL || 'http://localhost:3001',
+      webUrl: process.env.WEB_URL || 'http://localhost:3000',
       stats: stats || { totalPremium: 0, todayPremium: 0 },
-      message: 'Frontend dashboard Next.js dapat diakses di http://localhost:3001',
+      message: 'Frontend dashboard Next.js dapat diakses di http://localhost:3000',
     });
   });
 
@@ -91,7 +91,7 @@ export function createApp(): Application {
       description: 'Web Generator & TypeScript REST API Service for Alight Motion Pro VIP Activation & Verification',
       architecture: 'Clean Architecture (Domain, Application, Infrastructure, Presentation)',
       environment: config.nodeEnv,
-      webApp: process.env.WEB_URL || 'http://localhost:3001',
+      webApp: process.env.WEB_URL || 'http://localhost:3000',
       security: {
         rateLimiting: 'Active',
         payloadLimit: '10kb',

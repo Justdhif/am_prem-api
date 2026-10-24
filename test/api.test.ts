@@ -202,13 +202,26 @@ async function runTests() {
       'https://www.tiktok.com/@user/video/7106594312292453675'
     );
 
-    // POST /api/am/preset/find validation (invalid URL throws 400)
+    // YouTube URL Extraction (Watch, Shorts, youtu.be)
+    const ytWatch = container.youTubeGateway.extractYouTubeUrl('Cek https://www.youtube.com/watch?v=dQw4w9WgXcQ keren');
+    assert(ytWatch !== null);
+    assert.strictEqual(ytWatch?.videoId, 'dQw4w9WgXcQ');
+
+    const ytShorts = container.youTubeGateway.extractYouTubeUrl('https://youtube.com/shorts/dQw4w9WgXcQ?feature=share');
+    assert(ytShorts !== null);
+    assert.strictEqual(ytShorts?.videoId, 'dQw4w9WgXcQ');
+
+    const ytShortUrl = container.youTubeGateway.extractYouTubeUrl('https://youtu.be/dQw4w9WgXcQ');
+    assert(ytShortUrl !== null);
+    assert.strictEqual(ytShortUrl?.videoId, 'dQw4w9WgXcQ');
+
+    // POST /api/am/preset/find validation (invalid non-supported URL throws 400)
     try {
-      await axios.post(`${baseUrl}/api/am/preset/find`, { url: 'https://youtube.com/watch?v=123' });
-      assert.fail('Should have failed for non-TikTok URL');
+      await axios.post(`${baseUrl}/api/am/preset/find`, { url: 'https://instagram.com/reel/123456/' });
+      assert.fail('Should have failed for non-supported URL');
     } catch (err: any) {
       assert.strictEqual(err.response?.status, 400);
-      assert(err.response?.data?.message.includes('TikTok'));
+      assert(err.response?.data?.message.includes('TikTok') || err.response?.data?.message.includes('YouTube'));
     }
 
     // POST /api/am/command (!ampreset without url) -> 400
@@ -220,23 +233,46 @@ async function runTests() {
       assert(err.response?.data?.replyText.includes('Belum Lengkap'));
     }
 
-    // Ekstraksi link preset dari balasan komentar kreator (alightcreative / drive / mediafire dll)
-    const sampleReplyText = 'XML pm wak🗿 5mb:\nhttps://alightcreative.com/am/share/u/SRTPfg8lX3qOFUZGSXKMvr2ZF2/p/wSi2LfMf-943c09596b6ff61f';
-    const extractedPresets = container.findAlightPresetUseCase.extractPresetsFromText(
-      sampleReplyText,
+    // Prioritas 1: Ekstraksi link preset langsung (alightcreative / drive / mediafire dll)
+    const sampleDirectText = 'XML pm wak🗿 5mb:\nhttps://alightcreative.com/am/share/u/SRTPfg8lX3qOFUZGSXKMvr2ZF2/p/wSi2LfMf-943c09596b6ff61f\nDrive: https://drive.google.com/file/d/123/view';
+    const extractedDirect = container.findAlightPresetUseCase.extractPresetsFromText(
+      sampleDirectText,
       'comment',
       'mailreal_',
       true
     );
-    assert.strictEqual(extractedPresets.length, 1);
-    assert.strictEqual(
-      extractedPresets[0].url,
-      'https://alightcreative.com/am/share/u/SRTPfg8lX3qOFUZGSXKMvr2ZF2/p/wSi2LfMf-943c09596b6ff61f'
-    );
-    assert.strictEqual(extractedPresets[0].type, 'alight_creative');
-    assert.strictEqual(extractedPresets[0].isCreator, true);
+    assert.strictEqual(extractedDirect.length, 2);
+    assert.strictEqual(extractedDirect[0].priority, 'preset_link');
+    assert.strictEqual(extractedDirect[0].type, 'alight_creative');
+    assert.strictEqual(extractedDirect[1].priority, 'preset_link');
+    assert.strictEqual(extractedDirect[1].type, 'google_drive');
 
-    console.log('✅ TikTok Preset Finder passed');
+    // Prioritas 2: Ekstraksi Ajakan Join Saluran / Join SL (WhatsApp Channel)
+    const sampleSaluranText = 'Xml & dll di saluran wa:\nhttps://whatsapp.com/channel/0029Vb9Bq88KGGGFFoqPEX3Y/112';
+    const extractedSaluran = container.findAlightPresetUseCase.extractPresetsFromText(
+      sampleSaluranText,
+      'comment',
+      'creator_am',
+      true
+    );
+    assert.strictEqual(extractedSaluran.length, 1);
+    assert.strictEqual(extractedSaluran[0].priority, 'join_saluran');
+    assert.strictEqual(extractedSaluran[0].type, 'whatsapp_channel');
+    assert.strictEqual(extractedSaluran[0].url, 'https://whatsapp.com/channel/0029Vb9Bq88KGGGFFoqPEX3Y/112');
+
+    // Prioritas 2: Deteksi teks "join sl" tanpa tautan langsung (arahkan ke bio)
+    const sampleJoinSlText = 'Preset 5mb & xml join sl di bio ya!';
+    const extractedJoinSl = container.findAlightPresetUseCase.extractPresetsFromText(
+      sampleJoinSlText,
+      'comment',
+      'fajaruzumaki',
+      true
+    );
+    assert.strictEqual(extractedJoinSl.length, 1);
+    assert.strictEqual(extractedJoinSl[0].priority, 'join_saluran');
+    assert.strictEqual(extractedJoinSl[0].label, 'Ajakan Join Saluran (Join SL)');
+
+    console.log('✅ Multi-Platform Preset Finder (TikTok & YouTube, 2 Prioritas) passed');
 
     // Test 8: Comment Section & Threaded Replies
     console.log('\nTest 8: Comment Section & Threaded Replies');

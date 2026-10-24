@@ -33,7 +33,7 @@
 - [API Specification](#-api-specification)
   - [1. Request Verification Link](#1-request-verification-link)
   - [2. Verify Link & Activate Pro](#2-verify-link--activate-pro)
-  - [3. TikTok Alight Preset Finder](#3-tiktok-alight-preset-finder)
+  - [3. TikTok & YouTube Alight Preset Finder (2 Prioritas)](#3-tiktok--youtube-alight-preset-finder-2-prioritas)
   - [4. Multi-Command Bot Adapter](#4-multi-command-bot-adapter)
   - [5. Comment System Endpoints](#5-comment-system-endpoints)
 - [Environment Configuration](#-environment-configuration)
@@ -58,7 +58,7 @@ Dibangun dengan prinsip ketat **Clean Architecture (Uncle Bob)** dan **Domain-Dr
 | :--- | :--- | :---: |
 | ⚡ **Automated 2-Step Activation** | Pengiriman Firebase Magic Link & aktivasi lisensi tahunan Pro secara programmatic | `Active` |
 | 🧪 **Interactive Web Playground** | Uji coba langsung endpoint `send-link`, `verify`, & `find preset` di browser dengan live latency (ms) | `Active` |
-| 🔍 **TikTok Preset Scraper** | Ekstraksi otomatis tautan `alight.link`, Google Drive XML, & MediaFire dari caption & komentar video | `Active` |
+| 🔍 **Multi-Platform Preset Finder** | Ekstraksi tautan preset AM (`alight.link`, Drive, Mediafire) & ajakan Join Saluran dari TikTok & YouTube (caption, deskripsi, komentar) | `Active` |
 | 💬 **TikTok-Style Comments** | Threaded replies (`> replyTo`), 9 kategori emoji keyboard lengkap, auto-expanding input, & toggle anonim | `Active` |
 | 🥞 **Drizzle ORM & PostgreSQL** | Database pooling cloud dengan Drizzle ORM type-safe queries, auto-migration, dan local fallback | `Active` |
 | 📱 **Dual-Tab Web Dashboard** | Tab navigasi **Docs** & **Playground** dengan Server-Side Rendered (SSR) stats dan kartu panduan persisten | `Active` |
@@ -168,7 +168,7 @@ Dashboard dapat diakses langsung tanpa autentikasi di:
 - **Tab Playground:**
   - **Card 1: Kirim Magic Link:** Form input email, live request button, tombol contoh data, reset, dan response viewer dengan badge HTTP status & latency (ms).
   - **Card 2: Verifikasi & Aktivasi Pro:** Form email dan magic link/oobCode dengan textarea **auto break-line & auto-expand** untuk menangani tautan panjang tanpa terpotong.
-  - **Card 3: Cari Preset TikTok:** Form URL TikTok dengan auto break-line input, tombol cari preset, tombol contoh data, dan JSON live viewer.
+  - **Card 3: Cari Preset TikTok & YouTube:** Form URL TikTok & YouTube dengan auto break-line input, pemindaian caption, deskripsi, komentar, dan 2 prioritas (Link Langsung & Join Saluran).
 - **Card Panduan Bantuan & FAQ:** Selalu tampil di bawah kontainer tab sehingga dapat diakses kapan saja dari kedua tab.
 
 ### 2. TikTok-Style Comment System
@@ -243,44 +243,52 @@ Memvalidasi parameter `oobCode` dari tautan email dan mengaktifkan lisensi tahun
 
 ---
 
-### 3. TikTok Alight Preset Finder
-Memindai caption dan komentar video TikTok untuk menemukan tautan preset Alight Motion.
+### 3. TikTok & YouTube Alight Preset Finder (2 Prioritas)
+Memindai tautan preset Alight Motion dari caption, **deskripsi video** (YouTube), serta kolom komentar & balasan (TikTok & YouTube).
+
+Fitur ini menerapkan **2 Tingkat Prioritas**:
+1. **Prioritas 1 (Link Preset Langsung):** Mendeteksi `alight.link`, `alightcreative.com`, Google Drive (`drive.google.com`), Mediafire, Sfile, dan shortlink.
+2. **Prioritas 2 (Ajakan Join Saluran / Join SL):** Mendeteksi saluran WhatsApp (`whatsapp.com/channel/...`), Telegram, link bio, serta teks *"join saluran"* / *"join sl"* ketika kreator mempromosikan preset lewat saluran.
 
 - **Endpoint:** `POST /api/am/preset/find`
 - **Headers:** `Content-Type: application/json`
-- **Payload:**
+- **Payload (TikTok atau YouTube):**
   ```json
   {
-    "url": "https://vt.tiktok.com/ZSjR1234/"
+    "url": "https://youtu.be/xxxxxx atau https://vt.tiktok.com/xxxx/"
   }
   ```
 - **Response (200 OK):**
   ```json
   {
     "success": true,
-    "message": "Berhasil menemukan 2 link preset Alight Motion dari video TikTok!",
+    "message": "Berhasil menemukan 1 link preset Alight Motion dan 1 saluran kreator!",
     "data": {
+      "platform": "youtube",
       "totalPresetsFound": 2,
-      "totalCommentsScanned": 50,
-      "presets": [
+      "totalCommentsScanned": 35,
+      "directPresets": [
         {
-          "url": "https://alight.link/samplePresetKey",
-          "type": "alight_link",
-          "source": "comment",
-          "label": "Alight Link (Official)",
-          "author": "editor_pro",
-          "isCreator": true
-        },
-        {
-          "url": "https://drive.google.com/file/d/1aBcDeFgHiJk/view",
-          "type": "google_drive",
-          "source": "caption",
-          "label": "Google Drive (XML/Preset)",
-          "author": "editor_pro",
+          "url": "https://alightcreative.com/am/share/u/xxxx/p/yyyy",
+          "type": "alight_creative",
+          "priority": "preset_link",
+          "source": "description",
+          "label": "Alight Creative",
           "isCreator": true
         }
       ],
-      "formattedText": "*乂 TIKTOK ALIGHT MOTION PRESET FINDER 乂*\n..."
+      "channelInvites": [
+        {
+          "url": "https://whatsapp.com/channel/0029Vb9Bq88KGGGFFoqPEX3Y/112",
+          "type": "whatsapp_channel",
+          "priority": "join_saluran",
+          "source": "comment",
+          "label": "Saluran WhatsApp (Join Saluran)",
+          "isCreator": true
+        }
+      ],
+      "presets": [ ... ],
+      "formattedText": "*乂 YOUTUBE ALIGHT MOTION PRESET FINDER 乂*\n..."
     }
   }
   ```

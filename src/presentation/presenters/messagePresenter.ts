@@ -22,7 +22,7 @@ export class MessagePresenter {
       `   Buka aplikasi Alight Motion di HP dan login menggunakan email tersebut.\n` +
       `   Akun otomatis Pro VIP tanpa watermark & fitur premium terbuka!\n\n` +
       `*Fitur Tambahan (Preset Finder):*\n` +
-      `• *!ampreset <url_tiktok>* : Mencari link preset AM dari caption & komentar video TikTok.\n\n` +
+      `• *!ampreset <url>* : Mencari link preset AM & ajakan join saluran dari TikTok & YouTube (caption, deskripsi, komentar).\n\n` +
       `⚡ _Official Service by Justdhif_`
     );
   }

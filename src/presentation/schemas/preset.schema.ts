@@ -2,13 +2,13 @@ import { z } from 'zod';
 
 export const findPresetSchema = z.object({
   url: z
-    .string({ required_error: 'URL video TikTok wajib diisi' })
+    .string({ required_error: 'URL video TikTok atau YouTube wajib diisi' })
     .trim()
-    .min(5, 'URL TikTok terlalu pendek')
-    .max(1024, 'URL TikTok terlalu panjang')
+    .min(5, 'URL video terlalu pendek')
+    .max(1024, 'URL video terlalu panjang')
     .refine(
-      (val) => /tiktok\.com/i.test(val),
-      'URL harus berupa tautan video TikTok yang valid (contoh: https://vt.tiktok.com/xxxx atau https://www.tiktok.com/@user/video/xxxx)'
+      (val) => /tiktok\.com|youtube\.com|youtu\.be/i.test(val),
+      'URL harus berupa tautan video TikTok (https://vt.tiktok.com/xxxx) atau YouTube (https://youtu.be/xxxx atau https://youtube.com/watch?v=xxxx)'
     ),
 });
 

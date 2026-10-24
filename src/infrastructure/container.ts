@@ -1,6 +1,7 @@
 import { FirebaseAuthGateway } from './external/firebaseAuthGateway.js';
 import { AlightGateway } from './external/alightGateway.js';
 import { TikTokGateway } from './external/tikTokGateway.js';
+import { YouTubeGateway } from './external/youTubeGateway.js';
 import { PostgresStatsRepository } from './repositories/PostgresStatsRepository.js';
 import { PostgresCommentRepository } from './repositories/PostgresCommentRepository.js';
 import { InMemorySessionRepository } from './repositories/InMemorySessionRepository.js';
@@ -18,6 +19,7 @@ export class Container {
   public readonly firebaseAuthGateway = new FirebaseAuthGateway();
   public readonly alightGateway = new AlightGateway();
   public readonly tikTokGateway = new TikTokGateway();
+  public readonly youTubeGateway = new YouTubeGateway();
 
   // Repositories (PostgreSQL dengan fallback lokal)
   public readonly statsRepository = new PostgresStatsRepository();
@@ -39,7 +41,10 @@ export class Container {
 
   public readonly getStatsUseCase = new GetStatsUseCase(this.statsRepository);
 
-  public readonly findAlightPresetUseCase = new FindAlightPresetUseCase(this.tikTokGateway);
+  public readonly findAlightPresetUseCase = new FindAlightPresetUseCase(
+    this.tikTokGateway,
+    this.youTubeGateway
+  );
 
   public readonly handleBotCommandUseCase = new HandleBotCommandUseCase(
     this.sendVerificationLinkUseCase,

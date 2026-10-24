@@ -327,11 +327,11 @@ export function renderDashboardHtml(
             <span class="badge-method bg-purple-500/20 text-purple-400 border border-purple-500/30">POST</span>
             <code class="text-sm font-bold text-white break-all">/api/am/preset/find</code>
           </div>
-          <span class="text-xs text-gray-400">Pindai Preset TikTok (Caption &amp; Komen)</span>
+          <span class="text-xs text-gray-400">Pindai Preset TikTok &amp; YouTube (2 Prioritas)</span>
         </div>
 
         <p class="text-xs sm:text-sm text-gray-300">
-          Mencari tautan preset Alight Motion (<code class="text-[#00e599]">alight.link</code>, Google Drive, Mediafire, Sfile) secara otomatis dari caption dan komentar video TikTok.
+          Mencari tautan preset Alight Motion (<code class="text-[#00e599]">alight.link</code>, Google Drive, Mediafire) dan info Join Saluran secara otomatis dari caption, deskripsi, &amp; komentar TikTok maupun YouTube.
         </p>
 
         <!-- Request Body -->
@@ -588,7 +588,7 @@ export function renderDashboardHtml(
                   <i class="fa-solid fa-wand-magic-sparkles"></i>
                 </div>
                 <div>
-                  <h3 class="text-sm sm:text-base font-bold text-white">3. Cari Preset TikTok</h3>
+                  <h3 class="text-sm sm:text-base font-bold text-white">3. Cari Preset TikTok &amp; YouTube</h3>
                   <div class="flex items-center space-x-2 mt-0.5">
                     <span class="badge-method bg-purple-500/20 text-purple-400 border border-purple-500/30">POST</span>
                     <code class="text-[11px] text-gray-400">/api/am/preset/find</code>
@@ -598,17 +598,17 @@ export function renderDashboardHtml(
             </div>
 
             <p class="text-xs text-gray-400 leading-relaxed">
-              Pindai link preset Alight Motion otomatis dari caption &amp; komentar video TikTok.
+              Pindai link preset Alight Motion (Prioritas 1) &amp; ajakan join saluran (Prioritas 2) dari caption, deskripsi, &amp; komentar video.
             </p>
 
             <form onsubmit="runPlaygroundPreset(event)" class="space-y-3">
               <div>
                 <label class="block text-xs font-semibold text-gray-300 mb-1.5">
-                  URL Video TikTok <span class="text-[#00e599]">*</span>
+                  URL Video TikTok / YouTube <span class="text-[#00e599]">*</span>
                 </label>
                 <div class="flex items-start bg-[#0d121f] rounded-xl px-3.5 py-2.5 border border-gray-700/80 focus-within:border-[#00e599] transition">
                   <i class="fa-brands fa-tiktok text-gray-500 mr-2.5 mt-1 text-xs shrink-0"></i>
-                  <textarea id="pg-preset-url" required rows="1" placeholder="https://vt.tiktok.com/ZSxxxxxxx/ atau link video TikTok"
+                  <textarea id="pg-preset-url" required rows="1" placeholder="https://vt.tiktok.com/ZSxxxxxxx/ atau https://youtu.be/xxxx atau link YouTube/TikTok"
                     oninput="handlePresetTextareaInput(this)"
                     class="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full resize-none break-all whitespace-pre-wrap no-scrollbar leading-relaxed"
                     style="min-height: 24px; max-height: 140px;"></textarea>
@@ -697,7 +697,7 @@ export function renderDashboardHtml(
               <i class="fa-solid fa-robot mr-2"></i>Daftar Perintah Bot WhatsApp
             </span>
             <p class="text-gray-300 leading-relaxed">
-              Gunakan <code class="text-[#00e599]">!amprem &lt;email&gt;</code> untuk kirim link, <code class="text-[#00e599]">!ampreset &lt;url&gt;</code> untuk cari preset VT, dan balas link untuk aktivasi.
+              Gunakan <code class="text-[#00e599]">!amprem &lt;email&gt;</code> untuk kirim link, <code class="text-[#00e599]">!ampreset &lt;url&gt;</code> untuk cari preset VT/YT, dan balas link untuk aktivasi.
             </p>
           </div>
         </div>

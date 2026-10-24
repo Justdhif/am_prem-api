@@ -57,6 +57,7 @@ export class TikTokGateway implements ITikTokGateway {
     const d = videoRes.data.data;
     const metadata: TikTokVideoMetadata = {
       id: d.id || '',
+      platform: 'tiktok',
       url: url,
       title: d.title || '',
       author: {
@@ -237,6 +238,7 @@ export class TikTokGateway implements ITikTokGateway {
 
     const metadata: TikTokVideoMetadata = {
       id: aweme.aweme_id || videoId,
+      platform: 'tiktok',
       url: url,
       title: aweme.desc || '',
       author: {

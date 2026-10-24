@@ -5,13 +5,20 @@ export type PresetType =
   | 'mediafire'
   | 'sfile'
   | 'shortlink'
+  | 'whatsapp_channel'
+  | 'channel_invite'
   | 'other';
 
-export type PresetSource = 'caption' | 'comment';
+export type PresetPriority = 'preset_link' | 'join_saluran';
+
+export type PresetSource = 'caption' | 'description' | 'comment';
+
+export type VideoPlatform = 'tiktok' | 'youtube';
 
 export interface PresetItem {
   url: string;
   type: PresetType;
+  priority: PresetPriority; // 'preset_link' (Prioritas 1) | 'join_saluran' (Prioritas 2)
   source: PresetSource;
   label: string;
   context: string;
@@ -19,18 +26,20 @@ export interface PresetItem {
   isCreator?: boolean;
 }
 
-export interface TikTokVideoAuthor {
+export interface VideoAuthor {
   id?: string;
   username: string;
   nickname?: string;
   avatar?: string;
 }
 
-export interface TikTokVideoMetadata {
+export interface VideoMetadata {
   id: string;
+  platform?: VideoPlatform;
   url: string;
   title: string;
-  author: TikTokVideoAuthor;
+  description?: string;
+  author: VideoAuthor;
   cover?: string;
   stats?: {
     likes?: number;
@@ -40,7 +49,7 @@ export interface TikTokVideoMetadata {
   };
 }
 
-export interface TikTokCommentItem {
+export interface CommentItem {
   id: string;
   text: string;
   author: {
@@ -54,11 +63,21 @@ export interface TikTokCommentItem {
   createdAt?: number;
 }
 
-export interface TikTokPresetFinderResult {
-  video: TikTokVideoMetadata;
-  presets: PresetItem[];
+export interface PresetFinderResult {
+  video: VideoMetadata;
+  platform: VideoPlatform;
+  presets: PresetItem[]; // Semua item terurut (Prioritas 1 lalu Prioritas 2)
+  directPresets: PresetItem[]; // Prioritas 1: Link preset Alight / Drive / Mediafire dll
+  channelInvites: PresetItem[]; // Prioritas 2: Join Saluran / WA Channel / Link Bio
   totalPresetsFound: number;
   totalCommentsScanned: number;
   caption: string;
+  description?: string;
   formattedText: string;
 }
+
+// Backwards compatibility aliases
+export type TikTokVideoAuthor = VideoAuthor;
+export type TikTokVideoMetadata = VideoMetadata;
+export type TikTokCommentItem = CommentItem;
+export type TikTokPresetFinderResult = PresetFinderResult;

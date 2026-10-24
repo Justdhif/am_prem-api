@@ -48,20 +48,20 @@ export class HandleBotCommandUseCase {
       };
     }
 
-    // 3. !ampreset / !findpreset / !preset <tiktok_url>
+    // 3. !ampreset / !findpreset / !preset <video_url> (TikTok & YouTube)
     if (command === '!ampreset' || command === '!findpreset' || command === '!preset') {
-      const tiktokUrl = parts.slice(1).join(' ').trim();
-      if (!tiktokUrl) {
+      const videoUrl = parts.slice(1).join(' ').trim();
+      if (!videoUrl) {
         return {
           success: false,
           command: 'ampreset',
           replyText:
-            '⚠️ *Format Perintah Belum Lengkap*\n\nSilakan sertakan URL video TikTok.\nContoh:\n`!ampreset https://vt.tiktok.com/xxxx/`\n`!ampreset https://www.tiktok.com/@user/video/xxxx`',
+            '⚠️ *Format Perintah Belum Lengkap*\n\nSilakan sertakan URL video TikTok atau YouTube.\nContoh:\n`!ampreset https://vt.tiktok.com/xxxx/`\n`!ampreset https://youtu.be/xxxx`\n`!ampreset https://youtube.com/watch?v=xxxx`',
         };
       }
 
       try {
-        const result = await this.findAlightPresetUseCase.execute({ url: tiktokUrl });
+        const result = await this.findAlightPresetUseCase.execute({ url: videoUrl });
         return {
           success: true,
           command: 'ampreset',
@@ -72,7 +72,7 @@ export class HandleBotCommandUseCase {
         return {
           success: false,
           command: 'ampreset',
-          replyText: `❌ *Gagal Mencari Preset TikTok*\n\n${err.message || err}`,
+          replyText: `❌ *Gagal Mencari Preset*\n\n${err.message || err}`,
           error: err.message || String(err),
         };
       }

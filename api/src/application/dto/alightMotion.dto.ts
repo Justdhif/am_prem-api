@@ -31,11 +31,17 @@ export interface VerifyLinkOutputDto {
   premiumError?: string | null;
 }
 
+export interface DailyStatItem {
+  date: string;
+  count: number;
+}
+
 export interface GetStatsOutputDto {
   totalPremium: number;
   todayPremium: number;
   status: string;
   formattedText: string;
+  history?: DailyStatItem[];
 }
 
 export interface BotCommandInputDto {

@@ -110,6 +110,7 @@ export class AlightMotionController {
         totalPremium: stats.totalPremium,
         todayPremium: stats.todayPremium,
         status: stats.status,
+        history: stats.history || [],
       },
     });
   }

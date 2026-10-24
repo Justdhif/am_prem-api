@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { DailyStatItem } from "@/lib/api";
 
 interface ActivationChartProps {
   totalActivations: number;
   todayActivations: number;
+  history?: DailyStatItem[];
   loading?: boolean;
 }
 
@@ -17,46 +19,53 @@ interface DataPoint {
 }
 
 export function ActivationChart({
-  totalActivations,
   todayActivations,
+  history = [],
   loading = false,
 }: ActivationChartProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  // Generate 7-day data ending today
+  // Map data 7 hari riil dari database PostgreSQL
   const chartData = useMemo<DataPoint[]>(() => {
-    const days = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+    const dayNames = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
     const now = new Date();
+    const todayStr = now.toISOString().split("T")[0];
+
+    if (history && history.length > 0) {
+      return history.map((item) => {
+        // Parse date YYYY-MM-DD
+        const parts = item.date.split("-");
+        const itemDate = new Date(
+          parseInt(parts[0], 10),
+          parseInt(parts[1], 10) - 1,
+          parseInt(parts[2], 10)
+        );
+        const isToday = item.date === todayStr;
+
+        return {
+          dayLabel: isToday ? "Hari Ini" : dayNames[itemDate.getDay()] || item.date,
+          dateLabel: itemDate.toLocaleDateString("id-ID", { day: "numeric", month: "short" }),
+          count: loading ? 0 : Math.max(0, item.count),
+          isToday,
+        };
+      });
+    }
+
+    // Fallback jika belum ada data history
     const result: DataPoint[] = [];
-
-    // Base average from total to create realistic distribution
-    const todayCount = Math.max(0, todayActivations);
-    const avgRecent = Math.max(3, Math.round(todayCount > 0 ? todayCount * 0.9 : 5));
-
-    // Stable variance factors for 6 previous days
-    const variances = [0.75, 1.1, 0.85, 1.25, 0.95, 1.15];
-
     for (let i = 6; i >= 0; i--) {
       const d = new Date(now);
       d.setDate(now.getDate() - i);
       const isToday = i === 0;
-
-      let count = todayCount;
-      if (!isToday) {
-        const factor = variances[(i - 1) % variances.length];
-        count = Math.max(1, Math.round(avgRecent * factor));
-      }
-
       result.push({
-        dayLabel: isToday ? "Hari Ini" : days[d.getDay()],
+        dayLabel: isToday ? "Hari Ini" : dayNames[d.getDay()],
         dateLabel: d.toLocaleDateString("id-ID", { day: "numeric", month: "short" }),
-        count: loading ? 0 : count,
+        count: isToday ? Math.max(0, todayActivations) : 0,
         isToday,
       });
     }
-
     return result;
-  }, [todayActivations, loading]);
+  }, [history, todayActivations, loading]);
 
   // Chart coordinate dimensions
   const width = 600;
@@ -69,12 +78,13 @@ export function ActivationChart({
   const plotWidth = width - padLeft - padRight;
   const plotHeight = height - padTop - padBottom;
 
-  const maxVal = Math.max(5, ...chartData.map((d) => d.count)) * 1.2;
+  const maxVal = Math.max(5, ...chartData.map((d) => d.count)) * 1.25;
 
   // Compute (x, y) coordinates for each point
   const points = useMemo(() => {
+    if (chartData.length === 0) return [];
     return chartData.map((d, i) => {
-      const x = padLeft + (i / (chartData.length - 1)) * plotWidth;
+      const x = padLeft + (i / Math.max(1, chartData.length - 1)) * plotWidth;
       const y = padTop + plotHeight - (d.count / maxVal) * plotHeight;
       return { x, y, ...d };
     });
@@ -113,7 +123,7 @@ export function ActivationChart({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
         <div className="flex items-center space-x-2">
           <span className="w-2 h-2 rounded-full bg-[#00e599] animate-pulse"></span>
-          <span className="text-xs font-bold text-gray-200">Tren Aktivasi VIP</span>
+          <span className="text-xs font-bold text-gray-200">Tren Aktivasi VIP (Riil Database)</span>
           <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#00e599]/15 text-[#00e599] font-semibold border border-[#00e599]/30">
             7 Hari Terakhir
           </span>

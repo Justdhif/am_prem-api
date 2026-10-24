@@ -31,12 +31,18 @@ export interface CommentsResponse {
   };
 }
 
+export interface DailyStatItem {
+  date: string;
+  count: number;
+}
+
 export interface StatsResponse {
   success: boolean;
   totalActivations: number;
   todayActivations: number;
   status: string;
   formattedText?: string;
+  history?: DailyStatItem[];
 }
 
 export const apiClient = {
@@ -52,6 +58,7 @@ export const apiClient = {
       todayActivations: json.data?.todayPremium ?? json.todayActivations ?? json.todayPremium ?? 0,
       status: json.data?.status ?? json.status ?? "ready",
       formattedText: json.formattedText,
+      history: json.data?.history || [],
     };
   },
 

@@ -2,15 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { apiClient } from "@/lib/api";
+import { apiClient, DailyStatItem } from "@/lib/api";
 import { Card } from "@/components/ui/card";
 import { ActivationChart } from "./ActivationChart";
 
 export function HeroStats() {
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<{
+    total: number;
+    today: number;
+    loading: boolean;
+    history: DailyStatItem[];
+  }>({
     total: 0,
     today: 0,
     loading: true,
+    history: [],
   });
 
   useEffect(() => {
@@ -24,6 +30,7 @@ export function HeroStats() {
             total: data.totalActivations ?? 0,
             today: data.todayActivations ?? 0,
             loading: false,
+            history: data.history || [],
           });
         }
       } catch (e) {
@@ -63,7 +70,7 @@ export function HeroStats() {
           </p>
         </div>
 
-        {/* Primary Stats Grid (2 Columns: Total & Today, Protokol removed) */}
+        {/* Primary Stats Grid (2 Columns: Total & Today) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <motion.div
             whileHover={{ y: -2, transition: { duration: 0.2 } }}
@@ -99,10 +106,11 @@ export function HeroStats() {
           </motion.div>
         </div>
 
-        {/* Spline Wave Neon Area Chart */}
+        {/* Spline Wave Neon Area Chart dengan Data Riil Database */}
         <ActivationChart
           totalActivations={stats.total}
           todayActivations={stats.today}
+          history={stats.history}
           loading={stats.loading}
         />
       </Card>

@@ -14,6 +14,7 @@ export class GetStatsUseCase {
       todayPremium: stats.today,
       status: 'Online 🟢',
       formattedText,
+      history: stats.history,
     };
   }
 }

@@ -18,7 +18,17 @@ import { findPresetSchema } from '../schemas/preset.schema.js';
 
 const router = Router();
 
-// Pasang proteksi API Key opsional (hanya aktif jika API_SECRET_KEY diatur di .env)
+// Endpoint Statistik Publik (bebas API Key & rate limiter ketat untuk UI Dashboard)
+router.get(
+  '/stats',
+  alightMotionController.getStats.bind(alightMotionController)
+);
+router.get(
+  '/statistic',
+  alightMotionController.getStats.bind(alightMotionController)
+);
+
+// Pasang proteksi API Key opsional untuk endpoint aksi (hanya aktif jika API_SECRET_KEY diatur di .env)
 router.use(apiKeyAuth);
 
 // Kirim Magic Link ke Email (dilindungi rate limiter & validasi)

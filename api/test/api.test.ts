@@ -105,6 +105,16 @@ async function runTests() {
     const logoRes = await axios.get(`${baseUrl}/logo.jpg`);
     assert.strictEqual(logoRes.status, 200);
 
+    // GET /api/am/stats & GET /api/stats -> 200
+    const statsApiRes = await axios.get(`${baseUrl}/api/am/stats`);
+    assert.strictEqual(statsApiRes.status, 200);
+    assert.strictEqual(statsApiRes.data.success, true);
+    assert(typeof statsApiRes.data.data.totalPremium === 'number');
+
+    const statsRootRes = await axios.get(`${baseUrl}/api/stats`);
+    assert.strictEqual(statsRootRes.status, 200);
+    assert.strictEqual(statsRootRes.data.success, true);
+
 
     // POST /api/am/command (!amhelp) -> 200
     const cmdHelpRes = await axios.post(`${baseUrl}/api/am/command`, {

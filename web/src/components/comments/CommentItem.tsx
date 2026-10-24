@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { CommentItem as CommentItemType } from "@/lib/api";
 
 interface CommentItemProps {
@@ -14,7 +17,13 @@ export function CommentItem({ comment, onReply }: CommentItemProps) {
     )}&background=1f2b42&color=94a3b8&bold=true`;
 
   return (
-    <div id={`comment-${comment.id}`} className="flex items-start space-x-3 text-xs">
+    <motion.div
+      id={`comment-${comment.id}`}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+      className="flex items-start space-x-3 text-xs"
+    >
       <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border border-gray-700/80 shrink-0 mt-0.5">
         <Image
           src={avatarUrl}
@@ -68,6 +77,6 @@ export function CommentItem({ comment, onReply }: CommentItemProps) {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

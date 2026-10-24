@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { SendLinkForm } from "./SendLinkForm";
 import { VerifyLinkForm } from "./VerifyLinkForm";
 import { PresetFinderForm } from "./PresetFinderForm";
@@ -37,7 +38,7 @@ export function PlaygroundTab() {
               : "text-gray-400 hover:text-white hover:bg-gray-800/80"
           )}
         >
-          <span className="w-4 h-4 rounded-full bg-gray-950/20 text-center text-[10px] font-black leading-4 inline-block">1</span>
+          <span className="w-4 h-4 rounded-full bg-gray-950/20 text-center text-[10px] font-black leading-4 inline-block font-mono">1</span>
           <span>1. Kirim Magic Link</span>
         </button>
 
@@ -51,7 +52,7 @@ export function PlaygroundTab() {
               : "text-gray-400 hover:text-white hover:bg-gray-800/80"
           )}
         >
-          <span className="w-4 h-4 rounded-full bg-gray-950/20 text-center text-[10px] font-black leading-4 inline-block">2</span>
+          <span className="w-4 h-4 rounded-full bg-gray-950/20 text-center text-[10px] font-black leading-4 inline-block font-mono">2</span>
           <span>2. Verifikasi &amp; Aktivasi</span>
         </button>
 
@@ -65,21 +66,47 @@ export function PlaygroundTab() {
               : "text-gray-400 hover:text-white hover:bg-gray-800/80"
           )}
         >
-          <span className="w-4 h-4 rounded-full bg-gray-950/20 text-center text-[10px] font-black leading-4 inline-block">3</span>
+          <span className="w-4 h-4 rounded-full bg-gray-950/20 text-center text-[10px] font-black leading-4 inline-block font-mono">3</span>
           <span>3. Cari Preset (VT/YT)</span>
         </button>
       </div>
 
-      {/* Sub Tab Contents */}
-      {activeSubTab === "send" && (
-        <SendLinkForm onSuccessEmail={(em) => setLastEmail(em)} />
-      )}
-      {activeSubTab === "verify" && (
-        <VerifyLinkForm initialEmail={lastEmail} />
-      )}
-      {activeSubTab === "preset" && (
-        <PresetFinderForm />
-      )}
+      {/* Sub Tab Contents with Smooth Animated Transition */}
+      <AnimatePresence mode="wait">
+        {activeSubTab === "send" && (
+          <motion.div
+            key="send"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            <SendLinkForm onSuccessEmail={(em) => setLastEmail(em)} />
+          </motion.div>
+        )}
+        {activeSubTab === "verify" && (
+          <motion.div
+            key="verify"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            <VerifyLinkForm initialEmail={lastEmail} />
+          </motion.div>
+        )}
+        {activeSubTab === "preset" && (
+          <motion.div
+            key="preset"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            <PresetFinderForm />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

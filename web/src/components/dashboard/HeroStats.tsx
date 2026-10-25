@@ -51,10 +51,10 @@ export function HeroStats() {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: "easeOut" }}
-      className="space-y-5 relative"
+      className="space-y-5 relative overflow-hidden max-w-full"
     >
-      {/* Background Ambient Glow */}
-      <div className="absolute top-0 right-0 w-80 h-80 bg-[#00e599]/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+      {/* Background Ambient Glow (Contained within bounds) */}
+      <div className="absolute top-0 right-0 w-72 h-72 bg-[#00e599]/10 rounded-full blur-3xl pointer-events-none translate-x-1/4 -translate-y-1/4"></div>
 
       {/* Top Banner (No "Resmi & Otomatis", Minimalist & Clean) */}
       <div className="space-y-1.5">

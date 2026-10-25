@@ -79,6 +79,25 @@ export function MusicPlayer() {
     };
   }, [isMobileModalOpen]);
 
+  // Prevent any horizontal and vertical scroll on the background page when mobile modal is open
+  useEffect(() => {
+    if (isMobileModalOpen) {
+      const prevBodyOverflow = document.body.style.overflow;
+      const prevHtmlOverflow = document.documentElement.style.overflow;
+      const prevTouchAction = document.body.style.touchAction;
+
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+
+      return () => {
+        document.body.style.overflow = prevBodyOverflow;
+        document.documentElement.style.overflow = prevHtmlOverflow;
+        document.body.style.touchAction = prevTouchAction;
+      };
+    }
+  }, [isMobileModalOpen]);
+
   // Format seconds to mm:ss
   const formatTime = (seconds: number) => {
     if (isNaN(seconds)) return "00:00";
@@ -812,11 +831,12 @@ export function MusicPlayer() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 lg:hidden bg-black/80 backdrop-blur-xl flex flex-col justify-end"
+            className="fixed inset-0 z-50 lg:hidden bg-black/80 backdrop-blur-xl flex flex-col justify-end overflow-hidden"
           >
             {/* Backdrop click to close */}
             <div
               onClick={() => setIsMobileModalOpen(false)}
+              onTouchMove={(e) => e.preventDefault()}
               className="absolute inset-0 z-0"
               aria-hidden="true"
             />
@@ -826,7 +846,8 @@ export function MusicPlayer() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 300 }}
-              className="relative z-10 w-full max-h-[92vh] overflow-y-auto bg-[#0d121f] border-t border-gray-800 rounded-t-3xl p-4 sm:p-6 shadow-2xl flex flex-col text-left custom-scrollbar"
+              className="relative z-10 w-full max-h-[92vh] overflow-y-auto bg-[#0d121f] border-t border-gray-800 rounded-t-3xl p-4 sm:p-6 shadow-2xl flex flex-col text-left custom-scrollbar overscroll-contain"
+              style={{ touchAction: "pan-y" }}
             >
               {/* Top Drag Indicator & Collapse Header */}
               <div className="flex flex-col items-center pb-2">

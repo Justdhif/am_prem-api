@@ -130,7 +130,7 @@ export function HomeServices() {
               <span className="w-5 h-5 rounded-full bg-gray-950/20 text-center text-[10px] font-black leading-5">
                 1
               </span>
-              <span>1. Kirim Magic Link</span>
+              <span>Kirim Magic Link</span>
             </button>
 
             <button
@@ -146,7 +146,7 @@ export function HomeServices() {
               <span className="w-5 h-5 rounded-full bg-gray-950/20 text-center text-[10px] font-black leading-5">
                 2
               </span>
-              <span>2. Tempel Link &amp; Aktifkan</span>
+              <span>Tempel Link</span>
             </button>
           </div>
 
@@ -207,7 +207,7 @@ export function HomeServices() {
                       onClick={() => setActivationStep(2)}
                       className="mt-2 px-3.5 py-1.5 rounded-lg bg-[#00e599] text-gray-950 font-bold text-xs hover:bg-[#1affaa] transition inline-flex items-center space-x-1.5 cursor-pointer shadow-md"
                     >
-                      <span>Lanjut ke Langkah 2: Tempel Link</span>
+                      <span>Lanjut ke Tempel Link</span>
                       <i className="fa-solid fa-arrow-right text-[10px]"></i>
                     </button>
                   </div>

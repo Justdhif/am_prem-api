@@ -64,3 +64,61 @@ export const NERVOUSNESS_LYRICS: LyricLine[] = [
   { time: 189.9, startTime: 189.9, endTime: 191.85, text: "Tell me please" },
   { time: 191.85, startTime: 191.85, endTime: 215.0, text: "..." },
 ];
+
+/**
+ * Parses raw LRC format lyrics into timed LyricLine array with start/end bounds
+ */
+export function parseLrcLyrics(lrcText: string, totalDuration = 215): LyricLine[] {
+  const rawLines = lrcText.split('\n');
+  const parsed: LyricLine[] = [];
+
+  for (const line of rawLines) {
+    const match = line.match(/\[(\d+):(\d+(?:\.\d+)?)\](.*)/);
+    if (match) {
+      const minutes = parseInt(match[1], 10);
+      const seconds = parseFloat(match[2]);
+      const time = Math.round((minutes * 60 + seconds) * 100) / 100;
+      const text = match[3].trim() || '...';
+      parsed.push({
+        time,
+        startTime: time,
+        endTime: time,
+        text,
+      });
+    }
+  }
+
+  // Sort by time
+  parsed.sort((a, b) => a.time - b.time);
+
+  // If first lyric is after 0s, prepend intro '...'
+  if (parsed.length > 0 && parsed[0].time > 0) {
+    parsed.unshift({
+      time: 0,
+      startTime: 0,
+      endTime: parsed[0].time,
+      text: '...',
+    });
+  }
+
+  // If last line isn\'t '...', append outro '...'
+  if (parsed.length > 0) {
+    const last = parsed[parsed.length - 1];
+    if (last.text !== '...' && last.time < totalDuration - 2) {
+      parsed.push({
+        time: last.time + 2,
+        startTime: last.time + 2,
+        endTime: totalDuration,
+        text: '...',
+      });
+    }
+  }
+
+  // Calculate start/end intervals
+  for (let i = 0; i < parsed.length; i++) {
+    const next = parsed[i + 1];
+    parsed[i].endTime = next ? next.startTime : Math.max(parsed[i].startTime, totalDuration);
+  }
+
+  return parsed;
+}

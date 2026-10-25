@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { NERVOUSNESS_LYRICS } from "./lyricsData";
+import { NERVOUSNESS_LYRICS, parseLrcLyrics, LyricLine } from "./lyricsData";
 import { cn } from "@/lib/utils";
 
 export function MusicPlayer() {
@@ -19,6 +19,10 @@ export function MusicPlayer() {
   // Safe fallbacks to prevent any client caching ReferenceErrors
   const lyricsContainerRef = desktopLyricsRef;
   const activeLyricRef = useRef<HTMLDivElement | null>(null);
+
+  // Dynamic Lyrics state fetched from LRCLIB.net (with default fallback)
+  const [lyrics, setLyrics] = useState<LyricLine[]>(NERVOUSNESS_LYRICS);
+  const [isLyricsLoadedFromApi, setIsLyricsLoadedFromApi] = useState(false);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -83,12 +87,57 @@ export function MusicPlayer() {
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
+  // Fetch synced lyrics from LRCLIB API with timestamps
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchLrclibLyrics() {
+      try {
+        // 1. Try Next.js cached API route first
+        const res = await fetch("/api/lyrics");
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data.lyrics && data.lyrics.length > 0) {
+            setLyrics(data.lyrics);
+            setIsLyricsLoadedFromApi(true);
+            return;
+          }
+        }
+
+        // 2. Direct client-side fetch from LRCLIB
+        const directRes = await fetch(
+          "https://lrclib.net/api/search?track_name=nervousness&artist_name=Joon"
+        );
+        if (directRes.ok) {
+          const directData = await directRes.json();
+          if (Array.isArray(directData)) {
+            const match = directData.find((item: { syncedLyrics?: string }) => Boolean(item.syncedLyrics));
+            if (match?.syncedLyrics) {
+              const parsed = parseLrcLyrics(match.syncedLyrics, duration || 215);
+              if (isMounted && parsed.length > 0) {
+                setLyrics(parsed);
+                setIsLyricsLoadedFromApi(true);
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Using built-in synced lyrics fallback:", err);
+      }
+    }
+
+    fetchLrclibLyrics();
+    return () => {
+      isMounted = false;
+    };
+  }, [duration]);
+
   // Sync current lyric index as audio plays
   useEffect(() => {
+    if (!lyrics || lyrics.length === 0) return;
     let matchIdx = -1;
-    for (let i = 0; i < NERVOUSNESS_LYRICS.length; i++) {
-      const item = NERVOUSNESS_LYRICS[i];
-      const nextItem = NERVOUSNESS_LYRICS[i + 1];
+    for (let i = 0; i < lyrics.length; i++) {
+      const item = lyrics[i];
+      const nextItem = lyrics[i + 1];
       const start = item.startTime;
       const end = nextItem ? nextItem.startTime : item.endTime;
       if (currentTime >= start && currentTime < end) {
@@ -97,14 +146,14 @@ export function MusicPlayer() {
       }
     }
 
-    if (matchIdx === -1 && currentTime >= NERVOUSNESS_LYRICS[NERVOUSNESS_LYRICS.length - 1].startTime) {
-      matchIdx = NERVOUSNESS_LYRICS.length - 1;
+    if (matchIdx === -1 && currentTime >= lyrics[lyrics.length - 1].startTime) {
+      matchIdx = lyrics.length - 1;
     }
 
     if (matchIdx !== -1 && matchIdx !== currentLyricIndex) {
       setCurrentLyricIndex(matchIdx);
     }
-  }, [currentTime, currentLyricIndex]);
+  }, [currentTime, currentLyricIndex, lyrics]);
 
   // Observe and measure Tab Lagu height on both desktop and mobile modal
   useEffect(() => {
@@ -231,11 +280,11 @@ export function MusicPlayer() {
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   // 3 visible lyrics: previous, active, and next
-  const prevLine = currentLyricIndex > 0 ? NERVOUSNESS_LYRICS[currentLyricIndex - 1] : null;
-  const activeLine = NERVOUSNESS_LYRICS[currentLyricIndex] || NERVOUSNESS_LYRICS[0];
+  const prevLine = currentLyricIndex > 0 ? lyrics[currentLyricIndex - 1] : null;
+  const activeLine = lyrics[currentLyricIndex] || lyrics[0];
   const nextLine =
-    currentLyricIndex < NERVOUSNESS_LYRICS.length - 1
-      ? NERVOUSNESS_LYRICS[currentLyricIndex + 1]
+    currentLyricIndex < lyrics.length - 1
+      ? lyrics[currentLyricIndex + 1]
       : null;
 
   // Reusable Full Player Content (shared by Desktop Sidebar and Mobile Popup Modal)
@@ -587,11 +636,16 @@ export function MusicPlayer() {
               ref={currentLyricsRef}
               className="flex-1 min-h-0 overflow-y-auto px-1 py-3 space-y-2.5 custom-scrollbar rounded-xl bg-[#0d121f]/40 border border-gray-800/60 relative select-none text-left"
             >
-              <div className="text-[10px] text-gray-500 uppercase tracking-widest text-left px-2 pb-2 border-b border-gray-800/60 font-semibold sticky top-0 bg-[#0d121f]/95 backdrop-blur-xs z-10">
-                Klik lirik untuk loncat ke bait
+              <div className="text-[10px] text-gray-500 uppercase tracking-widest text-left px-2 pb-2 border-b border-gray-800/60 font-semibold sticky top-0 bg-[#0d121f]/95 backdrop-blur-xs z-10 flex items-center justify-between">
+                <span>Klik lirik untuk loncat ke bait</span>
+                {isLyricsLoadedFromApi && (
+                  <span className="text-[9px] text-[#00e599]/80 font-mono font-normal lowercase tracking-normal">
+                    lrclib.net
+                  </span>
+                )}
               </div>
 
-              {NERVOUSNESS_LYRICS.map((line, idx) => {
+              {lyrics.map((line, idx) => {
                 const isActive = idx === currentLyricIndex;
                 const isPassed = idx < currentLyricIndex;
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
 const plusJakartaSans = localFont({
   src: "./fonts/PlusJakartaSans-Variable.woff2",
@@ -38,6 +39,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans min-h-screen flex flex-col antialiased selection:bg-[#00e599] selection:text-gray-950 bg-[#0d121f] text-[#e2e8f0]">
+        <LoadingScreen />
         {children}
       </body>
     </html>

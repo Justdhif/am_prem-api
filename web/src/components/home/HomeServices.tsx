@@ -217,7 +217,7 @@ export function HomeServices() {
                   <button
                     type="submit"
                     disabled={sendLoading}
-                    className="px-5 py-2.5 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm transition flex items-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 cursor-pointer disabled:opacity-50"
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 cursor-pointer disabled:opacity-50"
                   >
                     {sendLoading ? (
                       <>
@@ -296,20 +296,11 @@ export function HomeServices() {
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between gap-2 pt-1 flex-wrap">
-                    <button
-                      type="button"
-                      onClick={() => setActivationStep(1)}
-                      className="px-3 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-semibold transition"
-                    >
-                      <i className="fa-solid fa-arrow-left mr-1.5"></i>
-                      Kembali ke Langkah 1
-                    </button>
-
+                  <div className="flex items-center justify-end pt-1">
                     <button
                       type="submit"
                       disabled={verifyLoading}
-                      className="px-6 py-2.5 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm transition flex items-center space-x-2 shadow-lg shadow-[#00e599]/25 active:scale-95 cursor-pointer disabled:opacity-50"
+                      className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/25 active:scale-95 cursor-pointer disabled:opacity-50"
                     >
                       {verifyLoading ? (
                         <>
@@ -445,7 +436,7 @@ export function HomeServices() {
               <button
                 type="submit"
                 disabled={presetLoading}
-                className="px-5 py-2.5 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm transition flex items-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 cursor-pointer disabled:opacity-50"
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 cursor-pointer disabled:opacity-50"
               >
                 {presetLoading ? (
                   <>

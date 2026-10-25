@@ -393,15 +393,15 @@ export function HomeServices() {
               <label className="block text-xs font-semibold text-gray-300 mb-1.5">
                 URL Video TikTok / YouTube <span className="text-[#00e599]">*</span>
               </label>
-              <div className="flex items-start bg-[#0d121f] rounded-xl px-3.5 py-3 border border-gray-700/80 focus-within:border-[#00e599] transition">
-                <i className="fa-solid fa-link text-gray-500 mr-2.5 mt-1 text-sm shrink-0"></i>
-                <textarea
+              <div className="flex items-center bg-[#0d121f] rounded-xl px-3.5 py-3 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                <i className="fa-solid fa-link text-gray-500 mr-2.5 text-sm shrink-0"></i>
+                <input
+                  type="text"
                   required
-                  rows={2}
                   value={presetUrl}
                   onChange={(e) => setPresetUrl(e.target.value)}
-                  placeholder="https://vt.tiktok.com/ZSxxxxxxx/ atau https://youtu.be/xxxx"
-                  className="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full resize-none leading-relaxed"
+                  placeholder="https://vt.tiktok.com/ZSxxxxxxx/"
+                  className="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full"
                 />
               </div>
             </div>
@@ -413,30 +413,32 @@ export function HomeServices() {
               </div>
             )}
 
-            <div className="flex items-center justify-between gap-2 pt-1 flex-wrap">
-              <div className="flex items-center space-x-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+              {/* Sample Buttons (Grid on mobile, inline on desktop) */}
+              <div className="grid grid-cols-2 sm:flex sm:items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setPresetUrl("https://vt.tiktok.com/ZSxxxxxxx/")}
-                  className="px-2.5 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition flex items-center space-x-1"
+                  className="px-3 py-2 rounded-xl bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-white text-xs font-medium transition flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer"
                 >
-                  <i className="fa-brands fa-tiktok text-[11px]"></i>
+                  <i className="fa-brands fa-tiktok text-xs"></i>
                   <span>Contoh TikTok</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setPresetUrl("https://youtu.be/dQw4w9WgXcQ")}
-                  className="px-2.5 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition flex items-center space-x-1"
+                  className="px-3 py-2 rounded-xl bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-white text-xs font-medium transition flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer"
                 >
-                  <i className="fa-brands fa-youtube text-[11px] text-red-400"></i>
+                  <i className="fa-brands fa-youtube text-xs text-red-400"></i>
                   <span>Contoh YouTube</span>
                 </button>
               </div>
 
+              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={presetLoading}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 cursor-pointer disabled:opacity-50"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 cursor-pointer disabled:opacity-50"
               >
                 {presetLoading ? (
                   <>

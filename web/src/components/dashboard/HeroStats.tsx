@@ -51,14 +51,11 @@ export function HeroStats() {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: "easeOut" }}
-      className="space-y-5 relative overflow-hidden max-w-full"
+      className="space-y-5 relative max-w-full pt-0"
     >
-      {/* Background Ambient Glow (Contained within bounds) */}
-      <div className="absolute top-0 right-0 w-72 h-72 bg-[#00e599]/10 rounded-full blur-3xl pointer-events-none translate-x-1/4 -translate-y-1/4"></div>
-
       {/* Top Banner (No "Resmi & Otomatis", Minimalist & Clean) */}
-      <div className="space-y-1.5">
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+      <div className="space-y-1.5 pt-0">
+        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-0 pt-0">
           Layanan Aktivasi Alight Motion Pro VIP
         </h1>
         <p className="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-2xl">

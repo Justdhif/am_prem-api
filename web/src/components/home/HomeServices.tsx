@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { apiClient } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 export function HomeServices() {
-  const [activeTab, setActiveTab] = useState<"activation" | "preset">("activation");
-
   // Activation Workflow State
   const [activationStep, setActivationStep] = useState<1 | 2>(1);
   const [email, setEmail] = useState("");
@@ -114,43 +112,11 @@ export function HomeServices() {
   };
 
   return (
-    <div className="space-y-5 text-left w-full">
-      {/* Primary Section Switcher Pills */}
-      <div className="flex items-center space-x-2 border-b border-gray-800 pb-3 overflow-x-auto no-scrollbar">
-        <button
-          type="button"
-          onClick={() => setActiveTab("activation")}
-          className={cn(
-            "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center space-x-2 cursor-pointer shrink-0 active:scale-95 select-none",
-            activeTab === "activation"
-              ? "bg-[#00e599] text-gray-950 shadow-md shadow-[#00e599]/25 font-black"
-              : "text-gray-400 hover:text-white hover:bg-gray-800/80"
-          )}
-        >
-          <i className="fa-solid fa-crown text-xs"></i>
-          <span>Aktivasi Alight Motion Pro VIP</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab("preset")}
-          className={cn(
-            "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center space-x-2 cursor-pointer shrink-0 active:scale-95 select-none",
-            activeTab === "preset"
-              ? "bg-[#00e599] text-gray-950 shadow-md shadow-[#00e599]/25 font-black"
-              : "text-gray-400 hover:text-white hover:bg-gray-800/80"
-          )}
-        >
-          <i className="fa-solid fa-wand-magic-sparkles text-xs"></i>
-          <span>Cari Preset (TikTok &amp; YouTube)</span>
-        </button>
-      </div>
-
-      {/* 1. ACTIVATION TAB */}
-      {activeTab === "activation" && (
-        <div className="space-y-4">
-          {/* Stepper Indicator */}
-          <div className="grid grid-cols-2 gap-2 sm:gap-4 p-1.5 bg-[#121826]/70 rounded-2xl border border-gray-800">
+    <div className="space-y-6 sm:space-y-8 text-left w-full">
+      {/* 1. ACTIVATION SECTION */}
+      <section className="space-y-4">
+        {/* Stepper Indicator */}
+        <div className="grid grid-cols-2 gap-2 sm:gap-4 p-1.5 bg-[#121826]/70 rounded-2xl border border-gray-800">
             <button
               type="button"
               onClick={() => setActivationStep(1)}
@@ -416,17 +382,11 @@ export function HomeServices() {
               )}
             </motion.div>
           )}
-        </div>
-      )}
+      </section>
 
-      {/* 2. PRESET FINDER TAB */}
-      {activeTab === "preset" && (
-        <motion.div
-          key="preset-finder"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-5 sm:p-6 bg-[#121826] border border-gray-800/90 rounded-2xl shadow-xl space-y-5"
-        >
+      {/* 2. PRESET FINDER SECTION */}
+      <section className="space-y-4">
+        <div className="p-5 sm:p-6 bg-[#121826] border border-gray-800/90 rounded-2xl shadow-xl space-y-5">
           <div className="space-y-1">
             <h2 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center space-x-2">
               <i className="fa-solid fa-magnifying-glass text-[#00e599]"></i>
@@ -598,8 +558,8 @@ export function HomeServices() {
               </div>
             </div>
           )}
-        </motion.div>
-      )}
+        </div>
+      </section>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MusicPlayer } from "@/components/player/MusicPlayer";
@@ -24,6 +25,17 @@ export default function DocsPage() {
 
         {/* Main Content Area */}
         <main className="flex-1 w-full space-y-6 sm:space-y-8 min-w-0 overflow-x-hidden max-w-full pt-0">
+          {/* Back Button to Homepage */}
+          <div className="pt-0">
+            <Link
+              href="/"
+              className="inline-flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-[#121826] hover:bg-gray-800 text-gray-300 hover:text-white text-xs font-semibold border border-gray-800 transition shadow-sm active:scale-95 cursor-pointer"
+            >
+              <i className="fa-solid fa-arrow-left text-[11px] text-[#00e599]"></i>
+              <span>Kembali ke Beranda</span>
+            </Link>
+          </div>
+
           {/* Docs Page Header */}
           <div className="space-y-2 pt-0 mt-0">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#00e599]/10 border border-[#00e599]/30 text-[#00e599] text-xs font-semibold">

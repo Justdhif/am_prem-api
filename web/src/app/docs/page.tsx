@@ -4,8 +4,6 @@ import { Footer } from "@/components/layout/Footer";
 import { MusicPlayer } from "@/components/player/MusicPlayer";
 import { CommentDrawer } from "@/components/comments/CommentDrawer";
 import { DocsTab } from "@/components/docs/DocsTab";
-import { PlaygroundTab } from "@/components/playground/PlaygroundTab";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -38,10 +36,6 @@ export default function DocsPage() {
 
           {/* Docs Page Header */}
           <div className="space-y-2 pt-0 mt-0">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#00e599]/10 border border-[#00e599]/30 text-[#00e599] text-xs font-semibold">
-              <i className="fa-solid fa-code text-[11px]"></i>
-              <span>REST API Reference &amp; Tester</span>
-            </div>
             <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
               Dokumentasi API Alight Motion Pro
             </h1>
@@ -50,27 +44,8 @@ export default function DocsPage() {
             </p>
           </div>
 
-          {/* Sub Navigation: Specs vs Interactive API Tester */}
-          <Tabs defaultValue="docs" className="w-full">
-            <TabsList>
-              <TabsTrigger value="docs">
-                <i className="fa-solid fa-book-bookmark text-xs sm:text-sm mr-1.5"></i>
-                <span>Spesifikasi API</span>
-              </TabsTrigger>
-              <TabsTrigger value="tester">
-                <i className="fa-solid fa-flask text-xs sm:text-sm mr-1.5"></i>
-                <span>API Tester (Developer)</span>
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="docs">
-              <DocsTab />
-            </TabsContent>
-
-            <TabsContent value="tester">
-              <PlaygroundTab />
-            </TabsContent>
-          </Tabs>
+          {/* Direct Documentation View */}
+          <DocsTab />
         </main>
 
         {/* Comment Drawer Sidebar (Desktop & Mobile) */}

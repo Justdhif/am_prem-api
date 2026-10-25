@@ -1,11 +1,16 @@
-import { NextResponse } from "next/server";
-import { parseLrcLyrics, LyricLine } from "@/components/player/lyricsData";
+import { NextRequest, NextResponse } from "next/server";
+import { parseLrcLyrics } from "@/components/player/lyricsData";
 
 export const revalidate = 3600; // Cache 1 hour
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const track = searchParams.get("track") || "nervousness";
+  const artist = searchParams.get("artist") || "Joon";
+  const duration = parseFloat(searchParams.get("duration") || "215");
+
   try {
-    const url = "https://lrclib.net/api/search?track_name=nervousness&artist_name=Joon";
+    const url = `https://lrclib.net/api/search?track_name=${encodeURIComponent(track)}&artist_name=${encodeURIComponent(artist)}`;
     const res = await fetch(url, {
       headers: {
         "User-Agent": "AlightMotionProWeb/1.0 (https://github.com/Justdhif/am_prem-api)",
@@ -21,7 +26,7 @@ export async function GET() {
     if (Array.isArray(data)) {
       const match = data.find((item: { syncedLyrics?: string }) => Boolean(item.syncedLyrics));
       if (match?.syncedLyrics) {
-        const parsed = parseLrcLyrics(match.syncedLyrics, 215);
+        const parsed = parseLrcLyrics(match.syncedLyrics, duration);
         return NextResponse.json({
           source: "lrclib",
           id: match.id,

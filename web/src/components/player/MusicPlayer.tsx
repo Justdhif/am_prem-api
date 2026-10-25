@@ -3,7 +3,13 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { NERVOUSNESS_LYRICS, parseLrcLyrics, LyricLine } from "./lyricsData";
+import {
+  PLAYLIST,
+  Track,
+  getFallbackLyrics,
+  parseLrcLyrics,
+  LyricLine,
+} from "./lyricsData";
 import { cn } from "@/lib/utils";
 
 export function MusicPlayer() {
@@ -20,13 +26,18 @@ export function MusicPlayer() {
   const lyricsContainerRef = desktopLyricsRef;
   const activeLyricRef = useRef<HTMLDivElement | null>(null);
 
+  // Playlist state
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const currentTrack = PLAYLIST[currentTrackIndex];
+
   // Dynamic Lyrics state fetched from LRCLIB.net (with default fallback)
-  const [lyrics, setLyrics] = useState<LyricLine[]>(NERVOUSNESS_LYRICS);
-  const [isLyricsLoadedFromApi, setIsLyricsLoadedFromApi] = useState(false);
+  const [lyrics, setLyrics] = useState<LyricLine[]>(() =>
+    getFallbackLyrics(PLAYLIST[0].id)
+  );
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(215); // Default ~3:35
+  const [duration, setDuration] = useState(PLAYLIST[0].duration);
   const [volume, setVolume] = useState(0.8);
   const [isMuted, setIsMuted] = useState(false);
   const [isLoop, setIsLoop] = useState(false);
@@ -106,35 +117,40 @@ export function MusicPlayer() {
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // Fetch synced lyrics from LRCLIB API with timestamps
+  // Fetch synced lyrics from LRCLIB API with timestamps for the active track
   useEffect(() => {
+    // 1. Immediately apply fallback lyrics to avoid blank screen
+    setLyrics(getFallbackLyrics(currentTrack.id));
+    setCurrentLyricIndex(0);
+    setCurrentTime(0);
+    setDuration(currentTrack.duration);
+
+    // 2. Fetch fresh synced lyrics from LRCLIB
     let isMounted = true;
-    async function fetchLrclibLyrics() {
+    async function fetchTrackLyrics() {
       try {
-        // 1. Try Next.js cached API route first
-        const res = await fetch("/api/lyrics");
+        const query = `track=${encodeURIComponent(currentTrack.title)}&artist=${encodeURIComponent(currentTrack.artist)}&duration=${currentTrack.duration}`;
+        const res = await fetch(`/api/lyrics?${query}`);
         if (res.ok) {
           const data = await res.json();
           if (isMounted && data.lyrics && data.lyrics.length > 0) {
             setLyrics(data.lyrics);
-            setIsLyricsLoadedFromApi(true);
             return;
           }
         }
 
-        // 2. Direct client-side fetch from LRCLIB
+        // Direct client-side fetch from LRCLIB
         const directRes = await fetch(
-          "https://lrclib.net/api/search?track_name=nervousness&artist_name=Joon"
+          `https://lrclib.net/api/search?track_name=${encodeURIComponent(currentTrack.title)}&artist_name=${encodeURIComponent(currentTrack.artist)}`
         );
         if (directRes.ok) {
           const directData = await directRes.json();
           if (Array.isArray(directData)) {
             const match = directData.find((item: { syncedLyrics?: string }) => Boolean(item.syncedLyrics));
             if (match?.syncedLyrics) {
-              const parsed = parseLrcLyrics(match.syncedLyrics, duration || 215);
+              const parsed = parseLrcLyrics(match.syncedLyrics, currentTrack.duration);
               if (isMounted && parsed.length > 0) {
                 setLyrics(parsed);
-                setIsLyricsLoadedFromApi(true);
               }
             }
           }
@@ -144,11 +160,21 @@ export function MusicPlayer() {
       }
     }
 
-    fetchLrclibLyrics();
+    fetchTrackLyrics();
+
+    // 3. Update audio source and play if already playing
+    if (audioRef.current) {
+      audioRef.current.src = currentTrack.src;
+      audioRef.current.load();
+      if (isPlaying) {
+        audioRef.current.play().catch((e) => console.log("Play interrupted:", e));
+      }
+    }
+
     return () => {
       isMounted = false;
     };
-  }, [duration]);
+  }, [currentTrackIndex]);
 
   // Sync current lyric index as audio plays
   useEffect(() => {
@@ -226,7 +252,7 @@ export function MusicPlayer() {
 
   const handleLoadedMetadata = () => {
     if (audioRef.current) {
-      setDuration(audioRef.current.duration || 215);
+      setDuration(audioRef.current.duration || currentTrack.duration);
       audioRef.current.volume = volume;
     }
   };
@@ -286,6 +312,37 @@ export function MusicPlayer() {
     if (audioRef.current) {
       audioRef.current.loop = !isLoop;
       setIsLoop(!isLoop);
+    }
+  };
+
+  const handleNextTrack = () => {
+    const nextIdx = (currentTrackIndex + 1) % PLAYLIST.length;
+    setCurrentTrackIndex(nextIdx);
+    setCurrentLyricIndex(0);
+    setCurrentTime(0);
+  };
+
+  const handlePrevTrack = () => {
+    if (audioRef.current && audioRef.current.currentTime > 3) {
+      audioRef.current.currentTime = 0;
+      setCurrentTime(0);
+      setCurrentLyricIndex(0);
+    } else {
+      const prevIdx = (currentTrackIndex - 1 + PLAYLIST.length) % PLAYLIST.length;
+      setCurrentTrackIndex(prevIdx);
+      setCurrentLyricIndex(0);
+      setCurrentTime(0);
+    }
+  };
+
+  const handleTrackEnded = () => {
+    if (isLoop) {
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch((err) => console.log("Loop replay failed:", err));
+      }
+    } else {
+      handleNextTrack();
     }
   };
 
@@ -388,8 +445,8 @@ export function MusicPlayer() {
             {/* 1. Album Cover */}
             <div className="relative aspect-video sm:aspect-square w-full rounded-2xl overflow-hidden border border-gray-800 shadow-md bg-[#0d121f] group/cover">
               <Image
-                src="/audio/cover.jpg"
-                alt="Joon - nervousness"
+                src={currentTrack.cover}
+                alt={`${currentTrack.artist} - ${currentTrack.title}`}
                 width={400}
                 height={400}
                 className={cn(
@@ -459,10 +516,10 @@ export function MusicPlayer() {
             <div className="flex items-center justify-between pt-0.5 text-left">
               <div className="min-w-0 pr-2 text-left">
                 <h3 className="text-base font-bold text-white tracking-tight truncate hover:text-[#00e599] transition cursor-pointer text-left">
-                  nervousness
+                  {currentTrack.title}
                 </h3>
                 <p className="text-xs text-gray-400 font-medium truncate mt-0.5 text-left">
-                  Joon
+                  {currentTrack.artist}
                 </p>
               </div>
 
@@ -525,13 +582,13 @@ export function MusicPlayer() {
                 <i className="fa-solid fa-repeat"></i>
               </button>
 
-              {/* Skip -10s */}
+              {/* Previous Track */}
               <button
                 type="button"
-                aria-label="Mundur 10 Detik"
-                onClick={() => handleSkip(-10)}
+                aria-label="Lagu Sebelumnya"
+                onClick={handlePrevTrack}
                 className="p-2 text-gray-400 hover:text-white transition active:scale-90 cursor-pointer"
-                title="Mundur 10s"
+                title="Lagu Sebelumnya"
               >
                 <i className="fa-solid fa-backward-step text-base"></i>
               </button>
@@ -548,13 +605,13 @@ export function MusicPlayer() {
                 <i className={cn("fa-solid text-lg", isPlaying ? "fa-pause" : "fa-play ml-0.5")}></i>
               </motion.button>
 
-              {/* Skip +10s */}
+              {/* Next Track */}
               <button
                 type="button"
-                aria-label="Maju 10 Detik"
-                onClick={() => handleSkip(10)}
+                aria-label="Lagu Berikutnya"
+                onClick={handleNextTrack}
                 className="p-2 text-gray-400 hover:text-white transition active:scale-90 cursor-pointer"
-                title="Maju 10s"
+                title="Lagu Berikutnya"
               >
                 <i className="fa-solid fa-forward-step text-base"></i>
               </button>
@@ -622,32 +679,52 @@ export function MusicPlayer() {
                 : "opacity-0 pointer-events-none invisible absolute inset-x-0 top-0"
             )}
           >
-            {/* Lyrics Header with Mini Play/Pause */}
+            {/* Lyrics Header with Mini Controls */}
             <div className="shrink-0 flex items-center justify-between p-2 rounded-xl bg-[#0d121f] border border-gray-800">
               <div className="flex items-center space-x-2 min-w-0 text-left">
                 <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-gray-800">
                   <Image
-                    src="/audio/cover.jpg"
-                    alt="Cover"
+                    src={currentTrack.cover}
+                    alt={`${currentTrack.artist} - ${currentTrack.title}`}
                     width={32}
                     height={32}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="min-w-0 text-left">
-                  <span className="text-xs font-bold text-white block truncate text-left">nervousness</span>
-                  <span className="text-[10px] text-gray-400 block truncate text-left">Joon</span>
+                  <span className="text-xs font-bold text-white block truncate text-left">{currentTrack.title}</span>
+                  <span className="text-[10px] text-gray-400 block truncate text-left">{currentTrack.artist}</span>
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={togglePlay}
-                aria-label={isPlaying ? "Jeda" : "Putar"}
-                className="w-8 h-8 rounded-full bg-[#00e599] text-gray-950 flex items-center justify-center shadow-md shadow-[#00e599]/30 hover:scale-105 active:scale-95 transition cursor-pointer"
-              >
-                <i className={cn("fa-solid text-xs", isPlaying ? "fa-pause" : "fa-play ml-0.5")}></i>
-              </button>
+              <div className="flex items-center space-x-1 shrink-0">
+                <button
+                  type="button"
+                  onClick={handlePrevTrack}
+                  aria-label="Lagu Sebelumnya"
+                  className="w-7 h-7 rounded-full text-gray-400 hover:text-white flex items-center justify-center transition cursor-pointer"
+                  title="Lagu Sebelumnya"
+                >
+                  <i className="fa-solid fa-backward-step text-xs"></i>
+                </button>
+                <button
+                  type="button"
+                  onClick={togglePlay}
+                  aria-label={isPlaying ? "Jeda" : "Putar"}
+                  className="w-8 h-8 rounded-full bg-[#00e599] text-gray-950 flex items-center justify-center shadow-md shadow-[#00e599]/30 hover:scale-105 active:scale-95 transition cursor-pointer"
+                >
+                  <i className={cn("fa-solid text-xs", isPlaying ? "fa-pause" : "fa-play ml-0.5")}></i>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNextTrack}
+                  aria-label="Lagu Berikutnya"
+                  className="w-7 h-7 rounded-full text-gray-400 hover:text-white flex items-center justify-center transition cursor-pointer"
+                  title="Lagu Berikutnya"
+                >
+                  <i className="fa-solid fa-forward-step text-xs"></i>
+                </button>
+              </div>
             </div>
 
             {/* Dynamic Scrollable Full Lyrics List (Fills remaining height) */}
@@ -655,15 +732,6 @@ export function MusicPlayer() {
               ref={currentLyricsRef}
               className="flex-1 min-h-0 overflow-y-auto px-1 py-3 space-y-2.5 custom-scrollbar rounded-xl bg-[#0d121f]/40 border border-gray-800/60 relative select-none text-left"
             >
-              <div className="text-[10px] text-gray-500 uppercase tracking-widest text-left px-2 pb-2 border-b border-gray-800/60 font-semibold sticky top-0 bg-[#0d121f]/95 backdrop-blur-xs z-10 flex items-center justify-between">
-                <span>Klik lirik untuk loncat ke bait</span>
-                {isLyricsLoadedFromApi && (
-                  <span className="text-[9px] text-[#00e599]/80 font-mono font-normal lowercase tracking-normal">
-                    lrclib.net
-                  </span>
-                )}
-              </div>
-
               {lyrics.map((line, idx) => {
                 const isActive = idx === currentLyricIndex;
                 const isPassed = idx < currentLyricIndex;
@@ -708,13 +776,11 @@ export function MusicPlayer() {
       {/* Hidden Native Audio Element (stays mounted and active continuously) */}
       <audio
         ref={audioRef}
-        src="/audio/nervousness.mp3"
+        src={currentTrack.src}
         preload="metadata"
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
-        onEnded={() => {
-          if (!isLoop) setIsPlaying(false);
-        }}
+        onEnded={handleTrackEnded}
       />
 
       {/* 1. Desktop Mode Player: Inline in Sidebar (Hidden on Mobile < lg) */}
@@ -735,17 +801,17 @@ export function MusicPlayer() {
           onClick={() => setIsMobileModalOpen(true)}
           className="relative flex items-center justify-between px-4 py-3 bg-[#111726]/95 hover:bg-[#161e30] border border-gray-800/90 rounded-2xl shadow-2xl backdrop-blur-md transition cursor-pointer overflow-hidden group select-none active:scale-[0.99]"
         >
-          {/* Left: Title & Artist (Direct text, consistent with user's reference) */}
+          {/* Left: Title & Artist */}
           <div className="min-w-0 flex-1 pr-3 text-left">
             <h4 className="text-sm sm:text-base font-bold text-white truncate tracking-tight leading-tight">
-              nervousness
+              {currentTrack.title}
             </h4>
             <p className="text-xs text-gray-400 font-medium truncate mt-0.5">
-              Joon
+              {currentTrack.artist}
             </p>
           </div>
 
-          {/* Right Controls: [Heart] [Previous] [Play/Pause Glow Circle] [Next] */}
+          {/* Right Controls: [Heart] [Previous Track] [Play/Pause Glow Circle] [Next Track] */}
           <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
             {/* Like Button (Heart) */}
             <button
@@ -766,16 +832,16 @@ export function MusicPlayer() {
               ></i>
             </button>
 
-            {/* Previous Track / Skip -10s */}
+            {/* Previous Track */}
             <button
               type="button"
-              aria-label="Mundur 10 Detik"
+              aria-label="Lagu Sebelumnya"
               onClick={(e) => {
                 e.stopPropagation();
-                handleSkip(-10);
+                handlePrevTrack();
               }}
               className="p-1.5 text-gray-300 hover:text-white transition active:scale-90 cursor-pointer"
-              title="Mundur 10s"
+              title="Lagu Sebelumnya"
             >
               <i className="fa-solid fa-backward-step text-base"></i>
             </button>
@@ -798,16 +864,16 @@ export function MusicPlayer() {
               ></i>
             </button>
 
-            {/* Next Track / Skip +10s */}
+            {/* Next Track */}
             <button
               type="button"
-              aria-label="Maju 10 Detik"
+              aria-label="Lagu Berikutnya"
               onClick={(e) => {
                 e.stopPropagation();
-                handleSkip(10);
+                handleNextTrack();
               }}
               className="p-1.5 text-gray-300 hover:text-white transition active:scale-90 cursor-pointer"
-              title="Maju 10s"
+              title="Lagu Berikutnya"
             >
               <i className="fa-solid fa-forward-step text-base"></i>
             </button>

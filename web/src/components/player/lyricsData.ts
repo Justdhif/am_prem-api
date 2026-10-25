@@ -1,3 +1,31 @@
+export interface Track {
+  id: string;
+  title: string;
+  artist: string;
+  src: string;
+  cover: string;
+  duration: number;
+}
+
+export const PLAYLIST: Track[] = [
+  {
+    id: "nervousness",
+    title: "nervousness",
+    artist: "Joon",
+    src: "/audio/nervousness.mp3",
+    cover: "/audio/cover.jpg",
+    duration: 215,
+  },
+  {
+    id: "with-ease",
+    title: "with ease",
+    artist: "Joon",
+    src: "/audio/with-ease.mp3",
+    cover: "/audio/cover-with-ease.jpg",
+    duration: 187,
+  },
+];
+
 export interface LyricLine {
   time: number; // in seconds (alias for startTime)
   startTime: number; // in seconds
@@ -121,4 +149,68 @@ export function parseLrcLyrics(lrcText: string, totalDuration = 215): LyricLine[
   }
 
   return parsed;
+}
+
+
+// Synced lyrics for "Joon - with ease"
+export const WITH_EASE_LYRICS: LyricLine[] = [
+  { time: 0.0, startTime: 0.0, endTime: 4.6, text: "..." },
+  { time: 4.6, startTime: 4.6, endTime: 10.65, text: "I got a feeling that you're twice as shy as me (Ah-ah)" },
+  { time: 10.65, startTime: 10.65, endTime: 14.72, text: "The feeling always comes and goes with ease" },
+  { time: 14.72, startTime: 14.72, endTime: 17.29, text: "We're too scared to disagree" },
+  { time: 17.29, startTime: 17.29, endTime: 21.15, text: "I'm waiting for you just to intervene (Ha, ha)" },
+  { time: 21.15, startTime: 21.15, endTime: 24.32, text: "'Cause I just want to say that it's all right and" },
+  { time: 24.32, startTime: 24.32, endTime: 25.92, text: "Let me hold you close" },
+  { time: 25.92, startTime: 25.92, endTime: 30.34, text: "But I'm carrying this discipline, I'm moving to the coast" },
+  { time: 30.34, startTime: 30.34, endTime: 34.89, text: "So it's better when you tell me things, like \"I should go alone\"" },
+  { time: 34.89, startTime: 34.89, endTime: 39.84, text: "Pray to God, you never said that shit, I would never know (Ooh)" },
+  { time: 39.84, startTime: 39.84, endTime: 43.78, text: "If I should keep my word (If I, if I)" },
+  { time: 43.78, startTime: 43.78, endTime: 48.14, text: "Am I a narcissist at my worst?" },
+  { time: 48.14, startTime: 48.14, endTime: 52.74, text: "Oh, I just wanna be there when you're driving ninety-nine" },
+  { time: 52.74, startTime: 52.74, endTime: 57.19, text: "The way I catch a glimpse of us is only when we lie" },
+  { time: 57.19, startTime: 57.19, endTime: 60.69, text: "I guess, I'll just miss somebody" },
+  { time: 60.69, startTime: 60.69, endTime: 64.25, text: "We don't need somebody else (Oh)" },
+  { time: 64.25, startTime: 64.25, endTime: 67.24, text: "I just shouldn't ask you for help" },
+  { time: 67.24, startTime: 67.24, endTime: 71.82, text: "I can't tell if you're flirting or you're tryna to piss me off" },
+  { time: 71.82, startTime: 71.82, endTime: 76.03, text: "We're kissing in my brothers room, but something feels so wrong" },
+  { time: 76.03, startTime: 76.03, endTime: 77.76, text: "(Ha-ha, oh)" },
+  { time: 77.76, startTime: 77.76, endTime: 80.05, text: "Maybe cause the laughing's gone" },
+  { time: 80.05, startTime: 80.05, endTime: 83.85, text: "We can't even sing our songs but, you only know" },
+  { time: 83.85, startTime: 83.85, endTime: 86.5, text: "I just want to say that it's all right and" },
+  { time: 86.5, startTime: 86.5, endTime: 88.26, text: "Let me hold you close" },
+  { time: 88.26, startTime: 88.26, endTime: 92.7, text: "But I'm carrying this discipline, I'm moving to the coast" },
+  { time: 92.7, startTime: 92.7, endTime: 97.2, text: "So it's better when you tell me things, like \"I should go alone\"" },
+  { time: 97.2, startTime: 97.2, endTime: 102.07, text: "Pray to God, you never said that shit, I would never know (Ooh)" },
+  { time: 102.07, startTime: 102.07, endTime: 105.99, text: "If I should keep my word" },
+  { time: 105.99, startTime: 105.99, endTime: 110.47, text: "Am I a narcissist at my worst?" },
+  { time: 110.47, startTime: 110.47, endTime: 114.73, text: "Oh, I just wanna be there when I'm driving ninety-nine" },
+  { time: 114.73, startTime: 114.73, endTime: 119.23, text: "The way I catch a glimpse of us is only when we lie (Only when we lie)" },
+  { time: 119.23, startTime: 119.23, endTime: 122.88, text: "I guess, I'll just miss somebody (I just miss somebody)" },
+  { time: 122.88, startTime: 122.88, endTime: 124.66, text: "We don't need somebody else" },
+  { time: 124.66, startTime: 124.66, endTime: 126.54, text: "(We don't need, we don't need, we don't need, oh)" },
+  { time: 126.54, startTime: 126.54, endTime: 128.26, text: "I just shouldn't ask you for help-" },
+  { time: 128.26, startTime: 128.26, endTime: 132.61, text: "Oh, I just wanna see the way we're leaving it to go" },
+  { time: 132.61, startTime: 132.61, endTime: 137.17, text: "Oh, baby, baby, baby, is there something I should know?" },
+  { time: 137.17, startTime: 137.17, endTime: 139.39, text: "(Is there something I should know?)" },
+  { time: 139.39, startTime: 139.39, endTime: 144.07, text: "And I guess I'm never getting well, oh (Oh)" },
+  { time: 144.07, startTime: 144.07, endTime: 147.46, text: "But I could never ask you for help" },
+  { time: 147.46, startTime: 147.46, endTime: 150.33, text: "I don't know who to ask" },
+  { time: 150.33, startTime: 150.33, endTime: 153.24, text: "Should it be you?" },
+  { time: 153.24, startTime: 153.24, endTime: 157.01, text: "(I just shouldn't ask you for help)" },
+  { time: 157.01, startTime: 157.01, endTime: 162.19, text: "And I hope that you're just doing well (Well)" },
+  { time: 162.19, startTime: 162.19, endTime: 164.45, text: "I just shouldn't ask you for help" },
+  { time: 164.45, startTime: 164.45, endTime: 168.3, text: "I just wanna be there when you're driving ninety-nine" },
+  { time: 168.3, startTime: 168.3, endTime: 172.64, text: "The way I catch a glimpse of us is only when we lie" },
+  { time: 172.64, startTime: 172.64, endTime: 176.29, text: "I guess, I'll just miss somebody" },
+  { time: 176.29, startTime: 176.29, endTime: 179.82, text: "We don't need somebody else (Oh)" },
+  { time: 179.82, startTime: 179.82, endTime: 182.96, text: "I just shouldn't ask you for help" },
+  { time: 182.96, startTime: 182.96, endTime: 187.0, text: "..." },
+];
+
+
+export function getFallbackLyrics(trackId: string): LyricLine[] {
+  if (trackId === "with-ease") {
+    return WITH_EASE_LYRICS;
+  }
+  return NERVOUSNESS_LYRICS;
 }

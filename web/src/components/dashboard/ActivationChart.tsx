@@ -118,7 +118,7 @@ export function ActivationChart({
   const activePoint = hoveredIndex !== null ? points[hoveredIndex] : points[points.length - 1];
 
   return (
-    <div className="w-full mt-5 pt-5 border-t border-gray-800/80">
+    <div className="w-full">
       {/* Chart Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
         <div className="flex items-center space-x-2">

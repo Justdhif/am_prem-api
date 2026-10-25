@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { apiClient, DailyStatItem } from "@/lib/api";
 import { ActivationChart } from "./ActivationChart";
+import { Card } from "@/components/ui/card";
 
 export function HeroStats() {
   const [stats, setStats] = useState<{
@@ -50,17 +51,13 @@ export function HeroStats() {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: "easeOut" }}
-      className="space-y-6 relative"
+      className="space-y-5 relative"
     >
       {/* Background Ambient Glow */}
       <div className="absolute top-0 right-0 w-80 h-80 bg-[#00e599]/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
 
-      {/* Top Banner (Cardless, Seamless) */}
-      <div className="space-y-2">
-        <div className="flex items-center space-x-2 text-xs font-bold text-[#00e599] uppercase tracking-wider">
-          <span className="w-2 h-2 rounded-full bg-[#00e599] animate-pulse"></span>
-          <span>Resmi &amp; Otomatis</span>
-        </div>
+      {/* Top Banner (No "Resmi & Otomatis", Minimalist & Clean) */}
+      <div className="space-y-1.5">
         <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
           Layanan Aktivasi Alight Motion Pro VIP
         </h1>
@@ -84,16 +81,13 @@ export function HeroStats() {
           </div>
         </div>
 
-        {/* Stat 2: Aktivasi Hari Ini */}
+        {/* Stat 2: Aktivasi Hari Ini (Tanpa Animasi Ping) */}
         <div className="flex items-center space-x-3.5 py-1">
           <div className="w-12 h-12 rounded-2xl bg-gray-800/60 border border-gray-700/60 flex items-center justify-center text-amber-400 shrink-0">
             <i className="fa-solid fa-bolt-lightning text-lg"></i>
           </div>
           <div>
-            <div className="flex items-center space-x-2">
-              <span className="text-xs text-gray-400 font-medium block">Aktivasi Hari Ini</span>
-              <span className="w-2 h-2 rounded-full bg-[#00e599] animate-ping"></span>
-            </div>
+            <span className="text-xs text-gray-400 font-medium block">Aktivasi Hari Ini</span>
             <span className="text-2xl sm:text-3xl font-extrabold text-white font-mono tracking-tight block">
               {stats.loading ? "..." : stats.today.toLocaleString()}
             </span>
@@ -101,13 +95,15 @@ export function HeroStats() {
         </div>
       </div>
 
-      {/* Spline Wave Neon Area Chart */}
-      <ActivationChart
-        totalActivations={stats.total}
-        todayActivations={stats.today}
-        history={stats.history}
-        loading={stats.loading}
-      />
+      {/* Spline Wave Neon Area Chart - Wrapped in Dedicated Card */}
+      <Card className="p-4 sm:p-5 bg-[#121826] border border-gray-800/90 rounded-2xl shadow-xl overflow-hidden relative">
+        <ActivationChart
+          totalActivations={stats.total}
+          todayActivations={stats.today}
+          history={stats.history}
+          loading={stats.loading}
+        />
+      </Card>
     </motion.div>
   );
 }

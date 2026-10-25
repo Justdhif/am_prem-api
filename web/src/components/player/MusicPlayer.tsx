@@ -8,7 +8,16 @@ import { cn } from "@/lib/utils";
 
 export function MusicPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const lyricsContainerRef = useRef<HTMLDivElement | null>(null);
+
+  // Height tracking to lock Tab Lirik exactly to Tab Lagu height without jumping
+  const [desktopPlayerHeight, setDesktopPlayerHeight] = useState<number>(580);
+  const [modalPlayerHeight, setModalPlayerHeight] = useState<number>(580);
+  const desktopPlayerRef = useRef<HTMLDivElement>(null);
+  const modalPlayerRef = useRef<HTMLDivElement>(null);
+  const desktopLyricsRef = useRef<HTMLDivElement>(null);
+  const modalLyricsRef = useRef<HTMLDivElement>(null);
+  // Safe fallbacks to prevent any client caching ReferenceErrors
+  const lyricsContainerRef = desktopLyricsRef;
   const activeLyricRef = useRef<HTMLDivElement | null>(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -20,6 +29,51 @@ export function MusicPlayer() {
   const [activeTab, setActiveTab] = useState<"player" | "lyrics">("player");
   const [isLiked, setIsLiked] = useState(false);
   const [currentLyricIndex, setCurrentLyricIndex] = useState(0);
+  const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
+  const [isMiniPlayerVisible, setIsMiniPlayerVisible] = useState(true);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Auto-hide mini player during scroll on mobile, reappear after 3s of idle or when reaching top/bottom
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isMobileModalOpen) return;
+
+      const scrollY = window.scrollY || document.documentElement.scrollTop;
+      const viewportHeight = window.innerHeight;
+      const fullHeight = document.documentElement.scrollHeight;
+      const isAtTop = scrollY <= 15;
+      const isAtBottom = scrollY + viewportHeight >= fullHeight - 20;
+
+      // When reaching top or bottom of the page, show mini player immediately
+      if (isAtTop || isAtBottom) {
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+        }
+        setIsMiniPlayerVisible(true);
+        return;
+      }
+
+      // Hide mini player while scrolling
+      setIsMiniPlayerVisible(false);
+
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      // Reappear after 1 second of stopping scroll
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsMiniPlayerVisible(true);
+      }, 1000);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, [isMobileModalOpen]);
 
   // Format seconds to mm:ss
   const formatTime = (seconds: number) => {
@@ -29,28 +83,71 @@ export function MusicPlayer() {
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // Sync current lyric index as audio plays (sesuai menit mulai & berhenti)
+  // Sync current lyric index as audio plays
   useEffect(() => {
-    const idx = NERVOUSNESS_LYRICS.findIndex((item, i) => {
-      const start = item.startTime ?? item.time;
-      const end = item.endTime ?? NERVOUSNESS_LYRICS[i + 1]?.startTime ?? NERVOUSNESS_LYRICS[i + 1]?.time ?? Infinity;
-      return currentTime >= start && currentTime < end;
-    });
+    let matchIdx = -1;
+    for (let i = 0; i < NERVOUSNESS_LYRICS.length; i++) {
+      const item = NERVOUSNESS_LYRICS[i];
+      const nextItem = NERVOUSNESS_LYRICS[i + 1];
+      const start = item.startTime;
+      const end = nextItem ? nextItem.startTime : item.endTime;
+      if (currentTime >= start && currentTime < end) {
+        matchIdx = i;
+        break;
+      }
+    }
 
-    if (idx !== -1 && idx !== currentLyricIndex) {
-      setCurrentLyricIndex(idx);
+    if (matchIdx === -1 && currentTime >= NERVOUSNESS_LYRICS[NERVOUSNESS_LYRICS.length - 1].startTime) {
+      matchIdx = NERVOUSNESS_LYRICS.length - 1;
+    }
+
+    if (matchIdx !== -1 && matchIdx !== currentLyricIndex) {
+      setCurrentLyricIndex(matchIdx);
     }
   }, [currentTime, currentLyricIndex]);
 
+  // Observe and measure Tab Lagu height on both desktop and mobile modal
+  useEffect(() => {
+    const observeRef = (
+      el: HTMLDivElement | null,
+      setHeight: (h: number) => void
+    ) => {
+      if (!el) return null;
+      if (el.offsetHeight > 50) {
+        setHeight(el.offsetHeight);
+      }
+      const obs = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const h = entry.borderBoxSize?.[0]?.blockSize || entry.contentRect.height;
+          if (h > 50) setHeight(Math.round(h));
+        }
+      });
+      obs.observe(el);
+      return obs;
+    };
+
+    const dObs = observeRef(desktopPlayerRef.current, setDesktopPlayerHeight);
+    const mObs = observeRef(modalPlayerRef.current, setModalPlayerHeight);
+
+    return () => {
+      dObs?.disconnect();
+      mObs?.disconnect();
+    };
+  }, [isMobileModalOpen, activeTab]);
+
   // Auto-scroll active lyric in full lyrics tab
   useEffect(() => {
-    if (activeTab === "lyrics" && activeLyricRef.current && lyricsContainerRef.current) {
-      activeLyricRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
+    if (activeTab === "lyrics") {
+      const container = isMobileModalOpen ? modalLyricsRef.current : desktopLyricsRef.current;
+      const activeEl = container?.querySelector('[data-active-lyric="true"]');
+      if (activeEl) {
+        activeEl.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
     }
-  }, [currentLyricIndex, activeTab]);
+  }, [currentLyricIndex, activeTab, isMobileModalOpen]);
 
   // Audio Event Listeners
   const handleTimeUpdate = () => {
@@ -141,20 +238,14 @@ export function MusicPlayer() {
       ? NERVOUSNESS_LYRICS[currentLyricIndex + 1]
       : null;
 
-  return (
-    <div className="w-full bg-transparent border-0 shadow-none relative text-left">
-      {/* Hidden Native Audio Element */}
-      <audio
-        ref={audioRef}
-        src="/audio/nervousness.mp3"
-        preload="metadata"
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleLoadedMetadata}
-        onEnded={() => {
-          if (!isLoop) setIsPlaying(false);
-        }}
-      />
+  // Reusable Full Player Content (shared by Desktop Sidebar and Mobile Popup Modal)
+  const renderPlayerBody = (isModal: boolean = false) => {
+    const currentPlayerRef = isModal ? modalPlayerRef : desktopPlayerRef;
+    const currentLyricsRef = isModal ? modalLyricsRef : desktopLyricsRef;
+    const currentTargetHeight = isModal ? modalPlayerHeight : desktopPlayerHeight;
 
+    return (
+      <div className="w-full text-left">
       {/* Header Bar */}
       <div className="flex items-center justify-between pb-3 border-b border-gray-800/80 mb-4">
         <div className="flex items-center space-x-2 text-left">
@@ -214,16 +305,18 @@ export function MusicPlayer() {
         </div>
       </div>
 
-      <AnimatePresence mode="wait">
-        {activeTab === "player" ? (
-          <motion.div
-            key="player"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
-            className="space-y-3.5 text-left"
-          >
+      {/* Container for both tabs with matched height to eliminate jumping */}
+      <div className="relative w-full">
+        {/* 1. Tab Lagu (Player) */}
+        <div
+          ref={currentPlayerRef}
+          className={cn(
+            "space-y-3.5 text-left transition-opacity duration-200",
+            activeTab === "player"
+              ? "opacity-100 relative"
+              : "opacity-0 pointer-events-none invisible absolute inset-x-0 top-0"
+          )}
+        >
             {/* 1. Album Cover */}
             <div className="relative aspect-video sm:aspect-square w-full rounded-2xl overflow-hidden border border-gray-800 shadow-md bg-[#0d121f] group/cover">
               <Image
@@ -254,7 +347,7 @@ export function MusicPlayer() {
               </button>
             </div>
 
-            {/* 2. 3-Line Dynamic Synchronized Lyrics (Rata Kiri & Tanpa Border Card) */}
+            {/* 2. 3-Line Dynamic Synchronized Lyrics */}
             <div className="py-2.5 px-0.5 space-y-1.5 text-left select-none overflow-hidden min-h-[92px] flex flex-col justify-center">
               {/* Previous Line */}
               <div
@@ -268,7 +361,7 @@ export function MusicPlayer() {
                 {prevLine?.text || "—"}
               </div>
 
-              {/* Active Line (Rata Kiri, Lebih Besar, Lebih Bold, Neon Mint Highlight) */}
+              {/* Active Line */}
               <motion.div
                 key={currentLyricIndex}
                 initial={{ opacity: 0, y: 3 }}
@@ -294,18 +387,14 @@ export function MusicPlayer() {
               </div>
             </div>
 
-            {/* 3. Song Info Bar (Title & Artist, Rata Kiri) */}
+            {/* 3. Song Info Bar (Title & Artist) */}
             <div className="flex items-center justify-between pt-0.5 text-left">
               <div className="min-w-0 pr-2 text-left">
                 <h3 className="text-base font-bold text-white tracking-tight truncate hover:text-[#00e599] transition cursor-pointer text-left">
                   nervousness
                 </h3>
-                <p className="text-xs text-gray-400 font-medium truncate flex items-center space-x-1.5 mt-0.5 text-left">
-                  <span>Joon</span>
-                  <span className="w-1 h-1 rounded-full bg-gray-600"></span>
-                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-gray-800 text-gray-400 font-semibold border border-gray-700/60">
-                    Official Single
-                  </span>
+                <p className="text-xs text-gray-400 font-medium truncate mt-0.5 text-left">
+                  Joon
                 </p>
               </div>
 
@@ -453,18 +542,20 @@ export function MusicPlayer() {
                 {isMuted ? "0%" : `${Math.round(volume * 100)}%`}
               </span>
             </div>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="lyrics"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
-            className="space-y-3 text-left"
+          </div>
+
+          {/* 2. Tab Lirik (Lyrics) - Height locked exactly to currentTargetHeight */}
+          <div
+            style={{ height: `${currentTargetHeight}px` }}
+            className={cn(
+              "flex flex-col text-left space-y-3 transition-opacity duration-200",
+              activeTab === "lyrics"
+                ? "opacity-100 relative"
+                : "opacity-0 pointer-events-none invisible absolute inset-x-0 top-0"
+            )}
           >
             {/* Lyrics Header with Mini Play/Pause */}
-            <div className="flex items-center justify-between p-2 rounded-xl bg-[#0d121f] border border-gray-800">
+            <div className="shrink-0 flex items-center justify-between p-2 rounded-xl bg-[#0d121f] border border-gray-800">
               <div className="flex items-center space-x-2 min-w-0 text-left">
                 <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-gray-800">
                   <Image
@@ -491,12 +582,12 @@ export function MusicPlayer() {
               </button>
             </div>
 
-            {/* Dynamic Scrollable Full Lyrics List (Rata Kiri, Tanpa Emoji) */}
+            {/* Dynamic Scrollable Full Lyrics List (Fills remaining height) */}
             <div
-              ref={lyricsContainerRef}
-              className="h-80 overflow-y-auto px-1 py-3 space-y-2.5 custom-scrollbar rounded-xl bg-[#0d121f]/40 border border-gray-800/60 relative select-none text-left"
+              ref={currentLyricsRef}
+              className="flex-1 min-h-0 overflow-y-auto px-1 py-3 space-y-2.5 custom-scrollbar rounded-xl bg-[#0d121f]/40 border border-gray-800/60 relative select-none text-left"
             >
-              <div className="text-[10px] text-gray-500 uppercase tracking-widest text-left px-2 pb-2 border-b border-gray-800/60 font-semibold">
+              <div className="text-[10px] text-gray-500 uppercase tracking-widest text-left px-2 pb-2 border-b border-gray-800/60 font-semibold sticky top-0 bg-[#0d121f]/95 backdrop-blur-xs z-10">
                 Klik lirik untuk loncat ke bait
               </div>
 
@@ -507,12 +598,12 @@ export function MusicPlayer() {
                 return (
                   <div
                     key={idx}
-                    ref={isActive ? activeLyricRef : null}
+                    data-active-lyric={isActive ? "true" : undefined}
                     onClick={() => handleLyricClick(line.time)}
                     className={cn(
                       "px-2.5 py-1.5 rounded-lg transition-all duration-300 cursor-pointer text-left leading-relaxed",
                       isActive
-                        ? "text-[#00e599] font-black text-sm drop-shadow-[0_0_10px_rgba(0,229,153,0.3)]"
+                        ? "text-[#00e599] font-black text-sm drop-shadow-[0_0_10px_rgba(0,229,153,0.3)] bg-[#00e599]/10"
                         : isPassed
                         ? "text-gray-500 hover:text-gray-300 font-medium text-xs hover:bg-gray-800/40"
                         : "text-gray-400 hover:text-gray-200 font-medium text-xs hover:bg-gray-800/40"
@@ -528,14 +619,199 @@ export function MusicPlayer() {
             <button
               type="button"
               onClick={() => setActiveTab("player")}
-              className="w-full py-2 rounded-xl bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-semibold text-xs transition flex items-center justify-center space-x-1.5 cursor-pointer"
+              className="shrink-0 w-full py-2 rounded-xl bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-semibold text-xs transition flex items-center justify-center space-x-1.5 cursor-pointer"
             >
               <i className="fa-solid fa-compact-disc"></i>
               <span>Kembali ke Pemutar Audio</span>
             </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <>
+      {/* Hidden Native Audio Element (stays mounted and active continuously) */}
+      <audio
+        ref={audioRef}
+        src="/audio/nervousness.mp3"
+        preload="metadata"
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
+        onEnded={() => {
+          if (!isLoop) setIsPlaying(false);
+        }}
+      />
+
+      {/* 1. Desktop Mode Player: Inline in Sidebar (Hidden on Mobile < lg) */}
+      <div className="hidden lg:block w-full bg-transparent border-0 shadow-none relative text-left">
+        {renderPlayerBody(false)}
+      </div>
+
+      {/* 2. Mobile Mode: Floating Sticky Mini Player Bar (Spotify Style, Sticky Bottom = 0, Visible ONLY on < lg) */}
+      <div
+        className={cn(
+          "block lg:hidden fixed bottom-0 left-0 right-0 z-40 p-2 sm:p-3 bg-gradient-to-t from-[#070b13] via-[#070b13]/95 to-transparent transition-all duration-500 ease-in-out",
+          isMiniPlayerVisible
+            ? "translate-y-0 opacity-100 pointer-events-auto"
+            : "translate-y-full opacity-0 pointer-events-none"
+        )}
+      >
+        <div
+          onClick={() => setIsMobileModalOpen(true)}
+          className="relative flex items-center justify-between px-4 py-3 bg-[#111726]/95 hover:bg-[#161e30] border border-gray-800/90 rounded-2xl shadow-2xl backdrop-blur-md transition cursor-pointer overflow-hidden group select-none active:scale-[0.99]"
+        >
+          {/* Left: Title & Artist (Direct text, consistent with user's reference) */}
+          <div className="min-w-0 flex-1 pr-3 text-left">
+            <h4 className="text-sm sm:text-base font-bold text-white truncate tracking-tight leading-tight">
+              nervousness
+            </h4>
+            <p className="text-xs text-gray-400 font-medium truncate mt-0.5">
+              Joon
+            </p>
+          </div>
+
+          {/* Right Controls: [Heart] [Previous] [Play/Pause Glow Circle] [Next] */}
+          <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
+            {/* Like Button (Heart) */}
+            <button
+              type="button"
+              aria-label="Sukai Lagu"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsLiked(!isLiked);
+              }}
+              className="p-1.5 text-gray-300 hover:text-[#00e599] transition active:scale-90 cursor-pointer"
+              title={isLiked ? "Batal Suka" : "Sukai Lagu"}
+            >
+              <i
+                className={cn(
+                  "text-base sm:text-lg",
+                  isLiked ? "fa-solid fa-heart text-[#00e599]" : "fa-regular fa-heart"
+                )}
+              ></i>
+            </button>
+
+            {/* Previous Track / Skip -10s */}
+            <button
+              type="button"
+              aria-label="Mundur 10 Detik"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSkip(-10);
+              }}
+              className="p-1.5 text-gray-300 hover:text-white transition active:scale-90 cursor-pointer"
+              title="Mundur 10s"
+            >
+              <i className="fa-solid fa-backward-step text-base"></i>
+            </button>
+
+            {/* Play / Pause Button (Glowing Neon Mint Circle) */}
+            <button
+              type="button"
+              aria-label={isPlaying ? "Jeda" : "Putar"}
+              onClick={(e) => {
+                e.stopPropagation();
+                togglePlay();
+              }}
+              className="w-10 h-10 rounded-full bg-[#00e599] text-gray-950 flex items-center justify-center shadow-[0_0_16px_rgba(0,229,153,0.5)] hover:bg-[#1affaa] active:scale-95 transition cursor-pointer mx-0.5"
+            >
+              <i
+                className={cn(
+                  "text-sm",
+                  isPlaying ? "fa-solid fa-pause" : "fa-solid fa-play ml-0.5"
+                )}
+              ></i>
+            </button>
+
+            {/* Next Track / Skip +10s */}
+            <button
+              type="button"
+              aria-label="Maju 10 Detik"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSkip(10);
+              }}
+              className="p-1.5 text-gray-300 hover:text-white transition active:scale-90 cursor-pointer"
+              title="Maju 10s"
+            >
+              <i className="fa-solid fa-forward-step text-base"></i>
+            </button>
+          </div>
+
+          {/* White Audio Progress Bar (at bottom edge of mini player card) */}
+          <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-white/20 overflow-hidden rounded-b-2xl">
+            <div
+              className="h-full bg-white transition-all duration-150 rounded-b-2xl"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Mobile Full Audio Player Bottom Sheet / Modal (Opened when clicking the mini bar) */}
+      <AnimatePresence>
+        {isMobileModalOpen && (
+          <motion.div
+            key="mobile-player-modal"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 lg:hidden bg-black/80 backdrop-blur-xl flex flex-col justify-end"
+          >
+            {/* Backdrop click to close */}
+            <div
+              onClick={() => setIsMobileModalOpen(false)}
+              className="absolute inset-0 z-0"
+              aria-hidden="true"
+            />
+
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 300 }}
+              className="relative z-10 w-full max-h-[92vh] overflow-y-auto bg-[#0d121f] border-t border-gray-800 rounded-t-3xl p-4 sm:p-6 shadow-2xl flex flex-col text-left custom-scrollbar"
+            >
+              {/* Top Drag Indicator & Collapse Header */}
+              <div className="flex flex-col items-center pb-2">
+                <div className="w-10 h-1 bg-gray-700/80 rounded-full mb-3"></div>
+                <div className="w-full flex items-center justify-between pb-2 border-b border-gray-800/80">
+                  <button
+                    type="button"
+                    onClick={() => setIsMobileModalOpen(false)}
+                    className="p-2 text-gray-400 hover:text-white transition -ml-2 cursor-pointer active:scale-95"
+                    aria-label="Tutup Pemutar"
+                  >
+                    <i className="fa-solid fa-chevron-down text-base"></i>
+                  </button>
+                  <span className="text-xs font-bold text-gray-200 uppercase tracking-wider">
+                    Now Playing
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setIsLiked(!isLiked)}
+                    className="p-2 text-gray-400 hover:text-[#00e599] transition -mr-2"
+                  >
+                    <i
+                      className={cn(
+                        "text-base",
+                        isLiked ? "fa-solid fa-heart text-[#00e599]" : "fa-regular fa-heart"
+                      )}
+                    ></i>
+                  </button>
+                </div>
+              </div>
+
+              {/* Full Player Content Inside Sheet */}
+              <div className="pt-2">
+                {renderPlayerBody(true)}
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 }

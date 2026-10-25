@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export function Footer() {
   return (
-    <footer className="border-t border-gray-800/80 py-6 mt-12 text-center text-xs text-gray-500 bg-[#0d121f]">
+    <footer className="hidden lg:block border-t border-gray-800/80 py-6 mt-12 text-center text-xs text-gray-500 bg-[#0d121f]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="flex items-center space-x-2">
           <div className="relative w-5 h-5 rounded-md overflow-hidden shrink-0">

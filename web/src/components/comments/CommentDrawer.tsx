@@ -88,8 +88,8 @@ export function CommentDrawer() {
 
   return (
     <>
-      {/* Floating Action Button (FAB) Bottom Right */}
-      <div className="fixed bottom-6 right-6 z-40">
+      {/* Floating Action Button (FAB) Bottom Right - Placed above the sticky mini player on mobile */}
+      <div className="fixed bottom-[80px] sm:bottom-[84px] lg:bottom-6 right-4 sm:right-6 z-40 transition-all duration-200">
         <motion.button
           id="btnToggleComments"
           type="button"

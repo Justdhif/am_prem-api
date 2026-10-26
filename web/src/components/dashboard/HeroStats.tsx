@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { apiClient, DailyStatItem } from "@/lib/api";
 import { ActivationChart } from "./ActivationChart";
@@ -54,25 +53,14 @@ export function HeroStats() {
       transition={{ duration: 0.45, ease: "easeOut" }}
       className="space-y-5 relative max-w-full pt-0"
     >
-      {/* Top Banner with Official Alight Motion App Badge */}
-      <div className="flex items-start space-x-3.5 pt-0">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl overflow-hidden border border-gray-800 bg-[#070b13] shrink-0 shadow-lg shadow-[#00e599]/10">
-          <Image
-            src="/logo.jpg"
-            alt="Alight Motion Official App"
-            width={56}
-            height={56}
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div className="space-y-1 min-w-0 flex-1">
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-0 pt-0">
-            Layanan Aktivasi Alight Motion Pro VIP
-          </h1>
-          <p className="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-2xl">
-            Endpoint mandiri &amp; otomatis untuk verifikasi Firebase link menjadi lisensi Alight Motion Pro VIP Resmi 1 Tahun tanpa watermark.
-          </p>
-        </div>
+      {/* Top Banner (Minimalist, Clean & Wide Typography) */}
+      <div className="space-y-1.5 pt-0">
+        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-0 pt-0">
+          Layanan Aktivasi Alight Motion Pro VIP
+        </h1>
+        <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-2xl">
+          Endpoint mandiri &amp; otomatis untuk verifikasi Firebase link menjadi lisensi Alight Motion Pro VIP Resmi 1 Tahun tanpa watermark.
+        </p>
       </div>
 
       {/* Primary Stats Grid (Cardless & Minimalist) */}

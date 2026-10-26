@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MusicPlayer } from "@/components/player/MusicPlayer";
@@ -24,33 +23,24 @@ export default function DocsPage() {
 
         {/* Main Content Area */}
         <main className="flex-1 w-full space-y-6 sm:space-y-8 min-w-0 overflow-x-hidden max-w-full pt-0">
-          {/* Back Button to Homepage */}
-          <div className="pt-0">
-            <Link
-              href="/"
-              className="inline-flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-[#121826] hover:bg-gray-800 text-gray-300 hover:text-white text-xs font-semibold border border-gray-800 transition shadow-sm active:scale-95 cursor-pointer"
-            >
-              <i className="fa-solid fa-arrow-left text-[11px] text-[#00e599]"></i>
-              <span>Kembali ke Beranda</span>
-            </Link>
-          </div>
-
-          {/* Docs Page Header */}
-          <div className="flex items-start space-x-3.5 pt-0 mt-0">
-            <div className="w-12 h-12 rounded-2xl overflow-hidden border border-gray-800 bg-[#070b13] shrink-0 shadow-lg shadow-[#00e599]/10">
-              <Image
-                src="/logo.jpg"
-                alt="Alight Motion Logo"
-                width={48}
-                height={48}
-                className="w-full h-full object-cover"
-              />
+          {/* Back Button and Docs Header grouped tightly */}
+          <div className="space-y-3 pt-0">
+            <div>
+              <Link
+                href="/"
+                className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-xl bg-[#121826] hover:bg-gray-800 text-gray-300 hover:text-white text-xs font-semibold border border-gray-800 transition shadow-sm active:scale-95 cursor-pointer"
+              >
+                <i className="fa-solid fa-arrow-left text-[11px] text-[#00e599]"></i>
+                <span>Kembali ke Beranda</span>
+              </Link>
             </div>
-            <div className="space-y-1 min-w-0 flex-1">
+
+            {/* Docs Page Header */}
+            <div className="space-y-1.5 pt-0">
               <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                 Dokumentasi API Alight Motion Pro
               </h1>
-              <p className="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-2xl">
+              <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-2xl">
                 Panduan integrasi endpoint untuk bot Telegram/WhatsApp atau automasi mandiri aktivasi lisensi Alight Motion Pro VIP Resmi 1 Tahun dan scraper preset TikTok/YouTube.
               </p>
             </div>

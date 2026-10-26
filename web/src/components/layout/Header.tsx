@@ -9,11 +9,11 @@ export function Header() {
         <Link href="/" className="flex items-center space-x-3 shrink-0 group">
           <div className="w-10 h-10 rounded-xl overflow-hidden border border-[#00e599]/40 shadow-sm shadow-[#00e599]/20 shrink-0 group-hover:scale-105 transition">
             <Image
-              src="/logo.jpg"
-              alt="Alight Motion Logo"
+              src="/logo-web.png"
+              alt="AM Pro API Logo"
               width={40}
               height={40}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain p-0.5"
               priority
             />
           </div>

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   title: "Alight Motion Pro API Docs - by Justdhif",
   description: "REST API documentation & interactive tester for Alight Motion Pro activation",
   icons: {
-    icon: "/logo.jpg",
+    icon: "/logo-web.png",
   },
 };
 

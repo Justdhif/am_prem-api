@@ -323,8 +323,19 @@ export function HomeServices() {
                   animate={{ scale: 1, opacity: 1 }}
                   className="p-6 rounded-2xl bg-gradient-to-br from-[#0d1e18] via-[#111c24] to-[#121826] border border-[#00e599]/40 space-y-4 text-center"
                 >
-                  <div className="w-16 h-16 rounded-full bg-[#00e599]/20 text-[#00e599] border border-[#00e599]/40 flex items-center justify-center mx-auto text-2xl shadow-lg shadow-[#00e599]/25">
-                    <i className="fa-solid fa-crown"></i>
+                  <div className="relative w-16 h-16 mx-auto">
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-[#00e599]/60 shadow-lg shadow-[#00e599]/30">
+                      <Image
+                        src="/logo.jpg"
+                        alt="Alight Motion App"
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#00e599] text-gray-950 flex items-center justify-center text-xs shadow-md">
+                      <i className="fa-solid fa-crown text-[10px]"></i>
+                    </div>
                   </div>
 
                   <div className="space-y-1">

@@ -7,10 +7,10 @@ export function Footer() {
         <div className="flex items-center space-x-2">
           <div className="relative w-5 h-5 rounded-md overflow-hidden shrink-0">
             <Image
-              src="/logo.jpg"
-              alt="Logo"
+              src="/logo-web.png"
+              alt="AM Pro API Logo"
               fill
-              className="object-cover"
+              className="object-contain"
             />
           </div>
           <span className="text-gray-300 font-semibold text-xs">

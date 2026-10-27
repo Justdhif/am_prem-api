@@ -249,12 +249,8 @@ echo $result;`,
       <div id="overview" className="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-[#121826] via-[#121826] to-[#0d1622] border border-gray-800 shadow-xl space-y-4 text-left scroll-mt-32">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#00e599] animate-pulse"></span>
             <span className="text-xs font-bold text-gray-300 uppercase tracking-wider">
               API Production Server
-            </span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#00e599]/15 text-[#00e599] font-mono border border-[#00e599]/30">
-              Online 🟢
             </span>
           </div>
 

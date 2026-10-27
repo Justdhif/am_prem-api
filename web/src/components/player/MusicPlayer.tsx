@@ -474,18 +474,6 @@ export function MusicPlayer() {
               {/* Ambient overlay & seamless gradient fade to card background (#0d121f) */}
               <div className="absolute inset-0 bg-gradient-to-t from-[#0d121f] via-[#0d121f]/30 to-transparent pointer-events-none" />
               <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#0d121f] via-[#0d121f]/90 to-transparent pointer-events-none" />
-
-              {/* Quick Play Overlay Button */}
-              <button
-                type="button"
-                onClick={togglePlay}
-                aria-label={isPlaying ? "Jeda" : "Putar"}
-                className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/cover:opacity-100 transition-opacity bg-black/30 backdrop-blur-xs cursor-pointer z-10"
-              >
-                <div className="w-12 h-12 rounded-full bg-[#00e599] text-gray-950 flex items-center justify-center shadow-lg shadow-[#00e599]/40 hover:scale-110 active:scale-95 transition">
-                  <i className={cn("fa-solid text-lg", isPlaying ? "fa-pause" : "fa-play ml-0.5")}></i>
-                </div>
-              </button>
             </div>
 
             {/* 2. 3-Line Dynamic Synchronized Lyrics (Fixed Height Container to Prevent Layout Shifts) */}

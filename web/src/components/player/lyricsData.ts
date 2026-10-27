@@ -9,6 +9,14 @@ export interface Track {
 
 export const PLAYLIST: Track[] = [
   {
+    id: "aint-in-la",
+    title: "Ain't In LA",
+    artist: "ADÉLA",
+    src: "/audio/aint-in-la.mp3",
+    cover: "/audio/cover-aint-in-la.jpg",
+    duration: 219,
+  },
+  {
     id: "nervousness",
     title: "nervousness",
     artist: "Joon",
@@ -32,6 +40,62 @@ export interface LyricLine {
   endTime: number; // in seconds
   text: string;
 }
+
+// Synced lyrics for "ADÉLA - Ain't In LA"
+export const AINT_IN_LA_LYRICS: LyricLine[] = [
+  { time: 0.0, startTime: 0.0, endTime: 2.73, text: "..." },
+  { time: 2.73, startTime: 2.73, endTime: 6.17, text: "Back it up, subwoofers in the trunk, and the" },
+  { time: 6.17, startTime: 6.17, endTime: 9.59, text: "Gemstones in the teeth go dumb, and the" },
+  { time: 9.59, startTime: 9.59, endTime: 13.03, text: "Light the cigarette with the propane" },
+  { time: 13.03, startTime: 13.03, endTime: 16.54, text: "Honda Civic doing donuts in the rain" },
+  { time: 16.54, startTime: 16.54, endTime: 19.94, text: "Back it up, subwoofers in the trunk, and the" },
+  { time: 19.94, startTime: 19.94, endTime: 23.42, text: "Gemstones in the teeth go dumb, and the" },
+  { time: 23.42, startTime: 23.42, endTime: 26.9, text: "Light the cigarette with the propane" },
+  { time: 26.9, startTime: 26.9, endTime: 29.82, text: "Honda Civic doing donuts in the rain" },
+  { time: 29.82, startTime: 29.82, endTime: 33.38, text: "She shares a room with her younger brother" },
+  { time: 33.38, startTime: 33.38, endTime: 36.82, text: "Clothes secondhand from her best friend's mother" },
+  { time: 36.82, startTime: 36.82, endTime: 40.01, text: "Cut it all up, yeah, she got her own style" },
+  { time: 40.01, startTime: 40.01, endTime: 43.95, text: "Madonna on the wall next to Destiny's Child" },
+  { time: 43.95, startTime: 43.95, endTime: 46.51, text: "And she's all that" },
+  { time: 46.51, startTime: 46.51, endTime: 50.87, text: "'Cause she knows she's beautiful" },
+  { time: 50.87, startTime: 50.87, endTime: 53.63, text: "And she's taught that" },
+  { time: 53.63, startTime: 53.63, endTime: 56.14, text: "Her dreams don't live at home" },
+  { time: 56.14, startTime: 56.14, endTime: 59.28, text: "Maybe tonight" },
+  { time: 59.28, startTime: 59.28, endTime: 63.12, text: "We don't gotta run away" },
+  { time: 63.12, startTime: 63.12, endTime: 65.95, text: "It's all a lie" },
+  { time: 65.95, startTime: 65.95, endTime: 70.05, text: "The baddest bitches ain't in L.A." },
+  { time: 70.05, startTime: 70.05, endTime: 72.89, text: "Enjoy the ride" },
+  { time: 72.89, startTime: 72.89, endTime: 76.98, text: "I know that you might wanna escape" },
+  { time: 76.98, startTime: 76.98, endTime: 79.85, text: "It's all a lie" },
+  { time: 79.85, startTime: 79.85, endTime: 85.58, text: "The baddest bitches ain't in L.A." },
+  { time: 85.58, startTime: 85.58, endTime: 89.08, text: "Back it up, subwoofers in the trunk, and the" },
+  { time: 89.08, startTime: 89.08, endTime: 92.51, text: "Gemstones in the teeth go dumb, and the" },
+  { time: 92.51, startTime: 92.51, endTime: 95.93, text: "Light the cigarette with the propane" },
+  { time: 95.93, startTime: 95.93, endTime: 99.08, text: "Honda Civic doing donuts in the rain" },
+  { time: 99.08, startTime: 99.08, endTime: 102.46, text: "All of the girls in them unknown cities" },
+  { time: 102.46, startTime: 102.46, endTime: 106.11, text: "You're so unique and your face so pretty" },
+  { time: 106.11, startTime: 106.11, endTime: 107.81, text: "Don't look like anyone" },
+  { time: 107.81, startTime: 107.81, endTime: 109.21, text: "You're not just anyone" },
+  { time: 109.21, startTime: 109.21, endTime: 113.03, text: "I'd rather be a nobody than to be like everyone" },
+  { time: 113.03, startTime: 113.03, endTime: 115.65, text: "And you're all that" },
+  { time: 115.65, startTime: 115.65, endTime: 119.9, text: "'Cause you know you're beautiful" },
+  { time: 119.9, startTime: 119.9, endTime: 122.39, text: "And you're taught that" },
+  { time: 122.39, startTime: 122.39, endTime: 125.2, text: "Your dreams don't live at home" },
+  { time: 125.2, startTime: 125.2, endTime: 128.3, text: "Maybe tonight" },
+  { time: 128.3, startTime: 128.3, endTime: 132.1, text: "We don't gotta run away" },
+  { time: 132.1, startTime: 132.1, endTime: 134.9, text: "It's all a lie" },
+  { time: 134.9, startTime: 134.9, endTime: 138.9, text: "The baddest bitches ain't in L.A." },
+  { time: 138.9, startTime: 138.9, endTime: 141.8, text: "Enjoy the ride" },
+  { time: 141.8, startTime: 141.8, endTime: 145.9, text: "I know that you might wanna escape" },
+  { time: 145.9, startTime: 145.9, endTime: 148.8, text: "It's all a lie" },
+  { time: 148.8, startTime: 148.8, endTime: 154.4, text: "The baddest bitches ain't in L.A." },
+  { time: 154.4, startTime: 154.4, endTime: 157.9, text: "Back it up, subwoofers in the trunk, and the" },
+  { time: 157.9, startTime: 157.9, endTime: 161.3, text: "Gemstones in the teeth go dumb, and the" },
+  { time: 161.3, startTime: 161.3, endTime: 164.8, text: "Light the cigarette with the propane" },
+  { time: 164.8, startTime: 164.8, endTime: 172.2, text: "Honda Civic doing donuts in the rain" },
+  { time: 172.2, startTime: 172.2, endTime: 179.0, text: "The baddest bitches ain't in L.A." },
+  { time: 179.0, startTime: 179.0, endTime: 219.0, text: "..." },
+];
 
 // Synced lyrics for "Joon - nervousness"
 export const NERVOUSNESS_LYRICS: LyricLine[] = [
@@ -129,7 +193,7 @@ export function parseLrcLyrics(lrcText: string, totalDuration = 215): LyricLine[
     });
   }
 
-  // If last line isn\'t '...', append outro '...'
+  // If last line isn't '...', append outro '...'
   if (parsed.length > 0) {
     const last = parsed[parsed.length - 1];
     if (last.text !== '...' && last.time < totalDuration - 2) {
@@ -150,7 +214,6 @@ export function parseLrcLyrics(lrcText: string, totalDuration = 215): LyricLine[
 
   return parsed;
 }
-
 
 // Synced lyrics for "Joon - with ease"
 export const WITH_EASE_LYRICS: LyricLine[] = [
@@ -207,8 +270,10 @@ export const WITH_EASE_LYRICS: LyricLine[] = [
   { time: 182.96, startTime: 182.96, endTime: 187.0, text: "..." },
 ];
 
-
 export function getFallbackLyrics(trackId: string): LyricLine[] {
+  if (trackId === "aint-in-la") {
+    return AINT_IN_LA_LYRICS;
+  }
   if (trackId === "with-ease") {
     return WITH_EASE_LYRICS;
   }

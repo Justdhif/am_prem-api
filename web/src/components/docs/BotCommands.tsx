@@ -9,15 +9,27 @@ const BASE_URL = "https://amprem-api.vercel.app";
 
 export function BotCommands() {
   const [copiedPath, setCopiedPath] = useState(false);
+  const [copiedRawBody, setCopiedRawBody] = useState(false);
   const [copiedChip, setCopiedChip] = useState<string | null>(null);
   const [activeResponseIndex, setActiveResponseIndex] = useState(0);
 
   const path = "/api/am/command";
 
+  const rawBodyExample = `{
+  "text": "!amprem user@gmail.com",
+  "senderId": "628123456789@s.whatsapp.net"
+}`;
+
   const handleCopyPath = () => {
     navigator.clipboard.writeText(path);
     setCopiedPath(true);
     setTimeout(() => setCopiedPath(false), 2000);
+  };
+
+  const handleCopyRawBody = () => {
+    navigator.clipboard.writeText(rawBodyExample);
+    setCopiedRawBody(true);
+    setTimeout(() => setCopiedRawBody(false), 2000);
   };
 
   const handleCopyCommand = (cmd: string) => {
@@ -105,6 +117,26 @@ echo $result;`,
   "success": false,
   "message": "Perintah tidak dikenali. Ketik !amhelp untuk melihat daftar perintah yang tersedia.",
   "error": "Unknown bot command"
+}`,
+    },
+    {
+      status: 429,
+      statusText: "Too Many Requests",
+      isError: true,
+      payload: `{
+  "success": false,
+  "message": "Pesan bot terlalu cepat (spam protection). Harap tunggu 5 detik sebelum mengirim perintah lagi.",
+  "error": "Rate limit exceeded"
+}`,
+    },
+    {
+      status: 500,
+      statusText: "Internal Server Error",
+      isError: true,
+      payload: `{
+  "success": false,
+  "message": "Terjadi kegagalan internal pada parser webhook bot.",
+  "error": "Webhook Execution Failed"
 }`,
     },
   ];
@@ -240,6 +272,32 @@ echo $result;`,
         </div>
       </div>
 
+      {/* Postman-style Raw JSON Request Body */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2 text-xs font-bold text-gray-300">
+            <i className="fa-solid fa-code text-[#00e599] text-xs"></i>
+            <span>Body Request (Raw JSON — Postman)</span>
+            <span className="text-[10px] font-mono text-gray-400 bg-[#0d121f] px-2 py-0.5 rounded border border-gray-800">
+              Content-Type: application/json
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={handleCopyRawBody}
+            className="px-2.5 py-1 rounded-lg bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-white text-[11px] font-medium transition active:scale-95 flex items-center space-x-1.5 cursor-pointer"
+          >
+            <i className={cn(copiedRawBody ? "fa-solid fa-check text-[#00e599]" : "fa-regular fa-copy text-[10px]")}></i>
+            <span>{copiedRawBody ? "Tersalin!" : "Salin JSON"}</span>
+          </button>
+        </div>
+        <div className="rounded-xl border border-gray-800 bg-[#070b13] p-3.5 sm:p-4 overflow-x-auto custom-scrollbar">
+          <pre className="font-mono text-xs leading-relaxed text-[#00e599] whitespace-pre">
+            <code>{rawBodyExample}</code>
+          </pre>
+        </div>
+      </div>
+
       {/* Multi-language Request Samples */}
       <div className="space-y-2">
         <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">
@@ -252,25 +310,46 @@ echo $result;`,
       <div className="space-y-2.5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="text-xs font-bold text-gray-300">Contoh Response Bot</span>
-          <div className="flex items-center bg-[#0d121f] p-0.5 rounded-lg border border-gray-800 text-[11px]">
-            {responses.map((res, idx) => (
-              <button
-                key={res.status}
-                type="button"
-                onClick={() => setActiveResponseIndex(idx)}
-                className={cn(
-                  "px-2.5 py-1 rounded-md font-mono font-bold transition cursor-pointer flex items-center space-x-1.5",
-                  activeResponseIndex === idx
-                    ? res.isError
-                      ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                      : "bg-[#00e599]/20 text-[#00e599] border border-[#00e599]/30"
-                    : "text-gray-400 hover:text-white"
-                )}
-              >
-                <span>{res.status}</span>
-                <span>{res.statusText}</span>
-              </button>
-            ))}
+          <div className="flex items-center bg-[#0d121f] p-0.5 rounded-lg border border-gray-800 text-[11px] overflow-x-auto max-w-full">
+            {responses.map((res, idx) => {
+              const isSelected = activeResponseIndex === idx;
+              const is2xx = res.status >= 200 && res.status < 300;
+              const is4xx = res.status >= 400 && res.status < 500;
+              const is5xx = res.status >= 500;
+
+              return (
+                <button
+                  key={res.status}
+                  type="button"
+                  onClick={() => setActiveResponseIndex(idx)}
+                  className={cn(
+                    "px-2.5 py-1 rounded-md font-mono font-bold transition cursor-pointer flex items-center space-x-1.5 shrink-0",
+                    isSelected
+                      ? is2xx
+                        ? "bg-[#00e599]/20 text-[#00e599] border border-[#00e599]/30"
+                        : is4xx
+                        ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                        : "bg-red-500/20 text-red-300 border border-red-500/30"
+                      : "text-gray-400 hover:text-white"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "w-1.5 h-1.5 rounded-full",
+                      is2xx
+                        ? "bg-[#00e599]"
+                        : is4xx
+                        ? "bg-amber-400"
+                        : "bg-red-400"
+                    )}
+                  />
+                  <span>{res.status}</span>
+                  <span className="hidden sm:inline font-sans text-[10px] font-medium text-gray-400">
+                    {res.statusText}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 

@@ -11,7 +11,7 @@ const BASE_URL = "https://amprem-api.vercel.app";
 
 export function DocsTab() {
   const [copiedBaseUrl, setCopiedBaseUrl] = useState(false);
-  const [activeNav, setActiveNav] = useState("overview");
+  const [activeNav, setActiveNav] = useState("endpoint-send-link");
 
   const handleCopyBaseUrl = () => {
     navigator.clipboard.writeText(BASE_URL);
@@ -20,13 +20,11 @@ export function DocsTab() {
   };
 
   const navSections = [
-    { id: "overview", label: "Overview", icon: "fa-solid fa-compass" },
     { id: "endpoint-send-link", label: "POST /send-link", icon: "fa-regular fa-envelope" },
     { id: "endpoint-verify", label: "POST /verify", icon: "fa-solid fa-key" },
     { id: "endpoint-stats", label: "GET /stats", icon: "fa-solid fa-chart-line" },
     { id: "endpoint-preset", label: "POST /preset/find", icon: "fa-solid fa-magnifying-glass" },
     { id: "bot-commands", label: "Bot Commands", icon: "fa-solid fa-robot" },
-    { id: "status-codes", label: "Status Codes", icon: "fa-solid fa-triangle-exclamation" },
     { id: "faq", label: "FAQ", icon: "fa-regular fa-circle-question" },
   ];
 
@@ -374,6 +372,7 @@ echo $result;`,
           path="/api/am/send-link"
           title="1. Kirim Magic Link Alight Motion ke Email"
           description="Memicu Firebase Authentication resmi milik Alight Motion untuk mengirimkan magic link verifikasi login langsung ke kotak masuk atau folder spam email pengguna."
+          rawBodyJson={`{\n  "email": "user@gmail.com"\n}`}
           parameters={[
             {
               name: "email",
@@ -404,8 +403,28 @@ echo $result;`,
               isError: true,
               payload: `{
   "success": false,
-  "message": "Format email tidak valid atau kuota pengiriman Firebase tercapai.",
+  "message": "Format email tidak valid atau parameter email kosong.",
   "error": "Invalid email address"
+}`,
+            },
+            {
+              status: 429,
+              statusText: "Too Many Requests",
+              isError: true,
+              payload: `{
+  "success": false,
+  "message": "Batas pengiriman email tercapai. Harap tunggu beberapa saat sebelum mencoba lagi.",
+  "error": "Rate limit exceeded (100 req / 15 min)"
+}`,
+            },
+            {
+              status: 500,
+              statusText: "Internal Server Error",
+              isError: true,
+              payload: `{
+  "success": false,
+  "message": "Gagal menghubungi layanan Firebase Auth Alight Motion.",
+  "error": "Internal Server Error"
 }`,
             },
           ]}
@@ -418,6 +437,7 @@ echo $result;`,
           path="/api/am/verify"
           title="2. Verifikasi & Aktifkan Alight Motion Pro VIP"
           description="Memverifikasi tautan login resmi dari email (oobCode) lalu secara otomatis menaikkan tier akun menjadi lisensi Alight Motion Pro VIP Resmi 1 Tahun tanpa watermark dan semua fitur premium terbuka."
+          rawBodyJson={`{\n  "link": "https://alightcreative.com/?link=https://alightcreative.com/am/share/...&oobCode=SAMPLE_OOB_CODE",\n  "email": "user@gmail.com"\n}`}
           parameters={[
             {
               name: "link",
@@ -465,6 +485,28 @@ echo $result;`,
   "error": "OOB code has expired or is invalid"
 }`,
             },
+            {
+              status: 429,
+              statusText: "Too Many Requests",
+              isError: true,
+              payload: `{
+  "success": false,
+  "isPremium": false,
+  "message": "Terlalu banyak percobaan aktivasi dari IP ini. Harap tunggu beberapa saat.",
+  "error": "Rate limit exceeded"
+}`,
+            },
+            {
+              status: 500,
+              statusText: "Internal Server Error",
+              isError: true,
+              payload: `{
+  "success": false,
+  "isPremium": false,
+  "message": "Gagal menyinkronkan lisensi membership ke database Alight Creative.",
+  "error": "Internal Server Error"
+}`,
+            },
           ]}
         />
 
@@ -501,6 +543,36 @@ echo $result;`,
   }
 }`,
             },
+            {
+              status: 400,
+              statusText: "Bad Request",
+              isError: true,
+              payload: `{
+  "success": false,
+  "message": "Parameter query tidak valid pada endpoint statistik.",
+  "error": "Bad Request"
+}`,
+            },
+            {
+              status: 429,
+              statusText: "Too Many Requests",
+              isError: true,
+              payload: `{
+  "success": false,
+  "message": "Batas frekuensi polling statistik terlampaui. Harap kurangi frekuensi request.",
+  "error": "Rate limit exceeded"
+}`,
+            },
+            {
+              status: 500,
+              statusText: "Internal Server Error",
+              isError: true,
+              payload: `{
+  "success": false,
+  "message": "Gagal membaca data agregat statistik dari database.",
+  "error": "Database Connection Failed"
+}`,
+            },
           ]}
         />
 
@@ -511,6 +583,7 @@ echo $result;`,
           path="/api/am/preset/find"
           title="4. Scraper & Ekstraktor Preset Multi-Platform (TikTok & YouTube)"
           description="Menerima link video TikTok atau YouTube, mengekstrak metadata video, memindai deskripsi dan seluruh komentar untuk menemukan link preset Alight Creative, Google Drive XML, atau undangan saluran."
+          rawBodyJson={`{\n  "url": "https://vt.tiktok.com/ZSxxxxxxx/"\n}`}
           parameters={[
             {
               name: "url",
@@ -560,6 +633,26 @@ echo $result;`,
   "error": "Unsupported video URL format"
 }`,
             },
+            {
+              status: 429,
+              statusText: "Too Many Requests",
+              isError: true,
+              payload: `{
+  "success": false,
+  "message": "Scraper rate limit tercapai. Harap tunggu beberapa saat.",
+  "error": "Rate limit exceeded"
+}`,
+            },
+            {
+              status: 500,
+              statusText: "Internal Server Error",
+              isError: true,
+              payload: `{
+  "success": false,
+  "message": "Gagal mengekstrak metadata dari video target (konten privat atau dihapus).",
+  "error": "Scraping Failed"
+}`,
+            },
           ]}
         />
       </div>
@@ -567,62 +660,10 @@ echo $result;`,
       {/* 4. BOT COMMANDS REFERENCE */}
       <BotCommands />
 
-      {/* 5. STATUS CODES REFERENCE TABLE */}
-      <div id="status-codes" className="p-5 sm:p-6 rounded-2xl bg-[#121826] border border-gray-800 shadow-xl space-y-4 scroll-mt-[126px]">
-        <div className="space-y-1">
-          <h3 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center space-x-2">
-            <i className="fa-solid fa-triangle-exclamation text-amber-400 text-sm"></i>
-            <span>Daftar Kode Status HTTP &amp; Penanganan Error</span>
-          </h3>
-          <p className="text-xs text-gray-400 leading-relaxed">
-            API mengembalikan kode status standar HTTP untuk mengindikasikan keberhasilan atau kegagalan request.
-          </p>
-        </div>
-
-        <div className="overflow-x-auto rounded-xl border border-gray-800 bg-[#0d121f]">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-[#121826]/80 text-gray-400 border-b border-gray-800 font-semibold uppercase text-[10px] tracking-wider">
-              <tr>
-                <th className="px-3.5 py-2.5">Kode</th>
-                <th className="px-3.5 py-2.5">Status</th>
-                <th className="px-3.5 py-2.5">Keterangan</th>
-                <th className="px-3.5 py-2.5">Solusi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-800/80 text-gray-300 font-mono text-[11px]">
-              <tr>
-                <td className="px-3.5 py-2.5 font-bold text-[#00e599]">200</td>
-                <td className="px-3.5 py-2.5 text-white">OK</td>
-                <td className="px-3.5 py-2.5 font-sans text-gray-400">Request berhasil diproses.</td>
-                <td className="px-3.5 py-2.5 font-sans text-gray-500">—</td>
-              </tr>
-              <tr>
-                <td className="px-3.5 py-2.5 font-bold text-amber-400">400</td>
-                <td className="px-3.5 py-2.5 text-white">Bad Request</td>
-                <td className="px-3.5 py-2.5 font-sans text-gray-400">Parameter tidak lengkap, format email salah, atau link verifikasi kedaluwarsa.</td>
-                <td className="px-3.5 py-2.5 font-sans text-gray-500">Periksa isi JSON body dan kirim ulang link baru.</td>
-              </tr>
-              <tr>
-                <td className="px-3.5 py-2.5 font-bold text-amber-400">429</td>
-                <td className="px-3.5 py-2.5 text-white">Too Many Requests</td>
-                <td className="px-3.5 py-2.5 font-sans text-gray-400">IP Anda melampaui batas rate limit (100 request dalam 15 menit).</td>
-                <td className="px-3.5 py-2.5 font-sans text-gray-500">Tunggu beberapa menit sebelum mengirim request berikutnya.</td>
-              </tr>
-              <tr>
-                <td className="px-3.5 py-2.5 font-bold text-red-400">500</td>
-                <td className="px-3.5 py-2.5 text-white">Internal Server Error</td>
-                <td className="px-3.5 py-2.5 font-sans text-gray-400">Terjadi kendala pada gateway Firebase atau server Alight Motion.</td>
-                <td className="px-3.5 py-2.5 font-sans text-gray-500">Coba beberapa saat lagi atau hubungi admin.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* 6. FAQ & TROUBLESHOOTING */}
+      {/* 5. FAQ & TROUBLESHOOTING */}
       <FaqSection />
 
-      {/* 7. SUPPORT BANNER */}
+      {/* 6. SUPPORT BANNER */}
       <WhatsAppBanner />
     </div>
   );

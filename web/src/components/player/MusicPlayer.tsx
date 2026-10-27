@@ -378,7 +378,7 @@ export function MusicPlayer() {
       <div className={cn("w-full text-left", isModal ? "flex-1 flex flex-col justify-between" : "")}>
       {/* Header Bar (Desktop only, mobile modal has unified top bar) */}
       {!isModal && (
-        <div className="flex items-center justify-between pb-3 border-b border-gray-800/80 mb-4">
+        <div className="flex items-center justify-between p-4 pb-3 border-b border-gray-800/80 mb-0">
           <div className="flex items-center space-x-2 text-left">
             {/* Animated equalizer bars */}
             <div className="flex items-end space-x-0.5 h-3.5">
@@ -443,38 +443,40 @@ export function MusicPlayer() {
         <div
           ref={currentPlayerRef}
           className={cn(
-            "space-y-3.5 text-left transition-opacity duration-200",
-            isModal ? "flex-1 flex flex-col justify-between" : "",
+            "text-left transition-opacity duration-200",
+            isModal ? "flex-1 flex flex-col justify-between" : "space-y-3.5",
             activeTab === "player"
               ? "opacity-100 relative"
               : "opacity-0 pointer-events-none invisible absolute inset-x-0 top-0"
           )}
         >
-            {/* 1. Album Cover - Seamlessly blended with content below (Hero bleed effect) */}
+            {/* 1. Album Cover - Full bleed on top, left, right (edges touch borders/screen) */}
             <div
               className={cn(
-                "relative overflow-hidden group/cover select-none",
+                "relative overflow-hidden group/cover select-none shrink-0 w-full",
                 isModal
-                  ? "w-full aspect-square max-w-[270px] xs:max-w-[300px] sm:max-w-[340px] mx-auto shrink-0 my-1 rounded-2xl"
-                  : "w-full rounded-2xl aspect-video sm:aspect-square"
+                  ? "h-[46dvh] min-h-[280px] max-h-[460px]"
+                  : "aspect-[4/3] sm:aspect-square"
               )}
             >
               <Image
                 src={currentTrack.cover}
                 alt={`${currentTrack.artist} - ${currentTrack.title}`}
-                width={400}
-                height={400}
+                fill
                 className={cn(
-                  "w-full h-full object-cover transition-transform duration-700 ease-out",
-                  isPlaying ? "scale-105" : "scale-100 group-hover/cover:scale-105"
+                  "object-cover object-center transition-transform duration-700 ease-out",
+                  isPlaying ? "scale-105" : "scale-100"
                 )}
                 priority
               />
 
               {/* Ambient overlay & seamless gradient fade to card background (#0d121f) */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0d121f] via-[#0d121f]/30 to-transparent pointer-events-none" />
-              <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#0d121f] via-[#0d121f]/90 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0d121f] via-[#0d121f]/20 to-transparent pointer-events-none" />
+              <div className="absolute inset-x-0 bottom-0 h-32 sm:h-36 bg-gradient-to-t from-[#0d121f] via-[#0d121f]/90 to-transparent pointer-events-none" />
             </div>
+
+            {/* Padded Content below cover (Lyrics, Title, Progress, Controls, Volume) */}
+            <div className={cn("flex-1 flex flex-col justify-between text-left", isModal ? "px-5 sm:px-6 pb-6 -mt-6 relative z-10 space-y-3" : "px-4 pb-4 space-y-3.5")}>
 
             {/* 2. 3-Line Dynamic Synchronized Lyrics (Fixed Height Container to Prevent Layout Shifts) */}
             <div className="py-2 px-1 text-left select-none overflow-hidden h-[96px] min-h-[96px] max-h-[96px] shrink-0 flex flex-col justify-between">
@@ -656,6 +658,7 @@ export function MusicPlayer() {
                 {isMuted ? "0%" : `${Math.round(volume * 100)}%`}
               </span>
             </div>
+            </div>
           </div>
 
           {/* 2. Tab Lirik (Lyrics) - Height locked exactly to currentTargetHeight on desktop, full height in modal */}
@@ -663,7 +666,7 @@ export function MusicPlayer() {
             style={isModal ? undefined : { height: `${currentTargetHeight}px` }}
             className={cn(
               "flex flex-col text-left space-y-3 transition-opacity duration-200",
-              isModal ? "flex-1 min-h-0 h-full" : "",
+              isModal ? "flex-1 min-h-0 h-full pt-16 px-4 sm:px-6 pb-6" : "p-4 space-y-3",
               activeTab === "lyrics"
                 ? "opacity-100 relative"
                 : "opacity-0 pointer-events-none invisible absolute inset-x-0 top-0"
@@ -775,7 +778,7 @@ export function MusicPlayer() {
       />
 
       {/* 1. Desktop Mode Player: Inline in Sidebar (Hidden on Mobile < lg) */}
-      <div className="hidden lg:block w-full bg-[#0d121f]/90 border border-gray-800/80 rounded-3xl p-4 sm:p-5 shadow-2xl relative text-left">
+      <div className="hidden lg:block w-full bg-[#0d121f] border border-gray-800/80 rounded-3xl overflow-hidden shadow-2xl relative text-left">
         {renderPlayerBody(false)}
       </div>
 
@@ -894,20 +897,20 @@ export function MusicPlayer() {
                 className="fixed inset-0 z-[100] lg:hidden bg-[#0d121f] h-[100dvh] h-full w-full flex flex-col text-left overflow-hidden select-none"
                 style={{ touchAction: "none" }}
               >
-                {/* Top Unified Header Bar */}
-                <div className="shrink-0 w-full px-4 pt-3.5 pb-2.5 flex items-center justify-between border-b border-gray-800/80 bg-[#0d121f]/95 backdrop-blur-md z-10">
+                {/* Top Unified Floating Header Bar */}
+                <div className="absolute top-0 inset-x-0 w-full px-4 pt-3.5 pb-2.5 flex items-center justify-between z-30 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
                   {/* Collapse Button */}
                   <button
                     type="button"
                     onClick={() => setIsMobileModalOpen(false)}
-                    className="w-9 h-9 rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-white flex items-center justify-center transition active:scale-90 cursor-pointer"
+                    className="w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/10 text-gray-200 hover:text-white flex items-center justify-center transition active:scale-90 cursor-pointer shadow-lg"
                     aria-label="Tutup Pemutar"
                   >
                     <i className="fa-solid fa-chevron-down text-sm"></i>
                   </button>
 
                   {/* Center Tab Switcher: [Lagu] [Lirik] */}
-                  <div className="flex items-center bg-[#070b13] p-1 rounded-xl border border-gray-800 text-xs shadow-inner">
+                  <div className="flex items-center bg-black/50 backdrop-blur-md p-1 rounded-xl border border-white/10 text-xs shadow-lg">
                     <button
                       type="button"
                       onClick={() => setActiveTab("player")}
@@ -915,7 +918,7 @@ export function MusicPlayer() {
                         "px-3.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center space-x-1.5",
                         activeTab === "player"
                           ? "bg-[#00e599] text-gray-950 shadow-sm"
-                          : "text-gray-400 hover:text-white"
+                          : "text-gray-300 hover:text-white"
                       )}
                     >
                       <i className="fa-solid fa-music text-[10px]"></i>
@@ -928,7 +931,7 @@ export function MusicPlayer() {
                         "px-3.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center space-x-1.5",
                         activeTab === "lyrics"
                           ? "bg-[#00e599] text-gray-950 shadow-sm"
-                          : "text-gray-400 hover:text-white"
+                          : "text-gray-300 hover:text-white"
                       )}
                     >
                       <i className="fa-solid fa-microphone-lines text-[10px]"></i>
@@ -940,9 +943,9 @@ export function MusicPlayer() {
                   <div className="w-9 h-9" aria-hidden="true" />
                 </div>
 
-                {/* Full Height Content Body */}
+                {/* Full Height Content Body - Edge-to-Edge container for seamless hero cover */}
                 <div
-                  className="flex-1 w-full min-h-0 overflow-y-auto p-4 sm:p-6 flex flex-col justify-between custom-scrollbar"
+                  className="flex-1 w-full min-h-0 overflow-y-auto flex flex-col justify-between custom-scrollbar relative"
                   style={{ touchAction: "pan-y" }}
                 >
                   {renderPlayerBody(true)}

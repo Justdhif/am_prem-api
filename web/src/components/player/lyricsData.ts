@@ -4,6 +4,7 @@ export interface Track {
   artist: string;
   src: string;
   cover: string;
+  video?: string;
   duration: number;
 }
 
@@ -30,6 +31,7 @@ export const PLAYLIST: Track[] = [
     artist: "Joon",
     src: "/audio/with-ease.mp3",
     cover: "/audio/cover-with-ease.webp",
+    video: "/audio/with-ease-canvas.mp4",
     duration: 187,
   },
 ];

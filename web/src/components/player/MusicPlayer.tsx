@@ -23,6 +23,8 @@ export function MusicPlayer() {
   const modalPlayerRef = useRef<HTMLDivElement>(null);
   const desktopLyricsRef = useRef<HTMLDivElement>(null);
   const modalLyricsRef = useRef<HTMLDivElement>(null);
+  const desktopVideoRef = useRef<HTMLVideoElement | null>(null);
+  const modalVideoRef = useRef<HTMLVideoElement | null>(null);
   // Safe fallbacks to prevent any client caching ReferenceErrors
   const lyricsContainerRef = desktopLyricsRef;
   const activeLyricRef = useRef<HTMLDivElement | null>(null);
@@ -121,6 +123,18 @@ export function MusicPlayer() {
     const secs = Math.floor(seconds % 60);
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
+
+  // Synchronize canvas video playback with audio play/pause state
+  useEffect(() => {
+    const vids = [desktopVideoRef.current, modalVideoRef.current].filter(Boolean) as HTMLVideoElement[];
+    vids.forEach((v) => {
+      if (isPlaying && currentTrack.video) {
+        v.play().catch(() => {});
+      } else {
+        v.pause();
+      }
+    });
+  }, [isPlaying, currentTrack.video, isMobileModalOpen]);
 
   // Fetch synced lyrics from LRCLIB API with timestamps for the active track
   useEffect(() => {
@@ -462,6 +476,7 @@ export function MusicPlayer() {
                   : "aspect-[4/3] sm:aspect-square"
               )}
             >
+              {/* Static Cover Image */}
               <Image
                 src={currentTrack.cover}
                 alt={`${currentTrack.artist} - ${currentTrack.title}`}
@@ -473,8 +488,30 @@ export function MusicPlayer() {
                 priority
               />
 
+              {/* Dynamic Canvas Video Loop (Transitions smoothly in when music plays) */}
+              {currentTrack.video && (
+                <video
+                  ref={isModal ? modalVideoRef : desktopVideoRef}
+                  key={`${currentTrack.id}-${isModal ? "modal" : "desktop"}`}
+                  src={currentTrack.video}
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  onCanPlay={(e) => {
+                    if (isPlaying) {
+                      e.currentTarget.play().catch(() => {});
+                    }
+                  }}
+                  className={cn(
+                    "absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-in-out pointer-events-none",
+                    isPlaying ? "opacity-100 scale-105" : "opacity-0 scale-100"
+                  )}
+                />
+              )}
+
               {/* Soft bottom-only gradient fade to card background (#0d121f), lowered so the cover remains bright and clear */}
-              <div className="absolute inset-x-0 bottom-0 h-20 sm:h-24 bg-gradient-to-t from-[#0d121f] via-[#0d121f]/75 to-transparent pointer-events-none" />
+              <div className="absolute inset-x-0 bottom-0 h-20 sm:h-24 bg-gradient-to-t from-[#0d121f] via-[#0d121f]/75 to-transparent pointer-events-none z-[2]" />
             </div>
 
             {/* Padded Content below cover (Lyrics, Title, Progress, Controls, Volume - grouped snugly at bottom) */}

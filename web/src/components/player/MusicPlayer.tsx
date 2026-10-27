@@ -475,193 +475,187 @@ export function MusicPlayer() {
               <div className="absolute inset-x-0 bottom-0 h-36 sm:h-44 bg-gradient-to-t from-[#0d121f] via-[#0d121f]/90 to-transparent pointer-events-none" />
             </div>
 
-            {/* Padded Content below cover (Lyrics, Title, Progress, Controls, Volume) */}
-            <div className={cn("flex-1 flex flex-col justify-between text-left", isModal ? "px-5 sm:px-6 pb-6 -mt-10 relative z-10 space-y-4" : "px-4 pb-4 space-y-3.5")}>
-              {/* Group 1: Compact Info Block (Lyrics + Title/Artist + Progress Bar) - tight cohesive spacing */}
-              <div className="space-y-2.5 text-left">
-                {/* 2. 3-Line Dynamic Synchronized Lyrics */}
-                <div className="py-1 px-0.5 text-left select-none overflow-hidden h-[86px] min-h-[86px] max-h-[86px] shrink-0 flex flex-col justify-between">
-                  {/* Previous Line */}
-                  <div
-                    onClick={() => prevLine && handleLyricClick(prevLine.time)}
-                    className={cn(
-                      "h-5 text-xs transition-all duration-300 truncate cursor-pointer text-left flex items-center",
-                      prevLine ? "text-gray-500 hover:text-gray-300 font-medium" : "opacity-0 select-none pointer-events-none"
-                    )}
-                    title={prevLine?.text}
-                  >
-                    <span className="truncate">{prevLine?.text || "—"}</span>
-                  </div>
-
-                  {/* Active Line */}
-                  <div className="h-11 flex items-center overflow-hidden">
-                    <motion.div
-                      key={currentLyricIndex}
-                      initial={{ opacity: 0, y: 3 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.22, ease: "easeOut" }}
-                      onClick={() => activeLine && handleLyricClick(activeLine.time)}
-                      className="w-full text-sm sm:text-base font-black text-[#00e599] text-left drop-shadow-[0_0_12px_rgba(0,229,153,0.35)] cursor-pointer line-clamp-2 leading-tight select-none"
-                      title="Klik untuk loncat ke bait ini"
-                    >
-                      {activeLine?.text || "..."}
-                    </motion.div>
-                  </div>
-
-                  {/* Next Line */}
-                  <div
-                    onClick={() => nextLine && handleLyricClick(nextLine.time)}
-                    className={cn(
-                      "h-5 text-xs transition-all duration-300 truncate cursor-pointer text-left flex items-center",
-                      nextLine ? "text-gray-400 hover:text-gray-200 font-medium" : "opacity-0 select-none pointer-events-none"
-                    )}
-                    title={nextLine?.text}
-                  >
-                    <span className="truncate">{nextLine?.text || "—"}</span>
-                  </div>
+            {/* Padded Content below cover (Lyrics, Title, Progress, Controls, Volume - grouped snugly at bottom) */}
+            <div className={cn("flex-1 flex flex-col justify-end text-left", isModal ? "px-5 sm:px-6 pb-6 -mt-10 relative z-10 space-y-2.5 sm:space-y-3" : "px-4 pb-4 space-y-3.5")}>
+              {/* 2. 3-Line Dynamic Synchronized Lyrics */}
+              <div className="py-1 px-0.5 text-left select-none overflow-hidden h-[86px] min-h-[86px] max-h-[86px] shrink-0 flex flex-col justify-between">
+                {/* Previous Line */}
+                <div
+                  onClick={() => prevLine && handleLyricClick(prevLine.time)}
+                  className={cn(
+                    "h-5 text-xs transition-all duration-300 truncate cursor-pointer text-left flex items-center",
+                    prevLine ? "text-gray-500 hover:text-gray-300 font-medium" : "opacity-0 select-none pointer-events-none"
+                  )}
+                  title={prevLine?.text}
+                >
+                  <span className="truncate">{prevLine?.text || "—"}</span>
                 </div>
 
-                {/* 3. Song Info Bar (Title & Artist) */}
-                <div className="pt-0.5 text-left">
-                  <h3 className="text-base sm:text-lg font-extrabold text-white tracking-tight truncate hover:text-[#00e599] transition cursor-pointer text-left leading-tight">
-                    {currentTrack.title}
-                  </h3>
-                  <p className="text-xs text-gray-400 font-medium truncate mt-0.5 text-left">
-                    {currentTrack.artist}
-                  </p>
+                {/* Active Line */}
+                <div className="h-11 flex items-center overflow-hidden">
+                  <motion.div
+                    key={currentLyricIndex}
+                    initial={{ opacity: 0, y: 3 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.22, ease: "easeOut" }}
+                    onClick={() => activeLine && handleLyricClick(activeLine.time)}
+                    className="w-full text-sm sm:text-base font-black text-[#00e599] text-left drop-shadow-[0_0_12px_rgba(0,229,153,0.35)] cursor-pointer line-clamp-2 leading-tight select-none"
+                    title="Klik untuk loncat ke bait ini"
+                  >
+                    {activeLine?.text || "..."}
+                  </motion.div>
                 </div>
 
-                {/* 4. Progress Bar & Timestamps */}
-                <div className="space-y-1 pt-0.5">
-                  <div className="relative w-full h-1.5 bg-gray-800 rounded-full overflow-hidden cursor-pointer group/bar">
-                    {/* Visual Progress Fill */}
-                    <div
-                      className="absolute top-0 left-0 h-full bg-[#00e599] rounded-full group-hover/bar:bg-[#1affaa] transition-all"
-                      style={{ width: `${progressPercent}%` }}
-                    />
-                    {/* Hidden Native Range for Accessibility */}
-                    <input
-                      type="range"
-                      min={0}
-                      max={duration || 100}
-                      step={0.1}
-                      value={currentTime}
-                      onChange={handleSeek}
-                      aria-label="Seek Waktu Lagu"
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between text-[11px] text-gray-500 font-mono">
-                    <span>{formatTime(currentTime)}</span>
-                    <span>{formatTime(duration)}</span>
-                  </div>
+                {/* Next Line */}
+                <div
+                  onClick={() => nextLine && handleLyricClick(nextLine.time)}
+                  className={cn(
+                    "h-5 text-xs transition-all duration-300 truncate cursor-pointer text-left flex items-center",
+                    nextLine ? "text-gray-400 hover:text-gray-200 font-medium" : "opacity-0 select-none pointer-events-none"
+                  )}
+                  title={nextLine?.text}
+                >
+                  <span className="truncate">{nextLine?.text || "—"}</span>
                 </div>
               </div>
 
-              {/* Group 2: Audio Controls & Volume Bar */}
-              <div className="space-y-3 pt-1">
-                {/* 5. Main Audio Controls */}
-                <div className="flex items-center justify-between pt-0.5">
-                  {/* Loop / Repeat */}
-                  <button
-                    type="button"
-                    aria-label="Ulangi Lagu"
-                    onClick={toggleLoop}
+              {/* 3. Song Info Bar (Title & Artist) */}
+              <div className="pt-0 text-left">
+                <h3 className="text-base sm:text-lg font-extrabold text-white tracking-tight truncate hover:text-[#00e599] transition cursor-pointer text-left leading-tight">
+                  {currentTrack.title}
+                </h3>
+                <p className="text-xs text-gray-400 font-medium truncate mt-0.5 text-left">
+                  {currentTrack.artist}
+                </p>
+              </div>
+
+              {/* 4. Progress Bar & Timestamps */}
+              <div className="space-y-1 pt-0">
+                <div className="relative w-full h-1.5 bg-gray-800 rounded-full overflow-hidden cursor-pointer group/bar">
+                  {/* Visual Progress Fill */}
+                  <div
+                    className="absolute top-0 left-0 h-full bg-[#00e599] rounded-full group-hover/bar:bg-[#1affaa] transition-all"
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                  {/* Hidden Native Range for Accessibility */}
+                  <input
+                    type="range"
+                    min={0}
+                    max={duration || 100}
+                    step={0.1}
+                    value={currentTime}
+                    onChange={handleSeek}
+                    aria-label="Seek Waktu Lagu"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between text-[11px] text-gray-500 font-mono">
+                  <span>{formatTime(currentTime)}</span>
+                  <span>{formatTime(duration)}</span>
+                </div>
+              </div>
+
+              {/* 5. Main Audio Controls */}
+              <div className="flex items-center justify-between pt-0.5">
+                {/* Loop / Repeat */}
+                <button
+                  type="button"
+                  aria-label="Ulangi Lagu"
+                  onClick={toggleLoop}
+                  className={cn(
+                    "p-2 text-sm transition active:scale-90 cursor-pointer",
+                    isLoop ? "text-[#00e599]" : "text-gray-500 hover:text-gray-300"
+                  )}
+                  title={isLoop ? "Ulangi Aktif" : "Ulangi Nonaktif"}
+                >
+                  <i className="fa-solid fa-repeat"></i>
+                </button>
+
+                {/* Previous Track */}
+                <button
+                  type="button"
+                  aria-label="Lagu Sebelumnya"
+                  onClick={handlePrevTrack}
+                  className="p-2 text-gray-400 hover:text-white transition active:scale-90 cursor-pointer"
+                  title="Lagu Sebelumnya"
+                >
+                  <i className="fa-solid fa-backward-step text-base"></i>
+                </button>
+
+                {/* Big Play / Pause Button */}
+                <motion.button
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.94 }}
+                  type="button"
+                  aria-label={isPlaying ? "Jeda" : "Putar"}
+                  onClick={togglePlay}
+                  className="w-12 h-12 rounded-full bg-[#00e599] text-gray-950 flex items-center justify-center shadow-lg shadow-[#00e599]/30 hover:bg-[#1affaa] transition cursor-pointer"
+                >
+                  <i className={cn("fa-solid text-lg", isPlaying ? "fa-pause" : "fa-play ml-0.5")}></i>
+                </motion.button>
+
+                {/* Next Track */}
+                <button
+                  type="button"
+                  aria-label="Lagu Berikutnya"
+                  onClick={handleNextTrack}
+                  className="p-2 text-gray-400 hover:text-white transition active:scale-90 cursor-pointer"
+                  title="Lagu Berikutnya"
+                >
+                  <i className="fa-solid fa-forward-step text-base"></i>
+                </button>
+
+                {/* Open Lyrics Tab Shortcut */}
+                <button
+                  type="button"
+                  aria-label="Lihat Lirik Penuh"
+                  onClick={() => setActiveTab("lyrics")}
+                  className="p-2 text-gray-500 hover:text-[#00e599] transition active:scale-90 cursor-pointer"
+                  title="Buka Lirik Penuh"
+                >
+                  <i className="fa-solid fa-bars-staggered text-sm"></i>
+                </button>
+              </div>
+
+              {/* 6. Volume Slider Bar */}
+              <div className="flex items-center space-x-2.5 pt-2 px-1 border-t border-gray-800/60">
+                <button
+                  type="button"
+                  onClick={toggleMute}
+                  aria-label={isMuted ? "Bunyikan" : "Bisukan"}
+                  className="text-gray-400 hover:text-white text-xs cursor-pointer"
+                >
+                  <i
                     className={cn(
-                      "p-2 text-sm transition active:scale-90 cursor-pointer",
-                      isLoop ? "text-[#00e599]" : "text-gray-500 hover:text-gray-300"
+                      "fa-solid",
+                      isMuted || volume === 0
+                        ? "fa-volume-xmark text-red-400"
+                        : volume < 0.5
+                        ? "fa-volume-low"
+                        : "fa-volume-high"
                     )}
-                    title={isLoop ? "Ulangi Aktif" : "Ulangi Nonaktif"}
-                  >
-                    <i className="fa-solid fa-repeat"></i>
-                  </button>
-
-                  {/* Previous Track */}
-                  <button
-                    type="button"
-                    aria-label="Lagu Sebelumnya"
-                    onClick={handlePrevTrack}
-                    className="p-2 text-gray-400 hover:text-white transition active:scale-90 cursor-pointer"
-                    title="Lagu Sebelumnya"
-                  >
-                    <i className="fa-solid fa-backward-step text-base"></i>
-                  </button>
-
-                  {/* Big Play / Pause Button */}
-                  <motion.button
-                    whileHover={{ scale: 1.08 }}
-                    whileTap={{ scale: 0.94 }}
-                    type="button"
-                    aria-label={isPlaying ? "Jeda" : "Putar"}
-                    onClick={togglePlay}
-                    className="w-12 h-12 rounded-full bg-[#00e599] text-gray-950 flex items-center justify-center shadow-lg shadow-[#00e599]/30 hover:bg-[#1affaa] transition cursor-pointer"
-                  >
-                    <i className={cn("fa-solid text-lg", isPlaying ? "fa-pause" : "fa-play ml-0.5")}></i>
-                  </motion.button>
-
-                  {/* Next Track */}
-                  <button
-                    type="button"
-                    aria-label="Lagu Berikutnya"
-                    onClick={handleNextTrack}
-                    className="p-2 text-gray-400 hover:text-white transition active:scale-90 cursor-pointer"
-                    title="Lagu Berikutnya"
-                  >
-                    <i className="fa-solid fa-forward-step text-base"></i>
-                  </button>
-
-                  {/* Open Lyrics Tab Shortcut */}
-                  <button
-                    type="button"
-                    aria-label="Lihat Lirik Penuh"
-                    onClick={() => setActiveTab("lyrics")}
-                    className="p-2 text-gray-500 hover:text-[#00e599] transition active:scale-90 cursor-pointer"
-                    title="Buka Lirik Penuh"
-                  >
-                    <i className="fa-solid fa-bars-staggered text-sm"></i>
-                  </button>
+                  ></i>
+                </button>
+                <div className="relative flex-1 h-1 bg-gray-800 rounded-full overflow-hidden group/vol cursor-pointer">
+                  <div
+                    className="absolute top-0 left-0 h-full bg-gray-400 group-hover/vol:bg-[#00e599] transition-all"
+                    style={{ width: `${isMuted ? 0 : volume * 100}%` }}
+                  />
+                  <input
+                    type="range"
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    value={isMuted ? 0 : volume}
+                    onChange={handleVolumeChange}
+                    aria-label="Atur Volume"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
                 </div>
-
-                {/* 6. Volume Slider Bar */}
-                <div className="flex items-center space-x-2.5 pt-2 px-1 border-t border-gray-800/60">
-                  <button
-                    type="button"
-                    onClick={toggleMute}
-                    aria-label={isMuted ? "Bunyikan" : "Bisukan"}
-                    className="text-gray-400 hover:text-white text-xs cursor-pointer"
-                  >
-                    <i
-                      className={cn(
-                        "fa-solid",
-                        isMuted || volume === 0
-                          ? "fa-volume-xmark text-red-400"
-                          : volume < 0.5
-                          ? "fa-volume-low"
-                          : "fa-volume-high"
-                      )}
-                    ></i>
-                  </button>
-                  <div className="relative flex-1 h-1 bg-gray-800 rounded-full overflow-hidden group/vol cursor-pointer">
-                    <div
-                      className="absolute top-0 left-0 h-full bg-gray-400 group-hover/vol:bg-[#00e599] transition-all"
-                      style={{ width: `${isMuted ? 0 : volume * 100}%` }}
-                    />
-                    <input
-                      type="range"
-                      min={0}
-                      max={1}
-                      step={0.01}
-                      value={isMuted ? 0 : volume}
-                      onChange={handleVolumeChange}
-                      aria-label="Atur Volume"
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
-                  </div>
-                  <span className="text-[10px] text-gray-500 font-mono w-7 text-right">
-                    {isMuted ? "0%" : `${Math.round(volume * 100)}%`}
-                  </span>
-                </div>
+                <span className="text-[10px] text-gray-500 font-mono w-7 text-right">
+                  {isMuted ? "0%" : `${Math.round(volume * 100)}%`}
+                </span>
               </div>
             </div>
           </div>

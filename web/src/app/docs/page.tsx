@@ -15,17 +15,17 @@ export default function DocsPage() {
   return (
     <>
       <Header />
-      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 md:px-10 lg:px-12 xl:px-16 pt-6 sm:pt-8 pb-28 lg:pb-12 flex flex-col lg:flex-row gap-8 lg:gap-10 xl:gap-12 items-start overflow-x-hidden max-w-full">
+      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 md:px-10 lg:px-12 xl:px-16 pt-6 sm:pt-8 pb-28 lg:pb-12 flex flex-col lg:flex-row gap-8 lg:gap-10 xl:gap-12 items-start max-w-full">
         {/* Left Sidebar: Spotify-style Music Player & Dynamic Synchronized Lyrics */}
-        <aside className="w-full lg:w-80 xl:w-[340px] shrink-0 lg:sticky lg:top-24 z-20">
+        <aside className="w-full lg:w-80 xl:w-[340px] shrink-0 lg:sticky lg:top-20 z-20">
           <MusicPlayer />
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 w-full space-y-6 sm:space-y-8 min-w-0 overflow-x-hidden max-w-full pt-0">
+        <main className="flex-1 w-full space-y-6 sm:space-y-8 min-w-0 max-w-full pt-0">
           {/* Back Button and Docs Header grouped tightly */}
           <div className="space-y-3 pt-0">
-            <div>
+            <div className="flex items-center">
               <Link
                 href="/"
                 className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-xl bg-[#121826] hover:bg-gray-800 text-gray-300 hover:text-white text-xs font-semibold border border-gray-800 transition shadow-sm active:scale-95 cursor-pointer"

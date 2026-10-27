@@ -15,6 +15,7 @@ export const PLAYLIST: Track[] = [
     artist: "ADÉLA",
     src: "/audio/aint-in-la.mp3",
     cover: "/audio/cover-aint-in-la.webp",
+    video: "/audio/aint-in-la-canvas.mp4",
     duration: 219,
   },
   {

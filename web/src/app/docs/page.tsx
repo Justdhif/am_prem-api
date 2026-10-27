@@ -27,7 +27,7 @@ export default function DocsPage() {
   return (
     <>
       <Header />
-      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 md:px-10 lg:px-12 xl:px-16 pt-0 sm:pt-6 lg:pt-8 pb-28 lg:pb-12 flex flex-col lg:flex-row gap-0 lg:gap-10 xl:gap-12 items-start max-w-full">
+      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 md:px-10 lg:px-12 xl:px-16 pt-3.5 sm:pt-6 lg:pt-8 pb-28 lg:pb-12 flex flex-col lg:flex-row gap-0 lg:gap-10 xl:gap-12 items-start max-w-full">
         {/* Left Sidebar: Spotify-style Music Player & Dynamic Synchronized Lyrics */}
         <aside className="contents lg:block lg:w-80 xl:w-[340px] shrink-0 lg:sticky lg:top-20 lg:z-20">
           <MusicPlayer />

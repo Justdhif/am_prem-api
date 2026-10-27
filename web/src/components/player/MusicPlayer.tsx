@@ -97,6 +97,19 @@ export function MusicPlayer() {
     };
   }, [isMobileModalOpen]);
 
+  // Broadcast mini player visibility to other components (e.g. CommentDrawer FAB)
+  useEffect(() => {
+    const isVisible = isMiniPlayerVisible && !isMobileModalOpen;
+    if (typeof window !== "undefined") {
+      (window as any).__isMiniPlayerVisible = isVisible;
+      window.dispatchEvent(
+        new CustomEvent("miniPlayerVisibility", {
+          detail: isVisible,
+        })
+      );
+    }
+  }, [isMiniPlayerVisible, isMobileModalOpen]);
+
   // Prevent any horizontal and vertical scroll on the background page when mobile modal is open
   useEffect(() => {
     if (isMobileModalOpen) {

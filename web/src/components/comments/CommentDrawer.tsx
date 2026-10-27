@@ -6,6 +6,7 @@ import { apiClient, CommentItem as CommentItemType } from "@/lib/api";
 import { CommentItem } from "./CommentItem";
 import { CommentInput } from "./CommentInput";
 import { LogoLoader } from "./LogoLoader";
+import { cn } from "@/lib/utils";
 
 export function CommentDrawer() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,6 +16,24 @@ export function CommentDrawer() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalComments, setTotalComments] = useState(0);
   const [replyTarget, setReplyTarget] = useState<{ id: string; name: string } | null>(null);
+  const [isMiniPlayerActive, setIsMiniPlayerActive] = useState(() => {
+    if (typeof window !== "undefined" && typeof (window as any).__isMiniPlayerVisible === "boolean") {
+      return (window as any).__isMiniPlayerVisible;
+    }
+    return true;
+  });
+
+  // Synchronize FAB position with MusicPlayer mini player visibility
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const customEvent = e as CustomEvent<boolean>;
+      if (typeof customEvent.detail === "boolean") {
+        setIsMiniPlayerActive(customEvent.detail);
+      }
+    };
+    window.addEventListener("miniPlayerVisibility", handler);
+    return () => window.removeEventListener("miniPlayerVisibility", handler);
+  }, []);
 
   const loadComments = useCallback(async (targetPage = 1) => {
     setLoading(true);
@@ -98,8 +117,15 @@ export function CommentDrawer() {
 
   return (
     <>
-      {/* Floating Action Button (FAB) Bottom Right - Placed above the sticky mini player on mobile */}
-      <div className="fixed bottom-[80px] sm:bottom-[84px] lg:bottom-6 right-4 sm:right-6 z-40 transition-all duration-200">
+      {/* Floating Action Button (FAB) Bottom Right - Dynamically shifts down when mini player hides on scroll */}
+      <div
+        className={cn(
+          "fixed right-4 sm:right-6 z-40 transition-all duration-500 ease-in-out",
+          isMiniPlayerActive
+            ? "bottom-[80px] sm:bottom-[84px] lg:bottom-6"
+            : "bottom-5 sm:bottom-6 lg:bottom-6"
+        )}
+      >
         <motion.button
           id="btnToggleComments"
           type="button"

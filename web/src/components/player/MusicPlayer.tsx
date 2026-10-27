@@ -963,7 +963,7 @@ export function MusicPlayer() {
               <i className="fa-solid fa-backward-step text-base"></i>
             </button>
 
-            {/* Play / Pause Button (Glowing Neon Mint Circle) */}
+            {/* Play / Pause Button (Transparent, aligned with Prev and Next) */}
             <button
               type="button"
               aria-label={isPlaying ? "Jeda" : "Putar"}
@@ -971,11 +971,12 @@ export function MusicPlayer() {
                 e.stopPropagation();
                 togglePlay();
               }}
-              className="w-10 h-10 rounded-full bg-[#00e599] text-gray-950 flex items-center justify-center shadow-[0_0_16px_rgba(0,229,153,0.5)] hover:bg-[#1affaa] active:scale-95 transition cursor-pointer mx-0.5"
+              className="p-1.5 text-gray-200 hover:text-white transition active:scale-90 cursor-pointer"
+              title={isPlaying ? "Jeda" : "Putar"}
             >
               <i
                 className={cn(
-                  "text-sm",
+                  "text-lg",
                   isPlaying ? "fa-solid fa-pause" : "fa-solid fa-play ml-0.5"
                 )}
               ></i>

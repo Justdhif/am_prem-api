@@ -43,7 +43,6 @@ export function MusicPlayer() {
   const [isMuted, setIsMuted] = useState(false);
   const [isLoop, setIsLoop] = useState(false);
   const [activeTab, setActiveTab] = useState<"player" | "lyrics">("player");
-  const [isLiked, setIsLiked] = useState(false);
   const [currentLyricIndex, setCurrentLyricIndex] = useState(0);
   const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
   const [isMiniPlayerVisible, setIsMiniPlayerVisible] = useState(true);
@@ -451,13 +450,13 @@ export function MusicPlayer() {
               : "opacity-0 pointer-events-none invisible absolute inset-x-0 top-0"
           )}
         >
-            {/* 1. Album Cover */}
+            {/* 1. Album Cover - Seamlessly blended with content below (Hero bleed effect) */}
             <div
               className={cn(
-                "relative rounded-2xl overflow-hidden border border-gray-800 shadow-md bg-[#0d121f] group/cover",
+                "relative overflow-hidden group/cover select-none",
                 isModal
-                  ? "aspect-square w-full max-w-[270px] xs:max-w-[300px] sm:max-w-[340px] mx-auto shrink-0 my-1 shadow-2xl"
-                  : "aspect-video sm:aspect-square w-full"
+                  ? "w-full aspect-square max-w-[270px] xs:max-w-[300px] sm:max-w-[340px] mx-auto shrink-0 my-1 rounded-2xl"
+                  : "w-full rounded-2xl aspect-video sm:aspect-square"
               )}
             >
               <Image
@@ -472,15 +471,16 @@ export function MusicPlayer() {
                 priority
               />
 
-              {/* Overlay Gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+              {/* Ambient overlay & seamless gradient fade to card background (#0d121f) */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0d121f] via-[#0d121f]/30 to-transparent pointer-events-none" />
+              <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#0d121f] via-[#0d121f]/90 to-transparent pointer-events-none" />
 
               {/* Quick Play Overlay Button */}
               <button
                 type="button"
                 onClick={togglePlay}
                 aria-label={isPlaying ? "Jeda" : "Putar"}
-                className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/cover:opacity-100 transition-opacity bg-black/40 backdrop-blur-xs cursor-pointer"
+                className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/cover:opacity-100 transition-opacity bg-black/30 backdrop-blur-xs cursor-pointer z-10"
               >
                 <div className="w-12 h-12 rounded-full bg-[#00e599] text-gray-950 flex items-center justify-center shadow-lg shadow-[#00e599]/40 hover:scale-110 active:scale-95 transition">
                   <i className={cn("fa-solid text-lg", isPlaying ? "fa-pause" : "fa-play ml-0.5")}></i>
@@ -531,30 +531,13 @@ export function MusicPlayer() {
             </div>
 
             {/* 3. Song Info Bar (Title & Artist) */}
-            <div className="flex items-center justify-between pt-0.5 text-left">
-              <div className="min-w-0 pr-2 text-left">
-                <h3 className="text-base font-bold text-white tracking-tight truncate hover:text-[#00e599] transition cursor-pointer text-left">
-                  {currentTrack.title}
-                </h3>
-                <p className="text-xs text-gray-400 font-medium truncate mt-0.5 text-left">
-                  {currentTrack.artist}
-                </p>
-              </div>
-
-              {/* Like Button */}
-              <button
-                type="button"
-                aria-label="Sukai Lagu"
-                onClick={() => setIsLiked(!isLiked)}
-                className="p-2 text-gray-400 hover:text-[#00e599] transition active:scale-90 cursor-pointer"
-              >
-                <i
-                  className={cn(
-                    "text-lg",
-                    isLiked ? "fa-solid fa-heart text-[#00e599]" : "fa-regular fa-heart"
-                  )}
-                ></i>
-              </button>
+            <div className="pt-0.5 text-left">
+              <h3 className="text-base font-bold text-white tracking-tight truncate hover:text-[#00e599] transition cursor-pointer text-left">
+                {currentTrack.title}
+              </h3>
+              <p className="text-xs text-gray-400 font-medium truncate mt-0.5 text-left">
+                {currentTrack.artist}
+              </p>
             </div>
 
             {/* 4. Progress Bar & Timestamps */}
@@ -804,7 +787,7 @@ export function MusicPlayer() {
       />
 
       {/* 1. Desktop Mode Player: Inline in Sidebar (Hidden on Mobile < lg) */}
-      <div className="hidden lg:block w-full bg-transparent border-0 shadow-none relative text-left">
+      <div className="hidden lg:block w-full bg-[#0d121f]/90 border border-gray-800/80 rounded-3xl p-4 sm:p-5 shadow-2xl relative text-left">
         {renderPlayerBody(false)}
       </div>
 
@@ -833,27 +816,8 @@ export function MusicPlayer() {
             </p>
           </div>
 
-          {/* Right Controls: [Heart] [Previous Track] [Play/Pause Glow Circle] [Next Track] */}
+          {/* Right Controls: [Previous Track] [Play/Pause Glow Circle] [Next Track] */}
           <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
-            {/* Like Button (Heart) */}
-            <button
-              type="button"
-              aria-label="Sukai Lagu"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsLiked(!isLiked);
-              }}
-              className="p-1.5 text-gray-300 hover:text-[#00e599] transition active:scale-90 cursor-pointer"
-              title={isLiked ? "Batal Suka" : "Sukai Lagu"}
-            >
-              <i
-                className={cn(
-                  "text-base sm:text-lg",
-                  isLiked ? "fa-solid fa-heart text-[#00e599]" : "fa-regular fa-heart"
-                )}
-              ></i>
-            </button>
-
             {/* Previous Track */}
             <button
               type="button"
@@ -967,20 +931,8 @@ export function MusicPlayer() {
                     </button>
                   </div>
 
-                  {/* Right Like Button */}
-                  <button
-                    type="button"
-                    onClick={() => setIsLiked(!isLiked)}
-                    className="w-9 h-9 rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-white flex items-center justify-center transition active:scale-90 cursor-pointer"
-                    aria-label="Sukai Lagu"
-                  >
-                    <i
-                      className={cn(
-                        "text-base transition",
-                        isLiked ? "fa-solid fa-heart text-[#00e599]" : "fa-regular fa-heart"
-                      )}
-                    ></i>
-                  </button>
+                  {/* Right Spacer (Balances collapse button for center tab alignment) */}
+                  <div className="w-9 h-9" aria-hidden="true" />
                 </div>
 
                 {/* Full Height Content Body */}

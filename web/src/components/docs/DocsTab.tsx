@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EndpointCard } from "./EndpointCard";
 import { BotCommands } from "./BotCommands";
 import { FaqSection } from "./FaqSection";
@@ -11,6 +11,7 @@ const BASE_URL = "https://amprem-api.vercel.app";
 
 export function DocsTab() {
   const [copiedBaseUrl, setCopiedBaseUrl] = useState(false);
+  const [activeNav, setActiveNav] = useState("overview");
 
   const handleCopyBaseUrl = () => {
     navigator.clipboard.writeText(BASE_URL);
@@ -30,11 +31,43 @@ export function DocsTab() {
   ];
 
   const scrollTo = (id: string) => {
+    setActiveNav(id);
     const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    if (!el) return;
+
+    // Header (64px) + Sticky nav pills bar (46px) + Breathing gap (16px) = 126px
+    const stickyHeaderOffset = 126;
+    const elementPosition = el.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - stickyHeaderOffset;
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: "smooth",
+    });
   };
+
+  // Synchronize active nav button with window scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.pageYOffset;
+      const stickyHeaderOffset = 135;
+
+      for (let i = navSections.length - 1; i >= 0; i--) {
+        const section = navSections[i];
+        const el = document.getElementById(section.id);
+        if (el) {
+          const top = el.offsetTop - stickyHeaderOffset;
+          if (scrollY >= top) {
+            setActiveNav(section.id);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // 1. SNIPPETS FOR /api/am/send-link
   const sendLinkSnippets = [
@@ -246,7 +279,7 @@ echo $result;`,
   return (
     <div className="space-y-8 text-left w-full">
       {/* 1. PRO BASE URL HERO CARD */}
-      <div id="overview" className="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-[#121826] via-[#121826] to-[#0d1622] border border-gray-800 shadow-xl space-y-4 text-left scroll-mt-32">
+      <div id="overview" className="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-[#121826] via-[#121826] to-[#0d1622] border border-gray-800 shadow-xl space-y-4 text-left scroll-mt-[126px]">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
             <span className="text-xs font-bold text-gray-300 uppercase tracking-wider">
@@ -310,17 +343,25 @@ echo $result;`,
       {/* 2. QUICK JUMP NAVIGATION PILLS */}
       <div className="sticky top-16 z-20 bg-[#0d121f]/90 backdrop-blur-md py-2 border-y border-gray-800/80 -mx-1 px-1 overflow-x-auto no-scrollbar">
         <div className="flex items-center space-x-1.5 min-w-max">
-          {navSections.map((nav) => (
-            <button
-              key={nav.id}
-              type="button"
-              onClick={() => scrollTo(nav.id)}
-              className="px-3 py-1.5 rounded-xl bg-[#121826] hover:bg-gray-800 text-gray-400 hover:text-white text-xs font-semibold border border-gray-800 transition active:scale-95 cursor-pointer flex items-center space-x-1.5"
-            >
-              <i className={cn(nav.icon, "text-[11px] text-[#00e599]")}></i>
-              <span>{nav.label}</span>
-            </button>
-          ))}
+          {navSections.map((nav) => {
+            const isActive = activeNav === nav.id;
+            return (
+              <button
+                key={nav.id}
+                type="button"
+                onClick={() => scrollTo(nav.id)}
+                className={cn(
+                  "px-3 py-1.5 rounded-xl text-xs font-semibold border transition active:scale-95 cursor-pointer flex items-center space-x-1.5 select-none",
+                  isActive
+                    ? "bg-[#00e599]/15 text-[#00e599] border-[#00e599]/40 shadow-sm shadow-[#00e599]/10 font-bold"
+                    : "bg-[#121826] hover:bg-gray-800 text-gray-400 hover:text-white border-gray-800"
+                )}
+              >
+                <i className={cn(nav.icon, "text-[11px]", isActive ? "text-[#00e599]" : "text-gray-400")}></i>
+                <span>{nav.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -527,7 +568,7 @@ echo $result;`,
       <BotCommands />
 
       {/* 5. STATUS CODES REFERENCE TABLE */}
-      <div id="status-codes" className="p-5 sm:p-6 rounded-2xl bg-[#121826] border border-gray-800 shadow-xl space-y-4 scroll-mt-32">
+      <div id="status-codes" className="p-5 sm:p-6 rounded-2xl bg-[#121826] border border-gray-800 shadow-xl space-y-4 scroll-mt-[126px]">
         <div className="space-y-1">
           <h3 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center space-x-2">
             <i className="fa-solid fa-triangle-exclamation text-amber-400 text-sm"></i>
@@ -579,9 +620,7 @@ echo $result;`,
       </div>
 
       {/* 6. FAQ & TROUBLESHOOTING */}
-      <div id="faq" className="scroll-mt-32 pt-2">
-        <FaqSection />
-      </div>
+      <FaqSection />
 
       {/* 7. SUPPORT BANNER */}
       <WhatsAppBanner />

@@ -1,15 +1,16 @@
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-
 export function FaqSection() {
   return (
-    <Card className="p-6 bg-[#131927]">
-      <div className="flex items-center space-x-3 mb-5">
-        <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm font-bold shrink-0">
-          <i className="fa-regular fa-circle-question"></i>
+    <div
+      id="faq"
+      className="p-5 sm:p-6 rounded-2xl bg-[#121826] border border-gray-800 shadow-xl space-y-5 scroll-mt-[126px] text-left transition hover:border-gray-700/80"
+    >
+      <div className="flex items-center space-x-3 border-b border-gray-800/80 pb-4">
+        <div className="w-9 h-9 rounded-xl bg-[#00e599]/10 border border-[#00e599]/30 text-[#00e599] flex items-center justify-center text-sm font-bold shrink-0">
+          <i className="fa-regular fa-circle-question text-base"></i>
         </div>
         <div>
-          <h2 className="text-base font-bold text-white">Panduan Bantuan &amp; FAQ</h2>
-          <p className="text-xs text-gray-400">Petunjuk aktivasi, panduan bot, dan solusi kendala umum.</p>
+          <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">Panduan Bantuan &amp; FAQ</h2>
+          <p className="text-xs sm:text-sm text-gray-400">Petunjuk aktivasi, panduan bot, dan solusi kendala umum.</p>
         </div>
       </div>
 
@@ -50,6 +51,6 @@ export function FaqSection() {
           </p>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

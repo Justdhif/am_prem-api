@@ -57,7 +57,7 @@ export function EndpointCard({
   return (
     <div
       id={id}
-      className="p-5 sm:p-6 rounded-2xl bg-[#121826] border border-gray-800 shadow-xl space-y-5 scroll-mt-24 text-left transition hover:border-gray-700/80"
+      className="p-5 sm:p-6 rounded-2xl bg-[#121826] border border-gray-800 shadow-xl space-y-5 scroll-mt-32 text-left transition hover:border-gray-700/80"
     >
       {/* Endpoint Header */}
       <div className="space-y-2 border-b border-gray-800/80 pb-4">

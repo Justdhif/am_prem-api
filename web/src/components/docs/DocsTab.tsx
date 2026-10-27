@@ -246,7 +246,7 @@ echo $result;`,
   return (
     <div className="space-y-8 text-left w-full">
       {/* 1. PRO BASE URL HERO CARD */}
-      <div id="overview" className="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-[#121826] via-[#121826] to-[#0d1622] border border-gray-800 shadow-xl space-y-4 text-left">
+      <div id="overview" className="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-[#121826] via-[#121826] to-[#0d1622] border border-gray-800 shadow-xl space-y-4 text-left scroll-mt-32">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
             <span className="w-2.5 h-2.5 rounded-full bg-[#00e599] animate-pulse"></span>
@@ -528,12 +528,10 @@ echo $result;`,
       </div>
 
       {/* 4. BOT COMMANDS REFERENCE */}
-      <div id="bot-commands" className="pt-2">
-        <BotCommands />
-      </div>
+      <BotCommands />
 
       {/* 5. STATUS CODES REFERENCE TABLE */}
-      <div id="status-codes" className="p-5 sm:p-6 rounded-2xl bg-[#121826] border border-gray-800 shadow-xl space-y-4">
+      <div id="status-codes" className="p-5 sm:p-6 rounded-2xl bg-[#121826] border border-gray-800 shadow-xl space-y-4 scroll-mt-32">
         <div className="space-y-1">
           <h3 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center space-x-2">
             <i className="fa-solid fa-triangle-exclamation text-amber-400 text-sm"></i>
@@ -585,7 +583,7 @@ echo $result;`,
       </div>
 
       {/* 6. FAQ & TROUBLESHOOTING */}
-      <div id="faq" className="pt-2">
+      <div id="faq" className="scroll-mt-32 pt-2">
         <FaqSection />
       </div>
 

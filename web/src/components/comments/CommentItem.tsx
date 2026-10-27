@@ -36,20 +36,20 @@ export function CommentItem({ comment, onReply }: CommentItemProps) {
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center flex-wrap gap-1">
+        <div className="flex items-center flex-wrap gap-1.5">
           <span className="font-semibold text-gray-400 text-xs">
             {comment.name || "Anonim"}
           </span>
 
-          {comment.replyToName && (
-            <span className="text-[10px] text-gray-500 font-normal">
-              &gt; <span className="text-gray-400 font-semibold">{comment.replyToName}</span>
+          {comment.isAnonymous && (
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#1f2937] text-[#9ca3af] font-normal border border-gray-700/60">
+              Anonim
             </span>
           )}
 
-          {comment.isAnonymous && (
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#1f2937] text-[#9ca3af] font-normal border border-gray-700/60 ml-1">
-              Anonim
+          {comment.replyToName && (
+            <span className="text-[10px] text-gray-500 font-normal">
+              &gt; <span className="text-gray-400 font-semibold">{comment.replyToName}</span>
             </span>
           )}
         </div>

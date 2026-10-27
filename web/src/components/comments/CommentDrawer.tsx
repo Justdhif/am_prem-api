@@ -167,7 +167,6 @@ export function CommentDrawer() {
                 {loading ? (
                   <div className="py-20 flex flex-col items-center justify-center text-center">
                     <LogoLoader />
-                    <p className="text-xs text-gray-400 mt-2 font-medium">Memuat komentar...</p>
                   </div>
                 ) : comments.length === 0 ? (
                   <div className="py-16 text-center text-gray-400 text-xs">

@@ -352,6 +352,44 @@ async function runTests() {
 
     console.log('✅ Comment Section & Threaded Replies passed');
 
+    // Test 9: HTTP Status Codes Coverage (200, 400, 429, 500, 404)
+    console.log('\nTest 9: HTTP Status Codes Coverage (200, 400, 429, 500, 404)');
+    const { classifyError } = await import('../src/presentation/middlewares/errorHandler.js');
+
+    // 9a. Verify classifyError utility
+    const err400 = classifyError(new Error('Format email tidak valid.'));
+    assert.strictEqual(err400.statusCode, 400);
+    assert.strictEqual(typeof err400.error, 'string');
+
+    const err429 = classifyError(new Error('Terlalu banyak permintaan ke API.'));
+    assert.strictEqual(err429.statusCode, 429);
+    assert.strictEqual(err429.error, 'Rate limit exceeded');
+
+    const err500 = classifyError(new Error('Koneksi database PostgreSQL terputus.'), 500);
+    assert.strictEqual(err500.statusCode, 500);
+    assert.strictEqual(err500.error, 'Internal Server Error');
+
+    // 9b. GET /api/am/stats with invalid query parameter -> 400 Bad Request
+    try {
+      await axios.get(`${baseUrl}/api/am/stats?unknownQueryParam=1`);
+      assert.fail('Should have failed for invalid query params');
+    } catch (err: any) {
+      assert.strictEqual(err.response?.status, 400);
+      assert.strictEqual(err.response?.data?.success, false);
+      assert.strictEqual(err.response?.data?.error, 'Bad Request');
+    }
+
+    // 9c. 404 Not Found route handler
+    try {
+      await axios.get(`${baseUrl}/api/am/non-existent-endpoint`);
+      assert.fail('Should have returned 404');
+    } catch (err: any) {
+      assert.strictEqual(err.response?.status, 404);
+      assert.strictEqual(err.response?.data?.success, false);
+      assert.strictEqual(err.response?.data?.error, 'Not Found');
+    }
+    console.log('✅ HTTP Status Codes Coverage passed');
+
     console.log('✅ Express API endpoints & Web Generator passed');
   } finally {
     server.close();

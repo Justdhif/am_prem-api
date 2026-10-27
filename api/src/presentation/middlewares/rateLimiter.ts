@@ -19,6 +19,7 @@ const createStandardLimiter = (options: {
       res.status(429).json({
         success: false,
         message: options.message,
+        error: 'Rate limit exceeded',
       });
     },
   });

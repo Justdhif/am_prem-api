@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { container } from '../../infrastructure/container.js';
 import { MessagePresenter } from '../presenters/messagePresenter.js';
 import { ApiResponseDto } from '../../application/dto/alightMotion.dto.js';
+import { classifyError } from '../middlewares/errorHandler.js';
 
 export class AlightMotionController {
   private getClientIp(req: Request): string {
@@ -50,10 +51,11 @@ export class AlightMotionController {
 
       res.status(200).json(response);
     } catch (err: any) {
-      res.status(400).json({
+      const errorDetail = classifyError(err, 400);
+      res.status(errorDetail.statusCode).json({
         success: false,
-        message: err.message || 'Gagal mengirim link verifikasi',
-        error: err.message || String(err),
+        message: errorDetail.message,
+        error: errorDetail.error || 'Invalid email address',
       });
     }
   }
@@ -91,28 +93,52 @@ export class AlightMotionController {
         error: result.premiumError || undefined,
       });
     } catch (err: any) {
-      res.status(400).json({
+      const errorDetail = classifyError(err, 400);
+      res.status(errorDetail.statusCode).json({
         success: false,
-        message: err.message || 'Verifikasi link gagal',
-        formattedText: MessagePresenter.formatVerifyErrorText(err.message || String(err)),
-        error: err.message || String(err),
+        isPremium: false,
+        message: errorDetail.message,
+        formattedText: MessagePresenter.formatVerifyErrorText(errorDetail.message),
+        error: errorDetail.error || 'OOB code has expired or is invalid',
       });
     }
   }
 
-  public async getStats(_req: Request, res: Response): Promise<void> {
-    const stats = await container.getStatsUseCase.execute();
-    res.status(200).json({
-      success: true,
-      message: 'Statistik Alight Motion Pro',
-      formattedText: stats.formattedText,
-      data: {
-        totalPremium: stats.totalPremium,
-        todayPremium: stats.todayPremium,
-        status: stats.status,
-        history: stats.history || [],
-      },
-    });
+  public async getStats(req: Request, res: Response, _next?: NextFunction): Promise<void> {
+    try {
+      // Validasi query parameter opsional (misal ?format=)
+      const allowedParams = ['format', 'period', 'limit'];
+      const queryKeys = Object.keys(req.query || {});
+      const hasInvalidKey = queryKeys.some((k) => !allowedParams.includes(k));
+      if (hasInvalidKey) {
+        res.status(400).json({
+          success: false,
+          message: 'Parameter query tidak valid pada endpoint statistik.',
+          error: 'Bad Request',
+        });
+        return;
+      }
+
+      const stats = await container.getStatsUseCase.execute();
+      res.status(200).json({
+        success: true,
+        message: 'Statistik Alight Motion Pro',
+        formattedText: stats.formattedText,
+        data: {
+          totalPremium: stats.totalPremium,
+          todayPremium: stats.todayPremium,
+          status: stats.status,
+          history: stats.history || [],
+        },
+      });
+    } catch (err: any) {
+      const errorDetail = classifyError(err, 500);
+      res.status(errorDetail.statusCode).json({
+        success: false,
+        message: errorDetail.message,
+        error: errorDetail.error || 'Database Connection Failed',
+      });
+    }
   }
 
   public async getHelp(_req: Request, res: Response): Promise<void> {
@@ -208,7 +234,7 @@ export class AlightMotionController {
     });
   }
 
-  public async handleCommand(req: Request, res: Response, _next: NextFunction): Promise<void> {
+  public async handleCommand(req: Request, res: Response, _next?: NextFunction): Promise<void> {
     try {
       const text: string = req.body.text?.trim() || '';
       const senderId: string =
@@ -223,13 +249,25 @@ export class AlightMotionController {
         clientIp,
       });
 
-      const statusCode = result.success ? 200 : 400;
-      res.status(statusCode).json(result);
+      if (!result.success) {
+        const errorDetail = classifyError(
+          new Error(result.error || result.replyText || 'Perintah bot tidak dikenali.'),
+          400
+        );
+        res.status(errorDetail.statusCode).json({
+          ...result,
+          error: result.error || errorDetail.error || 'Unknown bot command',
+        });
+        return;
+      }
+
+      res.status(200).json(result);
     } catch (err: any) {
-      res.status(500).json({
+      const errorDetail = classifyError(err, 500);
+      res.status(errorDetail.statusCode).json({
         success: false,
         replyText: `⚠️ Terjadi kesalahan saat memproses perintah Alight Motion.\n\n${err.message || err}`,
-        error: err.message || String(err),
+        error: errorDetail.error || 'Webhook Execution Failed',
       });
     }
   }

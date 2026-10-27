@@ -11,6 +11,7 @@ export const validateBody = (schema: ZodTypeAny) => {
         res.status(400).json({
           success: false,
           message: error.errors[0]?.message || 'Validation error',
+          error: 'Bad Request',
           errors: error.errors.map((e) => ({
             field: e.path.join('.'),
             message: e.message,

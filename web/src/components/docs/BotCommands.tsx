@@ -272,15 +272,12 @@ echo $result;`,
         </div>
       </div>
 
-      {/* Postman-style Raw JSON Request Body */}
+      {/* Raw JSON Request Body */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2 text-xs font-bold text-gray-300">
             <i className="fa-solid fa-code text-[#00e599] text-xs"></i>
-            <span>Body Request (Raw JSON — Postman)</span>
-            <span className="text-[10px] font-mono text-gray-400 bg-[#0d121f] px-2 py-0.5 rounded border border-gray-800">
-              Content-Type: application/json
-            </span>
+            <span>Body Request</span>
           </div>
           <button
             type="button"

@@ -152,16 +152,13 @@ export function EndpointCard({
         </div>
       )}
 
-      {/* Postman-style Raw JSON Request Body */}
+      {/* Raw JSON Request Body */}
       {rawBodyJson && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-xs font-bold text-gray-300">
               <i className="fa-solid fa-code text-[#00e599] text-xs"></i>
-              <span>Body Request (Raw JSON — Postman)</span>
-              <span className="text-[10px] font-mono text-gray-400 bg-[#0d121f] px-2 py-0.5 rounded border border-gray-800">
-                Content-Type: application/json
-              </span>
+              <span>Body Request</span>
             </div>
             <button
               type="button"
@@ -185,7 +182,7 @@ export function EndpointCard({
         <div className="space-y-1.5">
           <div className="flex items-center space-x-2 text-xs font-bold text-gray-300">
             <i className="fa-solid fa-code text-gray-500 text-xs"></i>
-            <span>Body Request (Raw JSON)</span>
+            <span>Body Request</span>
           </div>
           <div className="p-3 rounded-xl bg-[#0d121f] border border-gray-800/80 text-gray-400 text-xs font-mono">
             none <span className="text-gray-500 font-sans text-[11px]">(GET request tidak memerlukan request body)</span>

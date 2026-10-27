@@ -13,7 +13,7 @@ export const PLAYLIST: Track[] = [
     title: "Ain't In LA",
     artist: "ADÉLA",
     src: "/audio/aint-in-la.mp3",
-    cover: "/audio/cover-aint-in-la.jpg",
+    cover: "/audio/cover-aint-in-la.webp",
     duration: 219,
   },
   {
@@ -21,7 +21,7 @@ export const PLAYLIST: Track[] = [
     title: "nervousness",
     artist: "Joon",
     src: "/audio/nervousness.mp3",
-    cover: "/audio/cover.jpg",
+    cover: "/audio/cover.webp",
     duration: 215,
   },
   {
@@ -29,7 +29,7 @@ export const PLAYLIST: Track[] = [
     title: "with ease",
     artist: "Joon",
     src: "/audio/with-ease.mp3",
-    cover: "/audio/cover-with-ease.jpg",
+    cover: "/audio/cover-with-ease.webp",
     duration: 187,
   },
 ];

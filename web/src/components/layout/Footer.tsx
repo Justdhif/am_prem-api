@@ -7,9 +7,10 @@ export function Footer() {
         <div className="flex items-center space-x-2">
           <div className="relative w-5 h-5 rounded-md overflow-hidden shrink-0">
             <Image
-              src="/logo-web.png"
+              src="/logo-web.webp"
               alt="AM Pro API Logo"
-              fill
+              width={20}
+              height={20}
               className="object-contain"
             />
           </div>

@@ -36,9 +36,19 @@ export function CommentDrawer() {
     }
   }, []);
 
+  // Fetch comments: if open, fetch immediately; otherwise defer to idle to save initial TBT
   useEffect(() => {
-    loadComments(1);
-  }, [loadComments]);
+    if (isOpen) {
+      loadComments(1);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      loadComments(1);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [isOpen, loadComments]);
 
   // Lock body scroll when drawer/sheet is open
   useEffect(() => {

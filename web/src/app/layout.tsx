@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
 const plusJakartaSans = localFont({
   src: "./fonts/PlusJakartaSans-Variable.woff2",
@@ -21,7 +20,7 @@ export const metadata: Metadata = {
   title: "Alight Motion Pro VIP - by Justdhif",
   description: "Layanan aktivasi resmi Alight Motion Pro VIP 1 Tahun dan scraper preset multi-platform",
   icons: {
-    icon: "/logo-web.png",
+    icon: "/logo-web.webp",
   },
 };
 
@@ -32,14 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" className={`dark ${plusJakartaSans.variable} ${jetbrainsMono.variable} overflow-x-clip max-w-full`}>
-      <head>
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-        />
-      </head>
       <body className="font-sans min-h-screen flex flex-col antialiased selection:bg-[#00e599] selection:text-gray-950 bg-[#0d121f] text-[#e2e8f0] overflow-x-clip max-w-full w-full relative">
-        <LoadingScreen />
         {children}
       </body>
     </html>

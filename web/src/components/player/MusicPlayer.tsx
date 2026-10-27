@@ -212,9 +212,6 @@ export function MusicPlayer() {
       setHeight: (h: number) => void
     ) => {
       if (!el) return null;
-      if (el.offsetHeight > 50) {
-        setHeight(el.offsetHeight);
-      }
       const obs = new ResizeObserver((entries) => {
         for (const entry of entries) {
           const h = entry.borderBoxSize?.[0]?.blockSize || entry.contentRect.height;

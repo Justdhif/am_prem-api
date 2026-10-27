@@ -1,12 +1,24 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { HeroStats } from "@/components/dashboard/HeroStats";
 import { StepsCard } from "@/components/dashboard/StepsCard";
 import { HomeServices } from "@/components/home/HomeServices";
-import { CommentDrawer } from "@/components/comments/CommentDrawer";
-import { MusicPlayer } from "@/components/player/MusicPlayer";
+
+const MusicPlayer = dynamic(
+  () => import("@/components/player/MusicPlayer").then((m) => m.MusicPlayer),
+  {
+    loading: () => (
+      <div className="w-full bg-[#0d121f] border border-gray-800/80 rounded-3xl p-5 min-h-[520px] animate-pulse hidden lg:block" />
+    ),
+  }
+);
+
+const CommentDrawer = dynamic(
+  () => import("@/components/comments/CommentDrawer").then((m) => m.CommentDrawer)
+);
 
 export const metadata: Metadata = {
   title: "Alight Motion Pro VIP - by Justdhif",

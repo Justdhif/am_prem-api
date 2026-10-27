@@ -472,43 +472,45 @@ export function MusicPlayer() {
               </button>
             </div>
 
-            {/* 2. 3-Line Dynamic Synchronized Lyrics */}
-            <div className="py-2.5 px-0.5 space-y-1.5 text-left select-none overflow-hidden min-h-[92px] flex flex-col justify-center">
-              {/* Previous Line */}
+            {/* 2. 3-Line Dynamic Synchronized Lyrics (Fixed Height Container to Prevent Layout Shifts) */}
+            <div className="py-2 px-1 text-left select-none overflow-hidden h-[96px] min-h-[96px] max-h-[96px] shrink-0 flex flex-col justify-between">
+              {/* Previous Line (Fixed 1 line, truncate) */}
               <div
                 onClick={() => prevLine && handleLyricClick(prevLine.time)}
                 className={cn(
-                  "text-xs transition-all duration-300 truncate cursor-pointer text-left",
-                  prevLine ? "text-gray-500 hover:text-gray-300 font-medium" : "opacity-0 select-none"
+                  "h-5 text-xs transition-all duration-300 truncate cursor-pointer text-left flex items-center",
+                  prevLine ? "text-gray-500 hover:text-gray-300 font-medium" : "opacity-0 select-none pointer-events-none"
                 )}
                 title={prevLine?.text}
               >
-                {prevLine?.text || "—"}
+                <span className="truncate">{prevLine?.text || "—"}</span>
               </div>
 
-              {/* Active Line */}
-              <motion.div
-                key={currentLyricIndex}
-                initial={{ opacity: 0, y: 3 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.22, ease: "easeOut" }}
-                onClick={() => activeLine && handleLyricClick(activeLine.time)}
-                className="text-sm sm:text-base font-black text-[#00e599] text-left drop-shadow-[0_0_12px_rgba(0,229,153,0.35)] cursor-pointer line-clamp-2 leading-snug"
-                title="Klik untuk loncat ke bait ini"
-              >
-                {activeLine?.text || "..."}
-              </motion.div>
+              {/* Active Line (Fixed height slot for up to 2 lines, never expanding or shrinking the player) */}
+              <div className="h-11 sm:h-12 flex items-center overflow-hidden">
+                <motion.div
+                  key={currentLyricIndex}
+                  initial={{ opacity: 0, y: 3 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.22, ease: "easeOut" }}
+                  onClick={() => activeLine && handleLyricClick(activeLine.time)}
+                  className="w-full text-sm sm:text-base font-black text-[#00e599] text-left drop-shadow-[0_0_12px_rgba(0,229,153,0.35)] cursor-pointer line-clamp-2 leading-tight select-none"
+                  title="Klik untuk loncat ke bait ini"
+                >
+                  {activeLine?.text || "..."}
+                </motion.div>
+              </div>
 
-              {/* Next Line */}
+              {/* Next Line (Fixed 1 line, truncate) */}
               <div
                 onClick={() => nextLine && handleLyricClick(nextLine.time)}
                 className={cn(
-                  "text-xs transition-all duration-300 truncate cursor-pointer text-left",
-                  nextLine ? "text-gray-400 hover:text-gray-200 font-medium" : "opacity-0 select-none"
+                  "h-5 text-xs transition-all duration-300 truncate cursor-pointer text-left flex items-center",
+                  nextLine ? "text-gray-400 hover:text-gray-200 font-medium" : "opacity-0 select-none pointer-events-none"
                 )}
                 title={nextLine?.text}
               >
-                {nextLine?.text || "—"}
+                <span className="truncate">{nextLine?.text || "—"}</span>
               </div>
             </div>
 

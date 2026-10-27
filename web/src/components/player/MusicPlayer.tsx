@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -46,7 +47,12 @@ export function MusicPlayer() {
   const [currentLyricIndex, setCurrentLyricIndex] = useState(0);
   const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
   const [isMiniPlayerVisible, setIsMiniPlayerVisible] = useState(true);
+  const [hasMounted, setHasMounted] = useState(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   // Auto-hide mini player during scroll on mobile, reappear after 3s of idle or when reaching top/bottom
   useEffect(() => {
@@ -370,80 +376,90 @@ export function MusicPlayer() {
     const currentTargetHeight = isModal ? modalPlayerHeight : desktopPlayerHeight;
 
     return (
-      <div className="w-full text-left">
-      {/* Header Bar */}
-      <div className="flex items-center justify-between pb-3 border-b border-gray-800/80 mb-4">
-        <div className="flex items-center space-x-2 text-left">
-          {/* Animated equalizer bars */}
-          <div className="flex items-end space-x-0.5 h-3.5">
-            <span
-              className={cn(
-                "w-0.5 bg-[#00e599] rounded-full transition-all duration-300",
-                isPlaying ? "h-3.5 animate-pulse" : "h-1"
-              )}
-            />
-            <span
-              className={cn(
-                "w-0.5 bg-[#00e599] rounded-full transition-all duration-300",
-                isPlaying ? "h-2.5 animate-bounce" : "h-1.5"
-              )}
-            />
-            <span
-              className={cn(
-                "w-0.5 bg-[#00e599] rounded-full transition-all duration-300",
-                isPlaying ? "h-3 animate-pulse" : "h-1"
-              )}
-            />
+      <div className={cn("w-full text-left", isModal ? "flex-1 flex flex-col justify-between" : "")}>
+      {/* Header Bar (Desktop only, mobile modal has unified top bar) */}
+      {!isModal && (
+        <div className="flex items-center justify-between pb-3 border-b border-gray-800/80 mb-4">
+          <div className="flex items-center space-x-2 text-left">
+            {/* Animated equalizer bars */}
+            <div className="flex items-end space-x-0.5 h-3.5">
+              <span
+                className={cn(
+                  "w-0.5 bg-[#00e599] rounded-full transition-all duration-300",
+                  isPlaying ? "h-3.5 animate-pulse" : "h-1"
+                )}
+              />
+              <span
+                className={cn(
+                  "w-0.5 bg-[#00e599] rounded-full transition-all duration-300",
+                  isPlaying ? "h-2.5 animate-bounce" : "h-1.5"
+                )}
+              />
+              <span
+                className={cn(
+                  "w-0.5 bg-[#00e599] rounded-full transition-all duration-300",
+                  isPlaying ? "h-3 animate-pulse" : "h-1"
+                )}
+              />
+            </div>
+            <span className="text-xs font-bold text-gray-200 uppercase tracking-wider text-left">
+              Now Playing
+            </span>
           </div>
-          <span className="text-xs font-bold text-gray-200 uppercase tracking-wider text-left">
-            Now Playing
-          </span>
-        </div>
 
-        {/* Tab Switcher: Player vs Full Lyrics */}
-        <div className="flex items-center bg-[#0d121f] p-0.5 rounded-lg border border-gray-800 text-[11px]">
-          <button
-            type="button"
-            onClick={() => setActiveTab("player")}
-            className={cn(
-              "px-2.5 py-1 rounded-md font-semibold transition cursor-pointer",
-              activeTab === "player"
-                ? "bg-[#00e599] text-gray-950 shadow-sm"
-                : "text-gray-400 hover:text-white"
-            )}
-          >
-            Lagu
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("lyrics")}
-            className={cn(
-              "px-2.5 py-1 rounded-md font-semibold transition cursor-pointer flex items-center space-x-1",
-              activeTab === "lyrics"
-                ? "bg-[#00e599] text-gray-950 shadow-sm"
-                : "text-gray-400 hover:text-white"
-            )}
-          >
-            <i className="fa-solid fa-microphone-lines text-[10px]"></i>
-            <span>Lirik</span>
-          </button>
+          {/* Tab Switcher: Player vs Full Lyrics */}
+          <div className="flex items-center bg-[#0d121f] p-0.5 rounded-lg border border-gray-800 text-[11px]">
+            <button
+              type="button"
+              onClick={() => setActiveTab("player")}
+              className={cn(
+                "px-2.5 py-1 rounded-md font-semibold transition cursor-pointer",
+                activeTab === "player"
+                  ? "bg-[#00e599] text-gray-950 shadow-sm"
+                  : "text-gray-400 hover:text-white"
+              )}
+            >
+              Lagu
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("lyrics")}
+              className={cn(
+                "px-2.5 py-1 rounded-md font-semibold transition cursor-pointer flex items-center space-x-1",
+                activeTab === "lyrics"
+                  ? "bg-[#00e599] text-gray-950 shadow-sm"
+                  : "text-gray-400 hover:text-white"
+              )}
+            >
+              <i className="fa-solid fa-microphone-lines text-[10px]"></i>
+              <span>Lirik</span>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Container for both tabs with matched height to eliminate jumping */}
-      <div className="relative w-full">
+      <div className={cn("relative w-full", isModal ? "flex-1 flex flex-col min-h-0" : "")}>
         {/* 1. Tab Lagu (Player) */}
         <div
           ref={currentPlayerRef}
           className={cn(
             "space-y-3.5 text-left transition-opacity duration-200",
+            isModal ? "flex-1 flex flex-col justify-between" : "",
             activeTab === "player"
               ? "opacity-100 relative"
               : "opacity-0 pointer-events-none invisible absolute inset-x-0 top-0"
           )}
         >
             {/* 1. Album Cover */}
-            <div className="relative aspect-video sm:aspect-square w-full rounded-2xl overflow-hidden border border-gray-800 shadow-md bg-[#0d121f] group/cover">
+            <div
+              className={cn(
+                "relative rounded-2xl overflow-hidden border border-gray-800 shadow-md bg-[#0d121f] group/cover",
+                isModal
+                  ? "aspect-square w-full max-w-[270px] xs:max-w-[300px] sm:max-w-[340px] mx-auto shrink-0 my-1 shadow-2xl"
+                  : "aspect-video sm:aspect-square w-full"
+              )}
+            >
               <Image
                 src={currentTrack.cover}
                 alt={`${currentTrack.artist} - ${currentTrack.title}`}
@@ -671,11 +687,12 @@ export function MusicPlayer() {
             </div>
           </div>
 
-          {/* 2. Tab Lirik (Lyrics) - Height locked exactly to currentTargetHeight */}
+          {/* 2. Tab Lirik (Lyrics) - Height locked exactly to currentTargetHeight on desktop, full height in modal */}
           <div
-            style={{ height: `${currentTargetHeight}px` }}
+            style={isModal ? undefined : { height: `${currentTargetHeight}px` }}
             className={cn(
               "flex flex-col text-left space-y-3 transition-opacity duration-200",
+              isModal ? "flex-1 min-h-0 h-full" : "",
               activeTab === "lyrics"
                 ? "opacity-100 relative"
                 : "opacity-0 pointer-events-none invisible absolute inset-x-0 top-0"
@@ -892,69 +909,87 @@ export function MusicPlayer() {
         </div>
       </div>
 
-      {/* 3. Mobile Full Audio Player Bottom Sheet / Modal (Opened when clicking the mini bar) */}
+      {/* 3. Mobile Fullscreen Audio Player Modal (Rendered via Portal to document.body with z-[100]) */}
       <AnimatePresence>
-        {isMobileModalOpen && (
-          <motion.div
-            key="mobile-player-modal"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 lg:hidden bg-black/80 backdrop-blur-xl flex flex-col justify-end overflow-hidden"
-          >
-            {/* Backdrop click to close */}
-            <div
-              onClick={() => setIsMobileModalOpen(false)}
-              onTouchMove={(e) => e.preventDefault()}
-              className="absolute inset-0 z-0"
-              aria-hidden="true"
-            />
-
+        {isMobileModalOpen && hasMounted &&
+          createPortal(
             <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 300 }}
-              className="relative z-10 w-full max-h-[92vh] overflow-y-auto bg-[#0d121f] border-t border-gray-800 rounded-t-3xl p-4 sm:p-6 shadow-2xl flex flex-col text-left custom-scrollbar overscroll-contain"
-              style={{ touchAction: "pan-y" }}
+              key="mobile-player-modal"
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ type: "spring", damping: 30, stiffness: 320 }}
+              className="fixed inset-0 z-[100] lg:hidden bg-[#0d121f] h-[100dvh] h-full w-full flex flex-col text-left overflow-hidden select-none"
+              style={{ touchAction: "none" }}
             >
-              {/* Top Drag Indicator & Collapse Header */}
-              <div className="flex flex-col items-center pb-2">
-                <div className="w-10 h-1 bg-gray-700/80 rounded-full mb-3"></div>
-                <div className="w-full flex items-center justify-between pb-2 border-b border-gray-800/80">
+              {/* Top Unified Header Bar */}
+              <div className="shrink-0 w-full px-4 pt-3.5 pb-2.5 flex items-center justify-between border-b border-gray-800/80 bg-[#0d121f]/95 backdrop-blur-md z-10">
+                {/* Collapse Button */}
+                <button
+                  type="button"
+                  onClick={() => setIsMobileModalOpen(false)}
+                  className="w-9 h-9 rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-white flex items-center justify-center transition active:scale-90 cursor-pointer"
+                  aria-label="Tutup Pemutar"
+                >
+                  <i className="fa-solid fa-chevron-down text-sm"></i>
+                </button>
+
+                {/* Center Tab Switcher: [Lagu] [Lirik] */}
+                <div className="flex items-center bg-[#070b13] p-1 rounded-xl border border-gray-800 text-xs shadow-inner">
                   <button
                     type="button"
-                    onClick={() => setIsMobileModalOpen(false)}
-                    className="p-2 text-gray-400 hover:text-white transition -ml-2 cursor-pointer active:scale-95"
-                    aria-label="Tutup Pemutar"
+                    onClick={() => setActiveTab("player")}
+                    className={cn(
+                      "px-3.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center space-x-1.5",
+                      activeTab === "player"
+                        ? "bg-[#00e599] text-gray-950 shadow-sm"
+                        : "text-gray-400 hover:text-white"
+                    )}
                   >
-                    <i className="fa-solid fa-chevron-down text-base"></i>
+                    <i className="fa-solid fa-music text-[10px]"></i>
+                    <span>Lagu</span>
                   </button>
-                  <span className="text-xs font-bold text-gray-200 uppercase tracking-wider">
-                    Now Playing
-                  </span>
                   <button
                     type="button"
-                    onClick={() => setIsLiked(!isLiked)}
-                    className="p-2 text-gray-400 hover:text-[#00e599] transition -mr-2"
+                    onClick={() => setActiveTab("lyrics")}
+                    className={cn(
+                      "px-3.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center space-x-1.5",
+                      activeTab === "lyrics"
+                        ? "bg-[#00e599] text-gray-950 shadow-sm"
+                        : "text-gray-400 hover:text-white"
+                    )}
                   >
-                    <i
-                      className={cn(
-                        "text-base",
-                        isLiked ? "fa-solid fa-heart text-[#00e599]" : "fa-regular fa-heart"
-                      )}
-                    ></i>
+                    <i className="fa-solid fa-microphone-lines text-[10px]"></i>
+                    <span>Lirik</span>
                   </button>
                 </div>
+
+                {/* Right Like Button */}
+                <button
+                  type="button"
+                  onClick={() => setIsLiked(!isLiked)}
+                  className="w-9 h-9 rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-white flex items-center justify-center transition active:scale-90 cursor-pointer"
+                  aria-label="Sukai Lagu"
+                >
+                  <i
+                    className={cn(
+                      "text-base transition",
+                      isLiked ? "fa-solid fa-heart text-[#00e599]" : "fa-regular fa-heart"
+                    )}
+                  ></i>
+                </button>
               </div>
 
-              {/* Full Player Content Inside Sheet */}
-              <div className="pt-2">
+              {/* Full Height Content Body */}
+              <div
+                className="flex-1 w-full min-h-0 overflow-y-auto p-4 sm:p-6 flex flex-col justify-between custom-scrollbar"
+                style={{ touchAction: "pan-y" }}
+              >
                 {renderPlayerBody(true)}
               </div>
-            </motion.div>
-          </motion.div>
-        )}
+            </motion.div>,
+            document.body
+          )}
       </AnimatePresence>
     </>
   );

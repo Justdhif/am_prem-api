@@ -781,6 +781,7 @@ export function MusicPlayer() {
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={handleTrackEnded}
+        className="hidden"
       />
 
       {/* 1. Desktop Mode Player: Inline in Sidebar (Hidden on Mobile < lg) */}

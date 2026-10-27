@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { AppShell } from "@/components/layout/AppShell";
 
 const plusJakartaSans = localFont({
   src: "./fonts/PlusJakartaSans-Variable.woff2",
@@ -32,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="id" className={`dark ${plusJakartaSans.variable} ${jetbrainsMono.variable} overflow-x-clip max-w-full`}>
       <body className="font-sans min-h-screen flex flex-col antialiased selection:bg-[#00e599] selection:text-gray-950 bg-[#0d121f] text-[#e2e8f0] overflow-x-clip max-w-full w-full relative">
-        {children}
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

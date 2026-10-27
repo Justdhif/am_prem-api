@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { HeroStats } from "@/components/dashboard/HeroStats";
@@ -6,6 +7,11 @@ import { StepsCard } from "@/components/dashboard/StepsCard";
 import { HomeServices } from "@/components/home/HomeServices";
 import { CommentDrawer } from "@/components/comments/CommentDrawer";
 import { MusicPlayer } from "@/components/player/MusicPlayer";
+
+export const metadata: Metadata = {
+  title: "Alight Motion Pro VIP - by Justdhif",
+  description: "Layanan aktivasi resmi Alight Motion Pro VIP 1 Tahun dan scraper preset multi-platform",
+};
 
 export default function Home() {
   return (

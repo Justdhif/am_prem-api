@@ -812,12 +812,14 @@ export function MusicPlayer() {
       <div
         className={cn(
           "block lg:hidden fixed bottom-0 left-0 right-0 z-40 p-2 sm:p-3 bg-gradient-to-t from-[#070b13] via-[#070b13]/95 to-transparent transition-all duration-500 ease-in-out",
-          isMiniPlayerVisible
+          isMiniPlayerVisible && !isMobileModalOpen
             ? "translate-y-0 opacity-100 pointer-events-auto"
             : "translate-y-full opacity-0 pointer-events-none"
         )}
       >
         <div
+          role="button"
+          tabIndex={0}
           onClick={() => setIsMobileModalOpen(true)}
           className="relative flex items-center justify-between px-4 py-3 bg-[#111726]/95 hover:bg-[#161e30] border border-gray-800/90 rounded-2xl shadow-2xl backdrop-blur-md transition cursor-pointer overflow-hidden group select-none active:scale-[0.99]"
         >
@@ -910,87 +912,89 @@ export function MusicPlayer() {
       </div>
 
       {/* 3. Mobile Fullscreen Audio Player Modal (Rendered via Portal to document.body with z-[100]) */}
-      <AnimatePresence>
-        {isMobileModalOpen && hasMounted &&
-          createPortal(
-            <motion.div
-              key="mobile-player-modal"
-              initial={{ y: "100%", opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: "100%", opacity: 0 }}
-              transition={{ type: "spring", damping: 30, stiffness: 320 }}
-              className="fixed inset-0 z-[100] lg:hidden bg-[#0d121f] h-[100dvh] h-full w-full flex flex-col text-left overflow-hidden select-none"
-              style={{ touchAction: "none" }}
-            >
-              {/* Top Unified Header Bar */}
-              <div className="shrink-0 w-full px-4 pt-3.5 pb-2.5 flex items-center justify-between border-b border-gray-800/80 bg-[#0d121f]/95 backdrop-blur-md z-10">
-                {/* Collapse Button */}
-                <button
-                  type="button"
-                  onClick={() => setIsMobileModalOpen(false)}
-                  className="w-9 h-9 rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-white flex items-center justify-center transition active:scale-90 cursor-pointer"
-                  aria-label="Tutup Pemutar"
-                >
-                  <i className="fa-solid fa-chevron-down text-sm"></i>
-                </button>
-
-                {/* Center Tab Switcher: [Lagu] [Lirik] */}
-                <div className="flex items-center bg-[#070b13] p-1 rounded-xl border border-gray-800 text-xs shadow-inner">
+      {hasMounted && typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {isMobileModalOpen && (
+              <motion.div
+                key="mobile-player-modal"
+                initial={{ y: "100%", opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: "100%", opacity: 0 }}
+                transition={{ type: "spring", damping: 30, stiffness: 320 }}
+                className="fixed inset-0 z-[100] lg:hidden bg-[#0d121f] h-[100dvh] h-full w-full flex flex-col text-left overflow-hidden select-none"
+                style={{ touchAction: "none" }}
+              >
+                {/* Top Unified Header Bar */}
+                <div className="shrink-0 w-full px-4 pt-3.5 pb-2.5 flex items-center justify-between border-b border-gray-800/80 bg-[#0d121f]/95 backdrop-blur-md z-10">
+                  {/* Collapse Button */}
                   <button
                     type="button"
-                    onClick={() => setActiveTab("player")}
-                    className={cn(
-                      "px-3.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center space-x-1.5",
-                      activeTab === "player"
-                        ? "bg-[#00e599] text-gray-950 shadow-sm"
-                        : "text-gray-400 hover:text-white"
-                    )}
+                    onClick={() => setIsMobileModalOpen(false)}
+                    className="w-9 h-9 rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-white flex items-center justify-center transition active:scale-90 cursor-pointer"
+                    aria-label="Tutup Pemutar"
                   >
-                    <i className="fa-solid fa-music text-[10px]"></i>
-                    <span>Lagu</span>
+                    <i className="fa-solid fa-chevron-down text-sm"></i>
                   </button>
+
+                  {/* Center Tab Switcher: [Lagu] [Lirik] */}
+                  <div className="flex items-center bg-[#070b13] p-1 rounded-xl border border-gray-800 text-xs shadow-inner">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("player")}
+                      className={cn(
+                        "px-3.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center space-x-1.5",
+                        activeTab === "player"
+                          ? "bg-[#00e599] text-gray-950 shadow-sm"
+                          : "text-gray-400 hover:text-white"
+                      )}
+                    >
+                      <i className="fa-solid fa-music text-[10px]"></i>
+                      <span>Lagu</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("lyrics")}
+                      className={cn(
+                        "px-3.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center space-x-1.5",
+                        activeTab === "lyrics"
+                          ? "bg-[#00e599] text-gray-950 shadow-sm"
+                          : "text-gray-400 hover:text-white"
+                      )}
+                    >
+                      <i className="fa-solid fa-microphone-lines text-[10px]"></i>
+                      <span>Lirik</span>
+                    </button>
+                  </div>
+
+                  {/* Right Like Button */}
                   <button
                     type="button"
-                    onClick={() => setActiveTab("lyrics")}
-                    className={cn(
-                      "px-3.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center space-x-1.5",
-                      activeTab === "lyrics"
-                        ? "bg-[#00e599] text-gray-950 shadow-sm"
-                        : "text-gray-400 hover:text-white"
-                    )}
+                    onClick={() => setIsLiked(!isLiked)}
+                    className="w-9 h-9 rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-white flex items-center justify-center transition active:scale-90 cursor-pointer"
+                    aria-label="Sukai Lagu"
                   >
-                    <i className="fa-solid fa-microphone-lines text-[10px]"></i>
-                    <span>Lirik</span>
+                    <i
+                      className={cn(
+                        "text-base transition",
+                        isLiked ? "fa-solid fa-heart text-[#00e599]" : "fa-regular fa-heart"
+                      )}
+                    ></i>
                   </button>
                 </div>
 
-                {/* Right Like Button */}
-                <button
-                  type="button"
-                  onClick={() => setIsLiked(!isLiked)}
-                  className="w-9 h-9 rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-white flex items-center justify-center transition active:scale-90 cursor-pointer"
-                  aria-label="Sukai Lagu"
+                {/* Full Height Content Body */}
+                <div
+                  className="flex-1 w-full min-h-0 overflow-y-auto p-4 sm:p-6 flex flex-col justify-between custom-scrollbar"
+                  style={{ touchAction: "pan-y" }}
                 >
-                  <i
-                    className={cn(
-                      "text-base transition",
-                      isLiked ? "fa-solid fa-heart text-[#00e599]" : "fa-regular fa-heart"
-                    )}
-                  ></i>
-                </button>
-              </div>
-
-              {/* Full Height Content Body */}
-              <div
-                className="flex-1 w-full min-h-0 overflow-y-auto p-4 sm:p-6 flex flex-col justify-between custom-scrollbar"
-                style={{ touchAction: "pan-y" }}
-              >
-                {renderPlayerBody(true)}
-              </div>
-            </motion.div>,
-            document.body
-          )}
-      </AnimatePresence>
+                  {renderPlayerBody(true)}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
     </>
   );
 }

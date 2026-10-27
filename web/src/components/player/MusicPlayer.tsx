@@ -360,6 +360,12 @@ export function MusicPlayer() {
 
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
+  // Dynamic previous and next track calculated automatically from PLAYLIST
+  const prevTrackIndex = (currentTrackIndex - 1 + PLAYLIST.length) % PLAYLIST.length;
+  const nextTrackIndex = (currentTrackIndex + 1) % PLAYLIST.length;
+  const prevTrack = PLAYLIST[prevTrackIndex];
+  const nextTrack = PLAYLIST[nextTrackIndex];
+
   // 3 visible lyrics: previous, active, and next
   const prevLine = currentLyricIndex > 0 ? lyrics[currentLyricIndex - 1] : null;
   const activeLine = lyrics[currentLyricIndex] || lyrics[0];
@@ -656,6 +662,54 @@ export function MusicPlayer() {
                   {isMuted ? "0%" : `${Math.round(volume * 100)}%`}
                 </span>
               </div>
+
+              {/* 7. Dynamic Previous & Next Track Info Strip (Auto-adapts to playlist changes) */}
+              {PLAYLIST.length > 1 && (
+                <div className="pt-2.5 px-0.5 border-t border-gray-800/60 flex items-center justify-between text-xs select-none">
+                  {/* Previous Song Info */}
+                  <button
+                    type="button"
+                    onClick={handlePrevTrack}
+                    className="group/prev flex items-center space-x-2 min-w-0 max-w-[48%] text-left hover:text-white transition active:scale-95 cursor-pointer"
+                    title={`Lagu Sebelumnya: ${prevTrack.title} - ${prevTrack.artist}`}
+                  >
+                    <div className="w-6 h-6 rounded-md bg-gray-800/80 group-hover/prev:bg-[#00e599]/20 group-hover/prev:text-[#00e599] text-gray-400 flex items-center justify-center shrink-0 transition">
+                      <i className="fa-solid fa-backward-step text-[10px]"></i>
+                    </div>
+                    <div className="min-w-0 truncate text-left">
+                      <span className="block text-[9px] uppercase tracking-wider text-gray-400 font-bold leading-tight">
+                        Sebelumnya
+                      </span>
+                      <span className="block text-[11px] font-medium text-gray-300 group-hover/prev:text-white truncate leading-tight mt-0.5">
+                        {prevTrack.title}
+                      </span>
+                    </div>
+                  </button>
+
+                  {/* Center Divider Line */}
+                  <div className="h-6 w-px bg-gray-800/70 mx-1 shrink-0" aria-hidden="true" />
+
+                  {/* Next Song Info */}
+                  <button
+                    type="button"
+                    onClick={handleNextTrack}
+                    className="group/next flex items-center justify-end space-x-2 min-w-0 max-w-[48%] text-right hover:text-white transition active:scale-95 cursor-pointer"
+                    title={`Lagu Berikutnya: ${nextTrack.title} - ${nextTrack.artist}`}
+                  >
+                    <div className="min-w-0 truncate text-right">
+                      <span className="block text-[9px] uppercase tracking-wider text-gray-400 font-bold leading-tight">
+                        Berikutnya
+                      </span>
+                      <span className="block text-[11px] font-medium text-gray-300 group-hover/next:text-white truncate leading-tight mt-0.5">
+                        {nextTrack.title}
+                      </span>
+                    </div>
+                    <div className="w-6 h-6 rounded-md bg-gray-800/80 group-hover/next:bg-[#00e599]/20 group-hover/next:text-[#00e599] text-gray-400 flex items-center justify-center shrink-0 transition">
+                      <i className="fa-solid fa-forward-step text-[10px]"></i>
+                    </div>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 

@@ -804,16 +804,33 @@ export function MusicPlayer() {
           role="button"
           tabIndex={0}
           onClick={() => setIsMobileModalOpen(true)}
-          className="relative flex items-center justify-between px-4 py-3 bg-[#111726]/95 hover:bg-[#161e30] border border-gray-800/90 rounded-2xl shadow-2xl backdrop-blur-md transition cursor-pointer overflow-hidden group select-none active:scale-[0.99]"
+          className="relative flex items-center justify-between px-3.5 py-2.5 sm:px-4 sm:py-3 bg-[#111726]/95 hover:bg-[#161e30] border border-gray-800/90 rounded-2xl shadow-2xl backdrop-blur-md transition cursor-pointer overflow-hidden group select-none active:scale-[0.99]"
         >
-          {/* Left: Title & Artist */}
-          <div className="min-w-0 flex-1 pr-3 text-left">
-            <h4 className="text-sm sm:text-base font-bold text-white truncate tracking-tight leading-tight">
-              {currentTrack.title}
-            </h4>
-            <p className="text-xs text-gray-400 font-medium truncate mt-0.5">
-              {currentTrack.artist}
-            </p>
+          {/* Left: Album Cover + Title & Artist */}
+          <div className="flex items-center space-x-3 min-w-0 flex-1 pr-3 text-left">
+            {/* Album Cover Thumbnail */}
+            <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden shrink-0 border border-gray-800/80 shadow-md bg-[#0d121f]">
+              <Image
+                src={currentTrack.cover}
+                alt={`${currentTrack.artist} - ${currentTrack.title}`}
+                width={48}
+                height={48}
+                className={cn(
+                  "w-full h-full object-cover transition-transform duration-500",
+                  isPlaying ? "scale-105" : "scale-100"
+                )}
+              />
+            </div>
+
+            {/* Title & Artist */}
+            <div className="min-w-0 flex-1 text-left">
+              <h4 className="text-sm font-bold text-white truncate tracking-tight leading-tight">
+                {currentTrack.title}
+              </h4>
+              <p className="text-xs text-gray-400 font-medium truncate mt-0.5">
+                {currentTrack.artist}
+              </p>
+            </div>
           </div>
 
           {/* Right Controls: [Previous Track] [Play/Pause Glow Circle] [Next Track] */}

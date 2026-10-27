@@ -470,13 +470,12 @@ export function MusicPlayer() {
                 priority
               />
 
-              {/* Ambient overlay & seamless gradient fade to card background (#0d121f) */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0d121f] via-[#0d121f]/20 to-transparent pointer-events-none" />
-              <div className="absolute inset-x-0 bottom-0 h-36 sm:h-44 bg-gradient-to-t from-[#0d121f] via-[#0d121f]/90 to-transparent pointer-events-none" />
+              {/* Soft bottom-only gradient fade to card background (#0d121f), lowered so the cover remains bright and clear */}
+              <div className="absolute inset-x-0 bottom-0 h-20 sm:h-24 bg-gradient-to-t from-[#0d121f] via-[#0d121f]/75 to-transparent pointer-events-none" />
             </div>
 
             {/* Padded Content below cover (Lyrics, Title, Progress, Controls, Volume - grouped snugly at bottom) */}
-            <div className={cn("flex-1 flex flex-col justify-end text-left", isModal ? "px-5 sm:px-6 pb-6 -mt-10 relative z-10 space-y-2.5 sm:space-y-3" : "px-4 pb-4 space-y-3.5")}>
+            <div className={cn("flex-1 flex flex-col justify-end text-left", isModal ? "px-5 sm:px-6 pb-6 -mt-6 relative z-10 space-y-2.5 sm:space-y-3" : "px-4 pb-4 space-y-3.5")}>
               {/* 2. 3-Line Dynamic Synchronized Lyrics */}
               <div className="py-1 px-0.5 text-left select-none overflow-hidden h-[86px] min-h-[86px] max-h-[86px] shrink-0 flex flex-col justify-between">
                 {/* Previous Line */}

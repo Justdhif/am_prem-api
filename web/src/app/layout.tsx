@@ -17,6 +17,12 @@ const jetbrainsMono = localFont({
   weight: "100 800",
 });
 
+const piximisa = localFont({
+  src: "./fonts/Piximisa.ttf",
+  variable: "--font-piximisa",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Alight Motion Pro VIP - by Justdhif",
   description: "Layanan aktivasi resmi Alight Motion Pro VIP 1 Tahun dan scraper preset multi-platform",
@@ -31,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`dark ${plusJakartaSans.variable} ${jetbrainsMono.variable} overflow-x-clip max-w-full`}>
+    <html lang="id" className={`dark ${plusJakartaSans.variable} ${jetbrainsMono.variable} ${piximisa.variable} overflow-x-clip max-w-full`}>
       <body className="font-sans min-h-screen flex flex-col antialiased selection:bg-[#00e599] selection:text-gray-950 bg-[#0d121f] text-[#e2e8f0] overflow-x-clip max-w-full w-full relative">
         <AppShell>{children}</AppShell>
       </body>

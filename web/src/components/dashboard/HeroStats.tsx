@@ -55,7 +55,7 @@ export function HeroStats() {
     >
       {/* Top Banner (Minimalist, Clean & Wide Typography) */}
       <div className="space-y-1.5 pt-0">
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-0 pt-0">
+        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide mt-0 pt-0 font-piximisa">
           Layanan Aktivasi Alight Motion Pro VIP
         </h1>
         <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-2xl">

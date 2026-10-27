@@ -14,7 +14,7 @@ export function Footer() {
               className="object-contain"
             />
           </div>
-          <span className="text-gray-300 font-semibold text-xs">
+          <span className="text-gray-300 font-bold text-xs font-piximisa tracking-wider">
             Alight Motion Pro API
           </span>
         </div>

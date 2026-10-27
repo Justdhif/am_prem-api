@@ -12,7 +12,7 @@ export function StepsCard() {
     >
       <div className="flex items-center space-x-2.5">
         <i className="fa-solid fa-wand-magic-sparkles text-[#00e599] text-base"></i>
-        <h2 className="text-base font-bold text-white tracking-tight">Alur Aktivasi 2 Langkah</h2>
+        <h2 className="text-base font-bold text-white tracking-wide font-piximisa">Alur Aktivasi 2 Langkah</h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-xs">

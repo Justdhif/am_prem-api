@@ -18,7 +18,7 @@ export function Header() {
             />
           </div>
           <div className="flex flex-col items-start justify-center">
-            <span className="font-bold text-base text-white tracking-tight leading-none group-hover:text-[#00e599] transition">
+            <span className="font-bold text-base sm:text-lg text-white tracking-wider leading-none group-hover:text-[#00e599] transition font-piximisa">
               AM Pro API
             </span>
             <span className="text-[10px] px-2 py-0.5 mt-1 rounded-full bg-[#00e599]/15 text-[#00e599] font-semibold border border-[#00e599]/30 leading-none">

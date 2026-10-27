@@ -61,6 +61,8 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-jakarta)", "sans-serif"],
         mono: ["var(--font-jetbrains)", "monospace"],
+        piximisa: ["var(--font-piximisa)", "sans-serif"],
+        display: ["var(--font-piximisa)", "sans-serif"],
       },
     },
   },

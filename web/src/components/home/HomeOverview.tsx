@@ -1,44 +1,4 @@
-import Link from "next/link";
-
 export function HomeOverview() {
-  const serviceCards = [
-    {
-      title: "Aktivasi Alight Motion Pro VIP",
-      href: "/aktivasi",
-      badge: "Lisensi Resmi 1 Tahun",
-      icon: "fa-solid fa-crown",
-      iconColor: "text-[#00e599]",
-      borderColor: "hover:border-[#00e599]/60",
-      glowColor: "group-hover:shadow-[0_0_30px_rgba(0,229,153,0.15)]",
-      description:
-        "Aktifkan lisensi Alight Motion Pro VIP resmi 1 Tahun gratis melalui verifikasi magic link email tanpa watermark dan semua efek terbuka.",
-      cta: "Mulai Aktivasi Akun",
-    },
-    {
-      title: "Preset Finder Multi-Platform",
-      href: "/preset",
-      badge: "TikTok & YouTube",
-      icon: "fa-solid fa-wand-magic-sparkles",
-      iconColor: "text-amber-400",
-      borderColor: "hover:border-amber-400/60",
-      glowColor: "group-hover:shadow-[0_0_30px_rgba(251,191,36,0.15)]",
-      description:
-        "Ekstrak dan temukan link preset XML dan tautan Alight Creative resmi dari komentar video TikTok atau YouTube secara instan.",
-      cta: "Cari Preset Video",
-    },
-    {
-      title: "Dokumentasi & REST API",
-      href: "/docs",
-      badge: "Integrasi Bot / Webhook",
-      icon: "fa-solid fa-book-bookmark",
-      iconColor: "text-blue-400",
-      borderColor: "hover:border-blue-400/60",
-      glowColor: "group-hover:shadow-[0_0_30px_rgba(96,165,250,0.15)]",
-      description:
-        "Panduan lengkap endpoint API aktivasi dan scraper preset untuk integrasi ke bot Telegram, WhatsApp, atau sistem backend Anda sendiri.",
-      cta: "Buka Dokumentasi",
-    },
-  ];
 
   const features = [
     {
@@ -84,52 +44,7 @@ export function HomeOverview() {
 
   return (
     <div className="space-y-8 sm:space-y-10 text-left w-full">
-      {/* 1. PRIMARY NAVIGATION HUB (Route Cards) */}
-      <section className="space-y-3.5">
-        <div className="flex items-center space-x-2">
-          <i className="fa-solid fa-compass text-[#00e599] text-sm"></i>
-          <h2 className="text-sm sm:text-base font-bold text-white uppercase tracking-wider">
-            Pusat Layanan &amp; Navigasi
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
-          {serviceCards.map((card, i) => (
-            <Link
-              key={i}
-              href={card.href}
-              className={`group relative p-5 sm:p-6 bg-[#121826] border border-gray-800/90 rounded-2xl transition duration-300 flex flex-col justify-between space-y-4 cursor-pointer ${card.borderColor} ${card.glowColor}`}
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className={`w-11 h-11 rounded-xl bg-gray-800/60 border border-gray-700/60 flex items-center justify-center ${card.iconColor} text-lg shadow-sm group-hover:scale-105 transition`}>
-                    <i className={card.icon}></i>
-                  </div>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-800 text-gray-300 font-semibold border border-gray-700">
-                    {card.badge}
-                  </span>
-                </div>
-
-                <div>
-                  <h3 className="text-base font-bold text-white group-hover:text-[#00e599] transition tracking-tight">
-                    {card.title}
-                  </h3>
-                  <p className="text-xs text-gray-400 leading-relaxed mt-1.5">
-                    {card.description}
-                  </p>
-                </div>
-              </div>
-
-              <div className="pt-2 flex items-center space-x-1.5 text-xs font-bold text-[#00e599] group-hover:translate-x-1 transition duration-200">
-                <span>{card.cta}</span>
-                <i className="fa-solid fa-arrow-right text-[10px]"></i>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* 2. OVERVIEW FITUR ALIGHT MOTION PRO VIP */}
+      {/* 1. OVERVIEW FITUR ALIGHT MOTION PRO VIP */}
       <section className="p-6 sm:p-7 rounded-2xl bg-[#121826]/70 border border-gray-800/90 space-y-5">
         <div className="space-y-1">
           <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#00e599]">

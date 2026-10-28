@@ -1,7 +1,16 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export function Header() {
+  const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const navItems = [
     { label: "Beranda", href: "/", icon: "fa-solid fa-house" },
     { label: "Aktivasi VIP", href: "/aktivasi", icon: "fa-solid fa-crown" },
@@ -9,10 +18,37 @@ export function Header() {
     { label: "Docs", href: "/docs", icon: "fa-solid fa-book-bookmark" },
   ];
 
+  // Auto-close mobile menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isMobileMenuOpen]);
+
+  // Close mobile menu on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-30 border-b border-gray-800/80 bg-[#0d121f]/95 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full bg-[#0d121f]/80 backdrop-blur-md border-b border-gray-800/40 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 md:px-10 lg:px-12 xl:px-16 h-16 flex items-center justify-between gap-4">
-        {/* Left: Brand (Nama Web) */}
+        {/* Left: Brand (Nama Web & Logo) */}
         <Link href="/" className="flex items-center space-x-3 shrink-0 group">
           <div className="w-10 h-10 rounded-xl overflow-hidden border border-[#00e599]/40 shadow-sm shadow-[#00e599]/20 shrink-0 group-hover:scale-105 transition">
             <Image
@@ -34,51 +70,154 @@ export function Header() {
           </div>
         </Link>
 
-        {/* Center: Main Navigation Menu (Desktop & Tablet) */}
-        <nav className="hidden md:flex items-center space-x-1 bg-[#121826]/80 p-1 rounded-2xl border border-gray-800/80">
-          {navItems.map((item, idx) => (
-            <Link
-              key={idx}
-              href={item.href}
-              className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-gray-300 hover:text-white hover:bg-gray-800/60 transition flex items-center space-x-1.5 cursor-pointer"
-            >
-              <i className={`${item.icon} text-[11px] text-[#00e599]`}></i>
-              <span>{item.label}</span>
-            </Link>
-          ))}
+        {/* Center: Main Navigation Menu (Desktop: Clean, Floating, No Box Background, Standard Navbar Style) */}
+        <nav className="hidden md:flex items-center space-x-1 lg:space-x-2 bg-transparent border-0 p-0 shadow-none">
+          {navItems.map((item, idx) => {
+            const isActive =
+              item.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(item.href);
+
+            return (
+              <Link
+                key={idx}
+                href={item.href}
+                className={cn(
+                  "px-3.5 py-1.5 rounded-lg text-xs lg:text-sm font-semibold transition-all duration-200 flex items-center space-x-2 cursor-pointer relative group",
+                  isActive
+                    ? "text-[#00e599] font-bold"
+                    : "text-gray-300 hover:text-white hover:bg-white/5"
+                )}
+              >
+                <i
+                  className={cn(
+                    item.icon,
+                    "text-xs transition-colors",
+                    isActive ? "text-[#00e599]" : "text-gray-400 group-hover:text-gray-200"
+                  )}
+                />
+                <span>{item.label}</span>
+                {isActive && (
+                  <motion.div
+                    layoutId="activeNavIndicator"
+                    className="absolute -bottom-1 inset-x-3 h-0.5 bg-[#00e599] rounded-full shadow-[0_0_8px_rgba(0,229,153,0.8)]"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
-        {/* Right: Mobile Quick Nav + TikTok */}
+        {/* Right: TikTok Icon & Mobile Hamburger Toggle */}
         <div className="flex items-center space-x-2 shrink-0">
-          {/* Quick buttons on mobile */}
-          <div className="flex md:hidden items-center space-x-1">
-            <Link
-              href="/aktivasi"
-              className="px-2.5 py-1 rounded-lg bg-[#00e599]/15 border border-[#00e599]/30 text-[#00e599] text-xs font-bold transition flex items-center space-x-1"
-            >
-              <i className="fa-solid fa-crown text-[10px]"></i>
-              <span>VIP</span>
-            </Link>
-            <Link
-              href="/preset"
-              className="px-2.5 py-1 rounded-lg bg-gray-800/80 border border-gray-700/80 text-gray-300 text-xs font-semibold transition flex items-center space-x-1"
-            >
-              <i className="fa-solid fa-wand-magic-sparkles text-[10px]"></i>
-              <span>Preset</span>
-            </Link>
-          </div>
-
+          {/* TikTok Icon Button */}
           <a
             href="https://www.tiktok.com/@justdhifbieber"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2 text-gray-400 hover:text-[#00e599] transition active:scale-95 flex items-center justify-center"
-            title="TikTok"
+            className="p-2 text-gray-400 hover:text-[#00e599] transition active:scale-95 flex items-center justify-center rounded-lg hover:bg-white/5"
+            title="Kunjungi TikTok @justdhifbieber"
           >
             <i className="fa-brands fa-tiktok text-xl"></i>
           </a>
+
+          {/* Mobile Hamburger Button */}
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition active:scale-95 cursor-pointer flex items-center justify-center md:hidden"
+            aria-label={isMobileMenuOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
+          >
+            <i
+              className={cn(
+                "text-xl transition-all duration-200",
+                isMobileMenuOpen ? "fa-solid fa-xmark text-[#00e599]" : "fa-solid fa-bars"
+              )}
+            />
+          </button>
         </div>
       </div>
+
+      {/* Mobile Hamburger Dropdown Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="fixed inset-0 top-16 bg-black/60 backdrop-blur-sm z-30 md:hidden"
+            />
+
+            {/* Dropdown Panel */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="absolute top-16 inset-x-0 bg-[#0d121f]/95 backdrop-blur-xl border-b border-gray-800 shadow-2xl z-40 p-4 md:hidden space-y-1.5"
+            >
+              <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-3 py-1">
+                Navigasi Menu
+              </div>
+
+              {navItems.map((item, idx) => {
+                const isActive =
+                  item.href === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(item.href);
+
+                return (
+                  <Link
+                    key={idx}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={cn(
+                      "flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition active:scale-[0.99] cursor-pointer",
+                      isActive
+                        ? "bg-[#00e599]/15 text-[#00e599] border border-[#00e599]/30 font-bold"
+                        : "text-gray-300 hover:text-white hover:bg-gray-800/60 border border-transparent"
+                    )}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div
+                        className={cn(
+                          "w-7 h-7 rounded-lg flex items-center justify-center text-xs shrink-0",
+                          isActive
+                            ? "bg-[#00e599] text-gray-950 font-bold"
+                            : "bg-gray-800/80 text-gray-400"
+                        )}
+                      >
+                        <i className={item.icon}></i>
+                      </div>
+                      <span>{item.label}</span>
+                    </div>
+
+                    <i className="fa-solid fa-chevron-right text-[10px] text-gray-600"></i>
+                  </Link>
+                );
+              })}
+
+              {/* Extra Mobile Link to TikTok */}
+              <div className="pt-2 mt-2 border-t border-gray-800/80 px-1">
+                <a
+                  href="https://www.tiktok.com/@justdhifbieber"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white hover:bg-gray-800/40 transition"
+                >
+                  <i className="fa-brands fa-tiktok text-sm text-[#00e599]"></i>
+                  <span>TikTok Official: @justdhifbieber</span>
+                </a>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

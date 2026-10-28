@@ -16,7 +16,7 @@ export function Footer() {
         <div className="flex items-center space-x-2">
           <div className="relative w-5 h-5 rounded-md overflow-hidden shrink-0">
             <Image
-              src="/logo-web.webp"
+              src="/images/logos/logo-web.webp"
               alt="AM Premium Logo"
               width={20}
               height={20}

@@ -282,7 +282,7 @@ export function ActivationForm() {
               <div className="relative w-16 h-16 mx-auto">
                 <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-[#00e599]/60 shadow-lg shadow-[#00e599]/30">
                   <Image
-                    src="/logo.webp"
+                    src="/images/logos/logo.webp"
                     alt="Alight Motion App"
                     width={64}
                     height={64}

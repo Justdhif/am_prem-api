@@ -85,7 +85,7 @@ export function LoadingScreen() {
                 className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 border-[#00e599]/70 shadow-2xl shadow-[#00e599]/30 bg-[#0d121f] p-0.5"
               >
                 <Image
-                  src="/logo-web.webp"
+                  src="/images/logos/logo-web.webp"
                   alt="AM Premium Logo"
                   fill
                   className="object-contain p-1.5"

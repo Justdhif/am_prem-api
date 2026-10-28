@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   title: "Alight Motion Premium - by Justdhif",
   description: "Layanan aktivasi resmi Alight Motion Premium 1 Tahun dan scraper preset multi-platform",
   icons: {
-    icon: "/logo-web.webp",
+    icon: "/images/logos/logo-web.webp",
   },
 };
 

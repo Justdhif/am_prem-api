@@ -18,7 +18,7 @@ export function LogoLoader({ text = "Memuat komentar..." }: { text?: string }) {
         className="relative w-12 h-12 flex items-center justify-center"
       >
         <Image
-          src="/logo.svg"
+          src="/images/logos/logo.svg"
           alt="Memuat..."
           width={48}
           height={48}

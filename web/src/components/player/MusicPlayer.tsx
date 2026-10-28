@@ -571,14 +571,31 @@ export function MusicPlayer() {
                 </div>
               </div>
 
-              {/* 3. Song Info Bar (Title & Artist) */}
-              <div className="pt-0 text-left">
-                <h3 className="text-base sm:text-lg font-extrabold text-white tracking-tight truncate hover:text-[#00e599] transition cursor-pointer text-left leading-tight">
-                  {currentTrack.title}
-                </h3>
-                <p className="text-xs text-gray-400 font-medium truncate mt-0.5 text-left">
-                  {currentTrack.artist}
-                </p>
+              {/* 3. Song Info Bar (Cover Thumbnail + Title & Artist) */}
+              <div className="pt-0 text-left flex items-center space-x-3 min-w-0">
+                {/* Cover Thumbnail */}
+                <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden shrink-0 border border-gray-800/90 shadow-md bg-[#0d121f]">
+                  <Image
+                    src={currentTrack.cover}
+                    alt={`${currentTrack.artist} - ${currentTrack.title}`}
+                    width={44}
+                    height={44}
+                    className={cn(
+                      "w-full h-full object-cover transition-transform duration-500",
+                      isPlaying ? "scale-105" : "scale-100"
+                    )}
+                  />
+                </div>
+
+                {/* Title & Artist */}
+                <div className="min-w-0 flex-1 text-left">
+                  <h3 className="text-base sm:text-lg font-extrabold text-white tracking-tight truncate hover:text-[#00e599] transition cursor-pointer text-left leading-tight">
+                    {currentTrack.title}
+                  </h3>
+                  <p className="text-xs text-gray-400 font-medium truncate mt-0.5 text-left">
+                    {currentTrack.artist}
+                  </p>
+                </div>
               </div>
 
               {/* 4. Progress Bar & Timestamps */}

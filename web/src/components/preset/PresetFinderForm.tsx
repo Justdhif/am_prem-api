@@ -46,7 +46,7 @@ export function PresetFinderForm() {
     <div className="space-y-6 text-left w-full">
       <div className="p-5 sm:p-7 bg-[#121826] border border-gray-800/90 rounded-2xl shadow-xl space-y-5">
         <div className="space-y-1">
-          <h2 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center space-x-2">
+          <h2 className="text-base sm:text-lg font-bold text-white tracking-wide font-piximisa flex items-center space-x-2">
             <i className="fa-solid fa-magnifying-glass text-[#00e599]"></i>
             <span>Cari &amp; Ekstrak Preset Alight Motion</span>
           </h2>

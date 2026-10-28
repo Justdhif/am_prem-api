@@ -51,7 +51,7 @@ export function HomeOverview() {
             <i className="fa-solid fa-star text-[11px]"></i>
             <span>Keunggulan Layanan</span>
           </div>
-          <h2 className="text-lg sm:text-xl font-black text-white tracking-tight">
+          <h2 className="text-lg sm:text-xl font-black text-white tracking-wide font-piximisa">
             Kenapa Menggunakan Alight Motion Pro VIP?
           </h2>
           <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-2xl">
@@ -79,7 +79,7 @@ export function HomeOverview() {
       {/* 3. FAQ SECTION (Overview Pertanyaan Umum) */}
       <section className="space-y-4">
         <div className="space-y-1">
-          <h2 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center space-x-2">
+          <h2 className="text-base sm:text-lg font-bold text-white tracking-wide font-piximisa flex items-center space-x-2">
             <i className="fa-regular fa-circle-question text-[#00e599]"></i>
             <span>Pertanyaan yang Sering Diajukan (FAQ)</span>
           </h2>

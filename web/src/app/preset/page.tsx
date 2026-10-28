@@ -29,7 +29,7 @@ export default function PresetPage() {
           <i className="fa-solid fa-wand-magic-sparkles text-[10px]"></i>
           <span>Scraper Multi-Platform</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide font-piximisa">
           Preset Finder Alight Motion
         </h1>
         <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-2xl">

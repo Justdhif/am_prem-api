@@ -30,7 +30,7 @@ export default function AktivasiPage() {
           <i className="fa-solid fa-crown text-[10px]"></i>
           <span>Layanan Mandiri Resmi</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide font-piximisa">
           Aktivasi Alight Motion Pro VIP 1 Tahun
         </h1>
         <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-2xl">

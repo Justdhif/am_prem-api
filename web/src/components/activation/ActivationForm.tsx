@@ -82,7 +82,7 @@ export function ActivationForm() {
             </span>
             <span>Langkah Pertama</span>
           </div>
-          <h2 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center space-x-2">
+          <h2 className="text-base sm:text-lg font-bold text-white tracking-wide font-piximisa flex items-center space-x-2">
             <i className="fa-solid fa-paper-plane text-[#00e599]"></i>
             <span>Kirim Magic Link Verifikasi Email</span>
           </h2>
@@ -170,7 +170,7 @@ export function ActivationForm() {
             </span>
             <span>Langkah Kedua</span>
           </div>
-          <h2 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center space-x-2">
+          <h2 className="text-base sm:text-lg font-bold text-white tracking-wide font-piximisa flex items-center space-x-2">
             <i className="fa-solid fa-key text-[#00e599]"></i>
             <span>Verifikasi &amp; Aktivasi Lisensi Pro VIP</span>
           </h2>
@@ -258,7 +258,7 @@ export function ActivationForm() {
             </div>
 
             <div className="space-y-1">
-              <h3 className="text-lg sm:text-xl font-black text-white tracking-tight">
+              <h3 className="text-lg sm:text-xl font-black text-white tracking-wide font-piximisa">
                 Aktivasi Alight Motion Pro VIP Berhasil! 🎉
               </h3>
               <p className="text-xs text-[#00e599] font-medium">

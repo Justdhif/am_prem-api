@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import { EmojiPicker } from "./EmojiPicker";
 
 interface CommentInputProps {
@@ -86,32 +87,41 @@ export function CommentInput({
   return (
     <div className="bg-[#0d121f] px-3 pb-3 pt-2 shrink-0 relative border-t border-gray-800/80">
       {/* Emoji Picker Popup */}
-      {showEmoji && (
-        <EmojiPicker
-          onSelectEmoji={handleInsertEmoji}
-          onBackspace={handleBackspaceEmoji}
-          onClose={() => setShowEmoji(false)}
-        />
-      )}
+      <AnimatePresence>
+        {showEmoji && (
+          <EmojiPicker
+            onSelectEmoji={handleInsertEmoji}
+            onBackspace={handleBackspaceEmoji}
+            onClose={() => setShowEmoji(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Reply Banner */}
-      {replyTarget && (
-        <div className="flex items-center justify-between pb-2 text-xs text-gray-400">
-          <div className="flex items-center space-x-1.5">
-            <i className="fa-solid fa-reply text-[10px] text-[#00e599]"></i>
-            <span>
-              Membalas <strong className="text-[#00e599]">@{replyTarget.name}</strong>
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={onCancelReply}
-            className="text-gray-500 hover:text-white text-xs cursor-pointer flex items-center"
+      <AnimatePresence>
+        {replyTarget && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="flex items-center justify-between pb-2 text-xs text-gray-400 overflow-hidden"
           >
-            <i className="fa-solid fa-xmark mr-1"></i>Batal
-          </button>
-        </div>
-      )}
+            <div className="flex items-center space-x-1.5">
+              <i className="fa-solid fa-reply text-[10px] text-[#00e599]"></i>
+              <span>
+                Membalas <strong className="text-[#00e599]">@{replyTarget.name}</strong>
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={onCancelReply}
+              className="text-gray-500 hover:text-white text-xs cursor-pointer flex items-center"
+            >
+              <i className="fa-solid fa-xmark mr-1"></i>Batal
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Author Name & Anonymous Toggle */}
       <div className="flex items-center justify-between gap-3 pb-2 text-xs border-b border-gray-800/60 mb-2.5">

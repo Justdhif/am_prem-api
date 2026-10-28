@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { apiClient } from "@/lib/api";
 import Image from "next/image";
 
@@ -74,7 +75,12 @@ export function ActivationForm() {
   return (
     <div className="space-y-6 sm:space-y-7 text-left w-full">
       {/* CARD 1: Langkah 1 - Kirim Magic Link Email */}
-      <section className="p-5 sm:p-7 bg-[#121826] border border-gray-800/90 rounded-2xl shadow-xl space-y-5">
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className="p-5 sm:p-7 bg-[#121826] border border-gray-800/90 rounded-2xl shadow-xl space-y-5"
+      >
         <div className="space-y-1.5">
           <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-[#00e599]/15 text-[#00e599] border border-[#00e599]/30 text-[11px] font-bold">
             <span className="w-4 h-4 rounded-full bg-[#00e599] text-gray-950 flex items-center justify-center text-[10px] font-black">
@@ -112,31 +118,45 @@ export function ActivationForm() {
             </div>
           </div>
 
-          {sendError && (
-            <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center space-x-2">
-              <i className="fa-solid fa-circle-exclamation text-base shrink-0"></i>
-              <span>{sendError}</span>
-            </div>
-          )}
+          <AnimatePresence mode="wait">
+            {sendError && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2 }}
+                className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center space-x-2"
+              >
+                <i className="fa-solid fa-circle-exclamation text-base shrink-0"></i>
+                <span>{sendError}</span>
+              </motion.div>
+            )}
 
-          {sendSuccessMessage && (
-            <div className="p-4 rounded-xl bg-[#00e599]/10 border border-[#00e599]/30 text-white text-xs space-y-2">
-              <div className="flex items-center space-x-2 text-[#00e599] font-bold">
-                <i className="fa-solid fa-circle-check text-base"></i>
-                <span>Magic Link Berhasil Dikirim!</span>
-              </div>
-              <p className="text-gray-300 leading-relaxed">{sendSuccessMessage}</p>
-              <div className="pt-1.5">
-                <a
-                  href="#step-2-form"
-                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#00e599] text-gray-950 font-bold text-xs hover:bg-[#1affaa] transition"
-                >
-                  <span>Lanjut Tempel Link di Langkah 2</span>
-                  <i className="fa-solid fa-arrow-down text-[10px]"></i>
-                </a>
-              </div>
-            </div>
-          )}
+            {sendSuccessMessage && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.25 }}
+                className="p-4 rounded-xl bg-[#00e599]/10 border border-[#00e599]/30 text-white text-xs space-y-2"
+              >
+                <div className="flex items-center space-x-2 text-[#00e599] font-bold">
+                  <i className="fa-solid fa-circle-check text-base"></i>
+                  <span>Magic Link Berhasil Dikirim!</span>
+                </div>
+                <p className="text-gray-300 leading-relaxed">{sendSuccessMessage}</p>
+                <div className="pt-1.5">
+                  <a
+                    href="#step-2-form"
+                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#00e599] text-gray-950 font-bold text-xs hover:bg-[#1affaa] transition active:scale-95"
+                  >
+                    <span>Lanjut Tempel Link di Langkah 2</span>
+                    <i className="fa-solid fa-arrow-down text-[10px]"></i>
+                  </a>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <button
             type="submit"
@@ -156,11 +176,14 @@ export function ActivationForm() {
             )}
           </button>
         </form>
-      </section>
+      </motion.section>
 
       {/* CARD 2: Langkah 2 - Verifikasi & Aktivasi Lisensi */}
-      <section
+      <motion.section
         id="step-2-form"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.08, ease: "easeOut" }}
         className="p-5 sm:p-7 bg-[#121826] border border-gray-800/90 rounded-2xl shadow-xl space-y-5"
       >
         <div className="space-y-1.5">
@@ -179,125 +202,148 @@ export function ActivationForm() {
           </p>
         </div>
 
-        {!verifyResult ? (
-          <form onSubmit={handleVerify} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                Email Akun Terdaftar
-              </label>
-              <div className="flex items-center bg-[#0d121f] rounded-xl px-3.5 py-3 border border-gray-700/80 focus-within:border-[#00e599] transition">
-                <i className="fa-regular fa-envelope text-gray-500 mr-2.5 text-sm shrink-0"></i>
-                <input
-                  type="email"
-                  value={verifyEmail}
-                  onChange={(e) => setVerifyEmail(e.target.value)}
-                  placeholder="user@gmail.com (opsional jika link lengkap)"
-                  className="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                Tautan Verifikasi Email / oobCode <span className="text-[#00e599]">*</span>
-              </label>
-              <div className="flex items-start bg-[#0d121f] rounded-xl px-3.5 py-3 border border-gray-700/80 focus-within:border-[#00e599] transition">
-                <i className="fa-solid fa-link text-gray-500 mr-2.5 text-sm mt-1 shrink-0"></i>
-                <textarea
-                  required
-                  rows={3}
-                  value={verifyLink}
-                  onChange={(e) => setVerifyLink(e.target.value)}
-                  placeholder="https://alightcreative.com/__/auth/action?apiKey=...&mode=signIn&oobCode=..."
-                  className="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full resize-none font-mono"
-                />
-              </div>
-            </div>
-
-            {verifyError && (
-              <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center space-x-2">
-                <i className="fa-solid fa-circle-exclamation text-base shrink-0"></i>
-                <span>{verifyError}</span>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={verifyLoading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-[#00e599] to-emerald-400 hover:from-[#1affaa] hover:to-emerald-300 text-gray-950 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/25 active:scale-[0.99] cursor-pointer disabled:opacity-50"
+        <AnimatePresence mode="wait">
+          {!verifyResult ? (
+            <motion.form
+              key="verify-form"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onSubmit={handleVerify}
+              className="space-y-4"
             >
-              {verifyLoading ? (
-                <>
-                  <i className="fa-solid fa-spinner fa-spin text-sm"></i>
-                  <span>Memverifikasi Akun...</span>
-                </>
-              ) : (
-                <>
-                  <i className="fa-solid fa-crown text-xs"></i>
-                  <span>Aktivasi AM Premium 1 Tahun Sekarang</span>
-                </>
-              )}
-            </button>
-          </form>
-        ) : (
-          /* CELEBRATORY SUCCESS STATE */
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-[#0d1e18] via-[#111c24] to-[#121826] border border-[#00e599]/40 space-y-4 text-center">
-            <div className="relative w-16 h-16 mx-auto">
-              <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-[#00e599]/60 shadow-lg shadow-[#00e599]/30">
-                <Image
-                  src="/logo.webp"
-                  alt="Alight Motion App"
-                  width={64}
-                  height={64}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#00e599] text-gray-950 flex items-center justify-center text-xs shadow-md">
-                <i className="fa-solid fa-crown text-[10px]"></i>
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <h3 className="text-lg sm:text-xl font-black text-white tracking-wide font-piximisa">
-                Aktivasi Alight Motion Premium Berhasil! 🎉
-              </h3>
-              <p className="text-xs text-[#00e599] font-medium">
-                {verifyResult.message || "Selamat! Akun Anda kini resmi berlangganan Alight Motion Premium 1 Tahun."}
-              </p>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-[#0d121f]/90 border border-gray-800 text-xs text-left space-y-2 max-w-md mx-auto">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400">Status Lisensi:</span>
-                <span className="font-bold text-[#00e599] flex items-center space-x-1">
-                  <i className="fa-solid fa-circle-check text-[10px]"></i>
-                  <span>Resmi 1 Tahun</span>
-                </span>
-              </div>
-              {verifyEmail && (
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Email Akun:</span>
-                  <span className="font-mono text-white truncate ml-2">{verifyEmail}</span>
+              <div>
+                <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                  Email Akun Terdaftar
+                </label>
+                <div className="flex items-center bg-[#0d121f] rounded-xl px-3.5 py-3 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                  <i className="fa-regular fa-envelope text-gray-500 mr-2.5 text-sm shrink-0"></i>
+                  <input
+                    type="email"
+                    value={verifyEmail}
+                    onChange={(e) => setVerifyEmail(e.target.value)}
+                    placeholder="user@gmail.com (opsional jika link lengkap)"
+                    className="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full"
+                  />
                 </div>
-              )}
-              <div className="pt-2 border-t border-gray-800 text-[11px] text-gray-400 leading-normal">
-                💡 <strong>Cara Pakai:</strong> Buka aplikasi Alight Motion di HP Anda, masuk ke profil lalu login menggunakan email di atas. Status Premium akan aktif otomatis tanpa watermark.
               </div>
-            </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                setVerifyResult(null);
-                setVerifyLink("");
-              }}
-              className="px-5 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-semibold transition cursor-pointer"
+              <div>
+                <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                  Tautan Verifikasi Email / oobCode <span className="text-[#00e599]">*</span>
+                </label>
+                <div className="flex items-start bg-[#0d121f] rounded-xl px-3.5 py-3 border border-gray-700/80 focus-within:border-[#00e599] transition">
+                  <i className="fa-solid fa-link text-gray-500 mr-2.5 text-sm mt-1 shrink-0"></i>
+                  <textarea
+                    required
+                    rows={3}
+                    value={verifyLink}
+                    onChange={(e) => setVerifyLink(e.target.value)}
+                    placeholder="https://alightcreative.com/__/auth/action?apiKey=...&mode=signIn&oobCode=..."
+                    className="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full resize-none font-mono"
+                  />
+                </div>
+              </div>
+
+              {verifyError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2 }}
+                  className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center space-x-2"
+                >
+                  <i className="fa-solid fa-circle-exclamation text-base shrink-0"></i>
+                  <span>{verifyError}</span>
+                </motion.div>
+              )}
+
+              <button
+                type="submit"
+                disabled={verifyLoading}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-[#00e599] to-emerald-400 hover:from-[#1affaa] hover:to-emerald-300 text-gray-950 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/25 active:scale-[0.99] cursor-pointer disabled:opacity-50"
+              >
+                {verifyLoading ? (
+                  <>
+                    <i className="fa-solid fa-spinner fa-spin text-sm"></i>
+                    <span>Memverifikasi Akun...</span>
+                  </>
+                ) : (
+                  <>
+                    <i className="fa-solid fa-crown text-xs"></i>
+                    <span>Aktivasi AM Premium 1 Tahun Sekarang</span>
+                  </>
+                )}
+              </button>
+            </motion.form>
+          ) : (
+            /* CELEBRATORY SUCCESS STATE */
+            <motion.div
+              key="verify-success"
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25 }}
+              className="p-6 rounded-2xl bg-gradient-to-br from-[#0d1e18] via-[#111c24] to-[#121826] border border-[#00e599]/40 space-y-4 text-center"
             >
-              Aktivasi Akun Lain
-            </button>
-          </div>
-        )}
-      </section>
+              <div className="relative w-16 h-16 mx-auto">
+                <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-[#00e599]/60 shadow-lg shadow-[#00e599]/30">
+                  <Image
+                    src="/logo.webp"
+                    alt="Alight Motion App"
+                    width={64}
+                    height={64}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#00e599] text-gray-950 flex items-center justify-center text-xs shadow-md">
+                  <i className="fa-solid fa-crown text-[10px]"></i>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <h3 className="text-lg sm:text-xl font-black text-white tracking-wide font-piximisa">
+                  Aktivasi Alight Motion Premium Berhasil! 🎉
+                </h3>
+                <p className="text-xs text-[#00e599] font-medium">
+                  {verifyResult.message || "Selamat! Akun Anda kini resmi berlangganan Alight Motion Premium 1 Tahun."}
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-[#0d121f]/90 border border-gray-800 text-xs text-left space-y-2 max-w-md mx-auto">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Status Lisensi:</span>
+                  <span className="font-bold text-[#00e599] flex items-center space-x-1">
+                    <i className="fa-solid fa-circle-check text-[10px]"></i>
+                    <span>Resmi 1 Tahun</span>
+                  </span>
+                </div>
+                {verifyEmail && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400">Email Akun:</span>
+                    <span className="font-mono text-white truncate ml-2">{verifyEmail}</span>
+                  </div>
+                )}
+                <div className="pt-2 border-t border-gray-800 text-[11px] text-gray-400 leading-normal">
+                  💡 <strong>Cara Pakai:</strong> Buka aplikasi Alight Motion di HP Anda, masuk ke profil lalu login menggunakan email di atas. Status Premium akan aktif otomatis tanpa watermark.
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setVerifyResult(null);
+                  setVerifyLink("");
+                }}
+                className="px-5 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-semibold transition cursor-pointer active:scale-95"
+              >
+                Aktivasi Akun Lain
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.section>
     </div>
   );
 }

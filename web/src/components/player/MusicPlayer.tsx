@@ -932,17 +932,28 @@ export function MusicPlayer() {
       />
 
       {/* 1. Desktop Mode Player: Inline in Sidebar (Hidden on Mobile < lg) */}
-      <div className="hidden lg:block w-full bg-[#0d121f] border border-gray-800/80 rounded-3xl overflow-hidden shadow-2xl relative text-left">
+      <motion.div
+        initial={{ opacity: 0, x: -20, scale: 0.98 }}
+        animate={{ opacity: 1, x: 0, scale: 1 }}
+        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+        className="hidden lg:block w-full bg-[#0d121f] border border-gray-800/80 rounded-3xl overflow-hidden shadow-2xl relative text-left"
+      >
         {renderPlayerBody(false)}
-      </div>
+      </motion.div>
 
       {/* 2. Mobile Mode: Floating Sticky Mini Player Bar (Spotify Style, Sticky Bottom = 0, Visible ONLY on < lg) */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, y: 35 }}
+        animate={{
+          opacity: isMiniPlayerVisible && !isMobileModalOpen ? 1 : 0,
+          y: isMiniPlayerVisible && !isMobileModalOpen ? 0 : 35,
+        }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
         className={cn(
-          "block lg:hidden fixed bottom-0 left-0 right-0 z-40 p-2 sm:p-3 bg-gradient-to-t from-[#070b13] via-[#070b13]/95 to-transparent transition-all duration-500 ease-in-out",
+          "block lg:hidden fixed bottom-0 left-0 right-0 z-40 p-2 sm:p-3 bg-gradient-to-t from-[#070b13] via-[#070b13]/95 to-transparent",
           isMiniPlayerVisible && !isMobileModalOpen
-            ? "translate-y-0 opacity-100 pointer-events-auto"
-            : "translate-y-full opacity-0 pointer-events-none"
+            ? "pointer-events-auto"
+            : "pointer-events-none"
         )}
       >
         <div
@@ -1036,7 +1047,7 @@ export function MusicPlayer() {
             />
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* 3. Mobile Fullscreen Audio Player Modal (Rendered via Portal to document.body with z-[100]) */}
       {hasMounted && typeof document !== "undefined" &&

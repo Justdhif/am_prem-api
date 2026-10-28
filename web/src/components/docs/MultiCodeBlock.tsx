@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export interface CodeSnippet {
@@ -44,10 +45,10 @@ export function MultiCodeBlock({ snippets, className }: MultiCodeBlockProps) {
                 type="button"
                 onClick={() => setActiveLang(s.language)}
                 className={cn(
-                  "px-2.5 py-1 rounded-lg text-xs font-semibold transition cursor-pointer select-none",
+                  "px-2.5 py-1 rounded-lg text-xs font-semibold transition cursor-pointer select-none relative",
                   isActive
                     ? "bg-[#00e599]/15 text-[#00e599] border border-[#00e599]/30"
-                    : "text-gray-400 hover:text-gray-200 hover:bg-gray-800/60"
+                    : "text-gray-400 hover:text-gray-200 hover:bg-gray-800/60 border border-transparent"
                 )}
               >
                 {s.label}
@@ -72,11 +73,20 @@ export function MultiCodeBlock({ snippets, className }: MultiCodeBlockProps) {
         </button>
       </div>
 
-      {/* Code body */}
-      <div className="p-3.5 sm:p-4 overflow-x-auto custom-scrollbar">
-        <pre className="font-mono text-xs leading-relaxed text-gray-300 whitespace-pre">
-          <code>{currentSnippet?.code}</code>
-        </pre>
+      {/* Code body with smooth transition */}
+      <div className="p-3.5 sm:p-4 overflow-x-auto custom-scrollbar min-h-[90px]">
+        <AnimatePresence mode="wait">
+          <motion.pre
+            key={activeLang}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.15 }}
+            className="font-mono text-xs leading-relaxed text-gray-300 whitespace-pre"
+          >
+            <code>{currentSnippet?.code}</code>
+          </motion.pre>
+        </AnimatePresence>
       </div>
     </div>
   );

@@ -1,5 +1,8 @@
-export function HomeOverview() {
+"use client";
 
+import { motion } from "framer-motion";
+
+export function HomeOverview() {
   const features = [
     {
       icon: "fa-solid fa-shield-halved",
@@ -45,7 +48,13 @@ export function HomeOverview() {
   return (
     <div className="space-y-8 sm:space-y-10 text-left w-full">
       {/* 1. OVERVIEW FITUR ALIGHT MOTION PREMIUM */}
-      <section className="p-6 sm:p-7 rounded-2xl bg-[#121826]/70 border border-gray-800/90 space-y-5">
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="p-6 sm:p-7 rounded-2xl bg-[#121826]/70 border border-gray-800/90 space-y-5"
+      >
         <div className="space-y-1">
           <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#00e599]">
             <i className="fa-solid fa-star text-[11px]"></i>
@@ -61,7 +70,12 @@ export function HomeOverview() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
           {features.map((feat, i) => (
-            <div key={i} className="p-4 rounded-xl bg-[#0d121f] border border-gray-800/80 space-y-2">
+            <motion.div
+              key={i}
+              whileHover={{ y: -2, borderColor: "rgba(0, 229, 153, 0.3)" }}
+              transition={{ duration: 0.2 }}
+              className="p-4 rounded-xl bg-[#0d121f] border border-gray-800/80 space-y-2 transition-colors"
+            >
               <div className="flex items-center space-x-2.5">
                 <div className="w-8 h-8 rounded-lg bg-[#00e599]/10 text-[#00e599] flex items-center justify-center text-sm shrink-0 border border-[#00e599]/20">
                   <i className={feat.icon}></i>
@@ -71,13 +85,19 @@ export function HomeOverview() {
               <p className="text-xs text-gray-400 leading-relaxed pl-10">
                 {feat.desc}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </section>
+      </motion.section>
 
-      {/* 3. FAQ SECTION (Overview Pertanyaan Umum) */}
-      <section className="space-y-4">
+      {/* 2. FAQ SECTION (Overview Pertanyaan Umum) */}
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{ duration: 0.4, delay: 0.08, ease: "easeOut" }}
+        className="space-y-4"
+      >
         <div className="space-y-1">
           <h2 className="text-base sm:text-lg font-bold text-white tracking-wide font-piximisa flex items-center space-x-2">
             <i className="fa-regular fa-circle-question text-[#00e599]"></i>
@@ -90,7 +110,12 @@ export function HomeOverview() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           {faqs.map((faq, i) => (
-            <div key={i} className="p-4 rounded-xl bg-[#121826]/80 border border-gray-800/80 space-y-1.5">
+            <motion.div
+              key={i}
+              whileHover={{ y: -2, borderColor: "rgba(0, 229, 153, 0.3)" }}
+              transition={{ duration: 0.2 }}
+              className="p-4 rounded-xl bg-[#121826]/80 border border-gray-800/80 space-y-1.5 transition-colors"
+            >
               <h4 className="text-xs sm:text-sm font-bold text-white flex items-start space-x-2">
                 <span className="text-[#00e599] font-black text-xs shrink-0 mt-0.5">Q:</span>
                 <span>{faq.q}</span>
@@ -98,10 +123,10 @@ export function HomeOverview() {
               <p className="text-xs text-gray-400 leading-relaxed pl-4">
                 {faq.a}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 }

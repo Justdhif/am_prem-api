@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api";
@@ -112,14 +113,17 @@ export function VerifyLinkForm({ initialEmail = "" }: VerifyLinkFormProps) {
           </div>
         </form>
 
-        <div className="space-y-1.5 pt-2">
+        <motion.div
+          layout
+          className="space-y-1.5 pt-2"
+        >
           <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block">
             Response Output
           </span>
-          <pre className="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs overflow-x-auto border border-gray-800 font-mono text-gray-300 max-h-56 leading-relaxed">
+          <pre className="bg-[#0d121f] p-3 sm:p-4 rounded-xl text-xs overflow-x-auto border border-gray-800 font-mono text-gray-300 max-h-56 leading-relaxed transition-all">
             <code>{output}</code>
           </pre>
-        </div>
+        </motion.div>
       </CardContent>
     </Card>
   );

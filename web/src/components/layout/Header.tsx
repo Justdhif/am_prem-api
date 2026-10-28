@@ -23,13 +23,46 @@ export function Header() {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
-  // Lock body scroll when mobile menu is open
+  // Lock body & html scroll completely when mobile menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
-      const originalOverflow = document.body.style.overflow;
+      const originalBodyOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+      const originalBodyTouchAction = document.body.style.touchAction;
+
       document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+
+      const preventTouchMove = (e: TouchEvent) => {
+        const target = e.target as HTMLElement | null;
+        if (target && target.closest(".mobile-menu-scrollable")) {
+          return;
+        }
+        if (e.cancelable) {
+          e.preventDefault();
+        }
+      };
+
+      const preventWheel = (e: WheelEvent) => {
+        const target = e.target as HTMLElement | null;
+        if (target && target.closest(".mobile-menu-scrollable")) {
+          return;
+        }
+        if (e.cancelable) {
+          e.preventDefault();
+        }
+      };
+
+      document.addEventListener("touchmove", preventTouchMove, { passive: false });
+      document.addEventListener("wheel", preventWheel, { passive: false });
+
       return () => {
-        document.body.style.overflow = originalOverflow;
+        document.body.style.overflow = originalBodyOverflow;
+        document.documentElement.style.overflow = originalHtmlOverflow;
+        document.body.style.touchAction = originalBodyTouchAction;
+        document.removeEventListener("touchmove", preventTouchMove);
+        document.removeEventListener("wheel", preventWheel);
       };
     }
   }, [isMobileMenuOpen]);
@@ -47,7 +80,7 @@ export function Header() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-40 w-full bg-[#0d121f]/60 backdrop-blur-xl border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.25)] transition-all duration-300">
+      <header className="fixed top-0 left-0 right-0 z-[120] w-full bg-[#0d121f]/60 backdrop-blur-xl border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.25)] transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 md:px-10 lg:px-12 xl:px-16 h-16 flex items-center justify-between gap-4">
         {/* Left: Brand (Nama Web & Logo) */}
         <Link href="/" className="flex items-center space-x-3 shrink-0 group">
@@ -144,15 +177,15 @@ export function Header() {
       {/* Mobile Hamburger Dropdown Menu & Screen Backdrop */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <div className="fixed inset-0 top-16 z-40 md:hidden pointer-events-none">
-            {/* Backdrop */}
+          <div className="fixed inset-0 top-16 z-[110] md:hidden">
+            {/* Backdrop with touch-none to prevent background interaction */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto"
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm touch-none"
             />
 
             {/* Dropdown Panel */}
@@ -161,7 +194,7 @@ export function Header() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="relative w-full bg-[#0d121f]/80 backdrop-blur-2xl border-b border-gray-800/80 shadow-2xl p-4 space-y-1.5 max-h-[calc(100vh-4rem)] overflow-y-auto pointer-events-auto"
+              className="relative w-full bg-[#0d121f]/95 backdrop-blur-2xl border-b border-gray-800/80 shadow-2xl p-4 space-y-1.5 max-h-[calc(100vh-4rem)] overflow-y-auto mobile-menu-scrollable"
             >
               <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-3 py-1">
                 Navigasi Menu

@@ -1,4 +1,11 @@
-import Link from "next/link";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { PresetFinderForm } from "@/components/preset/PresetFinderForm";
 import type { Metadata } from "next";
 
@@ -11,17 +18,23 @@ export default function PresetPage() {
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* Breadcrumb Navigation */}
-      <div className="flex flex-wrap items-center gap-2">
-        <Link
-          href="/"
-          className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#121826] hover:bg-gray-800 text-gray-300 hover:text-white text-xs font-semibold border border-gray-800 transition shadow-sm active:scale-95 cursor-pointer"
-        >
-          <i className="fa-solid fa-house text-[11px] text-gray-400"></i>
-          <span>Beranda</span>
-        </Link>
-        <span className="text-gray-600 text-xs">/</span>
-        <span className="text-xs font-bold text-[#00e599]">Preset Finder</span>
-      </div>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">
+              <i className="fa-solid fa-house text-[10px] text-gray-400"></i>
+              <span>Beranda</span>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>
+              <i className="fa-solid fa-wand-magic-sparkles text-[10px]"></i>
+              <span>Preset Finder</span>
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       {/* Header Title */}
       <div className="space-y-1.5">

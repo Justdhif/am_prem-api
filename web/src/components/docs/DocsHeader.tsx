@@ -1,7 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export function DocsHeader() {
   return (
@@ -9,40 +16,26 @@ export function DocsHeader() {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: "easeOut" }}
-      className="space-y-3 pt-0"
+      className="space-y-4 pt-0"
     >
-      <div className="flex flex-wrap items-center gap-2">
-        <Link href="/" className="inline-block">
-          <motion.div
-            whileHover={{
-              scale: 1.04,
-              x: -2,
-              borderColor: "rgba(0, 229, 153, 0.4)",
-              boxShadow: "0 0 20px rgba(0, 229, 153, 0.15)",
-            }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ duration: 0.18 }}
-            className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-xl bg-[#121826] hover:bg-[#161f30] text-gray-300 hover:text-white text-xs font-semibold border border-gray-800 transition-colors shadow-sm cursor-pointer group"
-          >
-            <i className="fa-solid fa-arrow-left text-[11px] text-[#00e599] group-hover:-translate-x-0.5 transition-transform" />
-            <span>Kembali ke Beranda</span>
-          </motion.div>
-        </Link>
-
-        <Link href="/aktivasi" className="inline-block">
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#121826] hover:bg-gray-800 text-gray-300 hover:text-white text-xs font-semibold border border-gray-800 transition shadow-sm">
-            <i className="fa-solid fa-crown text-[10px] text-[#00e599]" />
-            <span>Halaman Aktivasi</span>
-          </div>
-        </Link>
-
-        <Link href="/preset" className="inline-block">
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#121826] hover:bg-gray-800 text-gray-300 hover:text-white text-xs font-semibold border border-gray-800 transition shadow-sm">
-            <i className="fa-solid fa-wand-magic-sparkles text-[10px] text-amber-400" />
-            <span>Preset Finder</span>
-          </div>
-        </Link>
-      </div>
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">
+              <i className="fa-solid fa-house text-[10px] text-gray-400"></i>
+              <span>Beranda</span>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>
+              <i className="fa-solid fa-book-bookmark text-[10px]"></i>
+              <span>Dokumentasi API</span>
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       {/* Docs Page Header */}
       <div className="space-y-1.5 pt-0">

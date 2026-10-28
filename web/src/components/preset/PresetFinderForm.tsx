@@ -268,7 +268,14 @@ export function PresetFinderForm() {
 
             {/* Player Rendering: Embed YouTube vs HTML5 Video */}
             {activeVideo.embedUrl ? (
-              <div className="w-full aspect-video">
+              <div
+                className={cn(
+                  "w-full transition-all duration-300",
+                  presetResult?.video?.url?.includes("/shorts/")
+                    ? "aspect-[9/16] max-w-md mx-auto"
+                    : "aspect-video"
+                )}
+              >
                 <iframe
                   src={activeVideo.embedUrl}
                   title={activeVideo.title}
@@ -278,7 +285,7 @@ export function PresetFinderForm() {
                 />
               </div>
             ) : (
-              <div className="w-full bg-black/90 flex items-center justify-center max-h-[460px] overflow-hidden relative">
+              <div className="w-full bg-black/95 flex items-center justify-center relative">
                 <video
                   ref={videoRef}
                   key={activeVideo.videoUrl || "default-video"}
@@ -287,7 +294,7 @@ export function PresetFinderForm() {
                   controls
                   playsInline
                   loop={!presetResult}
-                  className="w-full max-h-[460px] object-contain"
+                  className="w-full h-auto block"
                 />
               </div>
             )}

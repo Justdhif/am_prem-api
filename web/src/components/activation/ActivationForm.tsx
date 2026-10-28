@@ -172,7 +172,7 @@ export function ActivationForm() {
           </div>
           <h2 className="text-base sm:text-lg font-bold text-white tracking-wide font-piximisa flex items-center space-x-2">
             <i className="fa-solid fa-key text-[#00e599]"></i>
-            <span>Verifikasi &amp; Aktivasi Lisensi Pro VIP</span>
+            <span>Verifikasi &amp; Aktivasi Lisensi Premium</span>
           </h2>
           <p className="text-xs text-gray-400 leading-relaxed">
             Buka email masuk dari Alight Motion, salin tautan verifikasi masuk (atau parameter oobCode), lalu tempelkan di formulir berikut.
@@ -234,7 +234,7 @@ export function ActivationForm() {
               ) : (
                 <>
                   <i className="fa-solid fa-crown text-xs"></i>
-                  <span>Aktivasi Pro VIP 1 Tahun Sekarang</span>
+                  <span>Aktivasi AM Premium 1 Tahun Sekarang</span>
                 </>
               )}
             </button>
@@ -259,10 +259,10 @@ export function ActivationForm() {
 
             <div className="space-y-1">
               <h3 className="text-lg sm:text-xl font-black text-white tracking-wide font-piximisa">
-                Aktivasi Alight Motion Pro VIP Berhasil! 🎉
+                Aktivasi Alight Motion Premium Berhasil! 🎉
               </h3>
               <p className="text-xs text-[#00e599] font-medium">
-                {verifyResult.message || "Selamat! Akun Anda kini resmi berlangganan Alight Motion Pro VIP 1 Tahun."}
+                {verifyResult.message || "Selamat! Akun Anda kini resmi berlangganan Alight Motion Premium 1 Tahun."}
               </p>
             </div>
 
@@ -281,7 +281,7 @@ export function ActivationForm() {
                 </div>
               )}
               <div className="pt-2 border-t border-gray-800 text-[11px] text-gray-400 leading-normal">
-                💡 <strong>Cara Pakai:</strong> Buka aplikasi Alight Motion di HP Anda, masuk ke profil lalu login menggunakan email di atas. Status Pro VIP akan aktif otomatis tanpa watermark.
+                💡 <strong>Cara Pakai:</strong> Buka aplikasi Alight Motion di HP Anda, masuk ke profil lalu login menggunakan email di atas. Status Premium akan aktif otomatis tanpa watermark.
               </div>
             </div>
 

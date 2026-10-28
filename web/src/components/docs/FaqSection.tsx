@@ -58,7 +58,7 @@ export function FaqSection() {
             <i className="fa-solid fa-star mr-2"></i>Fitur Pro yang Didapat?
           </span>
           <p className="text-gray-300 leading-relaxed">
-            Lisensi Alight Motion Pro VIP 1 Tahun resmi aktif: bebas watermark saat export video, akses penuh semua efek premium, import preset XML &amp; font tanpa batas.
+            Lisensi Alight Motion Premium 1 Tahun resmi aktif: bebas watermark saat export video, akses penuh semua efek premium, import preset XML &amp; font tanpa batas.
           </p>
         </motion.div>
 

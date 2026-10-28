@@ -13,7 +13,7 @@ export function Header() {
 
   const navItems = [
     { label: "Beranda", href: "/", icon: "fa-solid fa-house" },
-    { label: "Aktivasi VIP", href: "/aktivasi", icon: "fa-solid fa-crown" },
+    { label: "Aktivasi Premium", href: "/aktivasi", icon: "fa-solid fa-crown" },
     { label: "Preset Finder", href: "/preset", icon: "fa-solid fa-wand-magic-sparkles" },
     { label: "Docs", href: "/docs", icon: "fa-solid fa-book-bookmark" },
   ];
@@ -54,7 +54,7 @@ export function Header() {
           <div className="w-10 h-10 rounded-xl overflow-hidden border border-[#00e599]/40 shadow-sm shadow-[#00e599]/20 shrink-0 group-hover:scale-105 transition">
             <Image
               src="/logo-web.webp"
-              alt="AM Pro API Logo"
+              alt="AM Premium Logo"
               width={40}
               height={40}
               className="w-full h-full object-contain p-0.5"
@@ -63,7 +63,7 @@ export function Header() {
           </div>
           <div className="flex flex-col items-start justify-center">
             <span className="font-bold text-base sm:text-lg text-white tracking-wider leading-none group-hover:text-[#00e599] transition font-piximisa">
-              AM Pro API
+              AM Premium
             </span>
             <span className="text-[10px] px-2 py-0.5 mt-1 rounded-full bg-[#00e599]/15 text-[#00e599] font-semibold border border-[#00e599]/30 leading-none">
               by Justdhif

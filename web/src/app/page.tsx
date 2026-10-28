@@ -11,8 +11,8 @@ import { StepsCard } from "@/components/dashboard/StepsCard";
 import { HomeOverview } from "@/components/home/HomeOverview";
 
 export const metadata: Metadata = {
-  title: "Alight Motion Pro VIP - Overview & Layanan",
-  description: "Layanan aktivasi resmi Alight Motion Pro VIP 1 Tahun dan scraper preset multi-platform",
+  title: "Alight Motion Premium - Overview & Layanan",
+  description: "Layanan aktivasi resmi Alight Motion Premium 1 Tahun dan scraper preset multi-platform",
 };
 
 export default function Home() {

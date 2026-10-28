@@ -30,7 +30,7 @@ export function HomeOverview() {
     },
     {
       q: "Bagaimana cara kerja verifikasi magic link?",
-      a: "Sistem memicu Firebase Auth untuk mengirim tautan masuk resmi ke email Anda. Saat tautan tersebut diverifikasi melalui sistem kami, lisensi Pro VIP 1 Tahun langsung dipasangkan ke ID akun Anda.",
+      a: "Sistem memicu Firebase Auth untuk mengirim tautan masuk resmi ke email Anda. Saat tautan tersebut diverifikasi melalui sistem kami, lisensi Premium 1 Tahun langsung dipasangkan ke ID akun Anda.",
     },
     {
       q: "Bagaimana cara menggunakan Preset Finder?",
@@ -44,7 +44,7 @@ export function HomeOverview() {
 
   return (
     <div className="space-y-8 sm:space-y-10 text-left w-full">
-      {/* 1. OVERVIEW FITUR ALIGHT MOTION PRO VIP */}
+      {/* 1. OVERVIEW FITUR ALIGHT MOTION PREMIUM */}
       <section className="p-6 sm:p-7 rounded-2xl bg-[#121826]/70 border border-gray-800/90 space-y-5">
         <div className="space-y-1">
           <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#00e599]">
@@ -52,7 +52,7 @@ export function HomeOverview() {
             <span>Keunggulan Layanan</span>
           </div>
           <h2 className="text-lg sm:text-xl font-black text-white tracking-wide font-piximisa">
-            Kenapa Menggunakan Alight Motion Pro VIP?
+            Kenapa Menggunakan Alight Motion Premium?
           </h2>
           <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-2xl">
             Tingkatkan kualitas editing video Anda dengan akses penuh ke ekosistem resmi Alight Motion tanpa kompromi.

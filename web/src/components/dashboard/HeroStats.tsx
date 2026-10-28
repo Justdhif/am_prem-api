@@ -56,22 +56,22 @@ export function HeroStats() {
       {/* Top Banner (Minimalist, Clean & Wide Typography) */}
       <div className="space-y-1.5 pt-0">
         <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide mt-0 pt-0 font-piximisa">
-          Platform Alight Motion Pro VIP &amp; Preset
+          Platform Alight Motion Premium &amp; Preset
         </h1>
         <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-2xl">
-          Platform mandiri resmi untuk aktivasi lisensi Alight Motion Pro VIP 1 Tahun tanpa watermark dan pemindai preset TikTok &amp; YouTube.
+          Platform mandiri resmi untuk aktivasi lisensi Alight Motion Premium 1 Tahun tanpa watermark dan pemindai preset TikTok &amp; YouTube.
         </p>
       </div>
 
       {/* Primary Stats Grid (Cardless & Minimalist) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Stat 1: Total VIP */}
+        {/* Stat 1: Total Premium */}
         <div className="flex items-center space-x-3.5 py-1">
           <div className="w-12 h-12 rounded-2xl bg-[#00e599]/10 border border-[#00e599]/25 flex items-center justify-center text-[#00e599] shrink-0 shadow-sm shadow-[#00e599]/10">
             <i className="fa-solid fa-crown text-lg"></i>
           </div>
           <div>
-            <span className="text-xs text-gray-400 font-medium block">Total Akun VIP Aktif</span>
+            <span className="text-xs text-gray-400 font-medium block">Total Akun Premium Aktif</span>
             <span className="text-2xl sm:text-3xl font-extrabold text-[#00e599] font-mono tracking-tight block">
               {stats.loading ? "..." : stats.total.toLocaleString()}
             </span>

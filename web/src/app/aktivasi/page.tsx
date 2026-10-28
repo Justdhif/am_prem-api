@@ -11,8 +11,8 @@ import { StepsCard } from "@/components/dashboard/StepsCard";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Aktivasi Alight Motion Pro VIP Resmi 1 Tahun",
-  description: "Formulir aktivasi resmi lisensi Alight Motion Pro VIP 1 Tahun tanpa watermark menggunakan sistem verifikasi Firebase.",
+  title: "Aktivasi Alight Motion Premium Resmi 1 Tahun",
+  description: "Formulir aktivasi resmi lisensi Alight Motion Premium 1 Tahun tanpa watermark menggunakan sistem verifikasi Firebase.",
 };
 
 export default function AktivasiPage() {
@@ -31,7 +31,7 @@ export default function AktivasiPage() {
           <BreadcrumbItem>
             <BreadcrumbPage>
               <i className="fa-solid fa-crown text-[10px]"></i>
-              <span>Aktivasi Pro VIP</span>
+              <span>Aktivasi Premium</span>
             </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
@@ -44,10 +44,10 @@ export default function AktivasiPage() {
           <span>Layanan Mandiri Resmi</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide font-piximisa">
-          Aktivasi Alight Motion Pro VIP 1 Tahun
+          Aktivasi Alight Motion Premium 1 Tahun
         </h1>
         <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-2xl">
-          Dapatkan lisensi Alight Motion Pro VIP penuh tanpa watermark secara gratis dan otomatis melalui verifikasi tautan email akun Anda.
+          Dapatkan lisensi Alight Motion Premium penuh tanpa watermark secara gratis dan otomatis melalui verifikasi tautan email akun Anda.
         </p>
       </div>
 

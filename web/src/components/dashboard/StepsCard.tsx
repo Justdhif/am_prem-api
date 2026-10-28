@@ -35,10 +35,10 @@ export function StepsCard() {
             <span className="w-6 h-6 rounded-full bg-[#00e599] text-gray-950 font-black flex items-center justify-center text-xs shrink-0 shadow-sm shadow-[#00e599]/30">
               2
             </span>
-            <span className="font-bold text-white text-sm">Verifikasi &amp; Aktivasi Pro</span>
+            <span className="font-bold text-white text-sm">Verifikasi &amp; Aktivasi Premium</span>
           </div>
           <p className="text-gray-400 leading-relaxed pl-8">
-            Salin full link dari email (atau cukup oobCode) lalu kirimkan ke <code className="text-[#00e599] bg-[#00e599]/10 px-1 py-0.5 rounded font-mono">POST /api/am/verify</code>. Akun Anda langsung aktif VIP 1 Tahun!
+            Salin full link dari email (atau cukup oobCode) lalu kirimkan ke <code className="text-[#00e599] bg-[#00e599]/10 px-1 py-0.5 rounded font-mono">POST /api/am/verify</code>. Akun Anda langsung aktif Premium 1 Tahun!
           </p>
         </div>
       </div>

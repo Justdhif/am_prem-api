@@ -123,7 +123,7 @@ export function ActivationChart({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
         <div className="flex items-center space-x-2">
           <span className="w-2 h-2 rounded-full bg-[#00e599] animate-pulse"></span>
-          <span className="text-xs font-bold text-gray-200">Tren Aktivasi VIP (Riil Database)</span>
+          <span className="text-xs font-bold text-gray-200">Tren Aktivasi Premium (Riil Database)</span>
           <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#00e599]/15 text-[#00e599] font-semibold border border-[#00e599]/30">
             7 Hari Terakhir
           </span>

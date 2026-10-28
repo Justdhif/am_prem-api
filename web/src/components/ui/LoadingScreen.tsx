@@ -86,7 +86,7 @@ export function LoadingScreen() {
               >
                 <Image
                   src="/logo-web.webp"
-                  alt="AM Pro API Logo"
+                  alt="AM Premium Logo"
                   fill
                   className="object-contain p-1.5"
                   priority
@@ -103,7 +103,7 @@ export function LoadingScreen() {
             >
               <div className="flex items-center space-x-2">
                 <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                  AM Pro API
+                  AM Premium
                 </h1>
                 <span className="w-2 h-2 rounded-full bg-[#00e599] animate-ping" />
               </div>

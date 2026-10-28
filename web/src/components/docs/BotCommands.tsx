@@ -147,7 +147,7 @@ echo $result;`,
   const commandsList = [
     { cmd: "!amprem user@gmail.com", desc: "Memicu pengiriman magic link verifikasi ke email akun" },
     { cmd: "!ampreset https://vt.tiktok.com/ZSxxxxxxx/", desc: "Ekstrak link preset Alight Motion dari video TikTok/YouTube" },
-    { cmd: "!amstats", desc: "Cek statistik total akun VIP aktif dan status server real-time" },
+    { cmd: "!amstats", desc: "Cek statistik total akun Premium aktif dan status server real-time" },
     { cmd: "!amhelp", desc: "Menampilkan daftar seluruh perintah bot dan panduan penggunaan" },
   ];
 

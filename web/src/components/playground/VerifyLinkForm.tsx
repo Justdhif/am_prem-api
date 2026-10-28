@@ -45,11 +45,11 @@ export function VerifyLinkForm({ initialEmail = "" }: VerifyLinkFormProps) {
             2
           </span>
           <CardTitle className="text-sm sm:text-base">
-            Uji Coba Verifikasi &amp; Aktivasi Alight Motion Pro VIP
+            Uji Coba Verifikasi &amp; Aktivasi Alight Motion Premium
           </CardTitle>
         </div>
         <CardDescription>
-          Tempelkan full link yang Anda terima di email untuk mengaktifkan lisensi Pro VIP 1 Tahun resmi.
+          Tempelkan full link yang Anda terima di email untuk mengaktifkan lisensi Premium 1 Tahun resmi.
         </CardDescription>
       </CardHeader>
 

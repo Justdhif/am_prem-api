@@ -8,14 +8,14 @@ export function Footer() {
           <div className="relative w-5 h-5 rounded-md overflow-hidden shrink-0">
             <Image
               src="/logo-web.webp"
-              alt="AM Pro API Logo"
+              alt="AM Premium Logo"
               width={20}
               height={20}
               className="object-contain"
             />
           </div>
           <span className="text-gray-300 font-bold text-xs font-piximisa tracking-wider">
-            Alight Motion Pro API
+            Alight Motion Premium
           </span>
         </div>
         <p className="text-[11px] text-gray-500">

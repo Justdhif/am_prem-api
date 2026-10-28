@@ -453,8 +453,8 @@ echo $result;`,
           id="endpoint-verify"
           method="POST"
           path="/api/am/verify"
-          title="2. Verifikasi & Aktifkan Alight Motion Pro VIP"
-          description="Memverifikasi tautan login resmi dari email (oobCode) lalu secara otomatis menaikkan tier akun menjadi lisensi Alight Motion Pro VIP Resmi 1 Tahun tanpa watermark dan semua fitur premium terbuka."
+          title="2. Verifikasi & Aktifkan Alight Motion Premium"
+          description="Memverifikasi tautan login resmi dari email (oobCode) lalu secara otomatis menaikkan tier akun menjadi lisensi Alight Motion Premium Resmi 1 Tahun tanpa watermark dan semua fitur premium terbuka."
           rawBodyJson={`{\n  "link": "https://alightcreative.com/?link=https://alightcreative.com/am/share/...&oobCode=SAMPLE_OOB_CODE",\n  "email": "user@gmail.com"\n}`}
           parameters={[
             {
@@ -481,7 +481,7 @@ echo $result;`,
               payload: `{
   "success": true,
   "isPremium": true,
-  "message": "Alight Motion Pro VIP berhasil diaktifkan selama 1 Tahun!",
+  "message": "Alight Motion Premium berhasil diaktifkan selama 1 Tahun!",
   "data": {
     "uid": "firebase_user_uid_xxxx",
     "email": "user@gmail.com",
@@ -534,7 +534,7 @@ echo $result;`,
           method="GET"
           path="/api/am/stats"
           title="3. Statistik Aktivasi Alight Motion Real-Time"
-          description="Mengambil statistik agregat jumlah total lisensi VIP aktif, total aktivasi hari ini, status server, serta riwayat aktivasi 7 hari terakhir."
+          description="Mengambil statistik agregat jumlah total lisensi Premium aktif, total aktivasi hari ini, status server, serta riwayat aktivasi 7 hari terakhir."
           parameters={[]}
           tip="Endpoint ini cocok dipanggil secara berkala (misalnya interval 10-30 detik) untuk menampilkan live counter di bot atau dashboard Anda."
           requestSnippets={statsSnippets}

@@ -40,10 +40,10 @@ export function DocsHeader() {
       {/* Docs Page Header */}
       <div className="space-y-1.5 pt-0">
         <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide font-piximisa">
-          Dokumentasi API Alight Motion Pro
+          Dokumentasi API Alight Motion Premium
         </h1>
         <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-2xl">
-          Panduan integrasi endpoint untuk bot Telegram/WhatsApp atau automasi mandiri aktivasi lisensi Alight Motion Pro VIP Resmi 1 Tahun dan scraper preset TikTok/YouTube.
+          Panduan integrasi endpoint untuk bot Telegram/WhatsApp atau automasi mandiri aktivasi lisensi Alight Motion Premium Resmi 1 Tahun dan scraper preset TikTok/YouTube.
         </p>
       </div>
     </motion.div>

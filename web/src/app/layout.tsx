@@ -24,8 +24,8 @@ const piximisa = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Alight Motion Pro VIP - by Justdhif",
-  description: "Layanan aktivasi resmi Alight Motion Pro VIP 1 Tahun dan scraper preset multi-platform",
+  title: "Alight Motion Premium - by Justdhif",
+  description: "Layanan aktivasi resmi Alight Motion Premium 1 Tahun dan scraper preset multi-platform",
   icons: {
     icon: "/logo-web.webp",
   },

@@ -46,7 +46,8 @@ export function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#0d121f]/80 backdrop-blur-md border-b border-gray-800/40 transition-all duration-300">
+    <>
+      <header className="fixed top-0 left-0 right-0 z-40 w-full bg-[#0d121f]/60 backdrop-blur-xl border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.25)] transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 md:px-10 lg:px-12 xl:px-16 h-16 flex items-center justify-between gap-4">
         {/* Left: Brand (Nama Web & Logo) */}
         <Link href="/" className="flex items-center space-x-3 shrink-0 group">
@@ -138,11 +139,12 @@ export function Header() {
           </button>
         </div>
       </div>
+    </header>
 
-      {/* Mobile Hamburger Dropdown Menu */}
+      {/* Mobile Hamburger Dropdown Menu & Screen Backdrop */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <>
+          <div className="fixed inset-0 top-16 z-40 md:hidden pointer-events-none">
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -150,7 +152,7 @@ export function Header() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 top-16 bg-black/60 backdrop-blur-sm z-30 md:hidden"
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto"
             />
 
             {/* Dropdown Panel */}
@@ -159,7 +161,7 @@ export function Header() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="absolute top-16 inset-x-0 bg-[#0d121f]/95 backdrop-blur-xl border-b border-gray-800 shadow-2xl z-40 p-4 md:hidden space-y-1.5"
+              className="relative w-full bg-[#0d121f]/80 backdrop-blur-2xl border-b border-gray-800/80 shadow-2xl p-4 space-y-1.5 max-h-[calc(100vh-4rem)] overflow-y-auto pointer-events-auto"
             >
               <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-3 py-1">
                 Navigasi Menu
@@ -215,9 +217,12 @@ export function Header() {
                 </a>
               </div>
             </motion.div>
-          </>
+          </div>
         )}
       </AnimatePresence>
-    </header>
+
+      {/* Spacer to preserve content flow offset since header is fixed */}
+      <div className="h-16 w-full shrink-0 pointer-events-none" aria-hidden="true" />
+    </>
   );
 }

@@ -20,7 +20,7 @@ const CommentDrawer = dynamic(
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isSpecialPage = pathname !== "/" && pathname !== "/docs";
+  const isSpecialPage = !["/", "/aktivasi", "/preset", "/docs"].includes(pathname);
 
   if (isSpecialPage) {
     return <>{children}</>;

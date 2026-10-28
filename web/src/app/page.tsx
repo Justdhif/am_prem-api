@@ -1,25 +1,28 @@
 import type { Metadata } from "next";
-import { DocsButton } from "@/components/dashboard/DocsButton";
+import { QuickNavPills } from "@/components/dashboard/QuickNavPills";
 import { HeroStats } from "@/components/dashboard/HeroStats";
 import { StepsCard } from "@/components/dashboard/StepsCard";
-import { HomeServices } from "@/components/home/HomeServices";
+import { HomeOverview } from "@/components/home/HomeOverview";
 
 export const metadata: Metadata = {
-  title: "Alight Motion Pro VIP - by Justdhif",
+  title: "Alight Motion Pro VIP - Overview & Layanan",
   description: "Layanan aktivasi resmi Alight Motion Pro VIP 1 Tahun dan scraper preset multi-platform",
 };
 
 export default function Home() {
   return (
-    <>
-      {/* Top Action / Nav Link grouped tight with Hero */}
-      <div className="space-y-3 pt-0">
-        <DocsButton />
+    <div className="space-y-6 sm:space-y-8">
+      {/* Top Action Nav Pills & Hero Overview grouped tight */}
+      <div className="space-y-3.5 pt-0">
+        <QuickNavPills />
         <HeroStats />
       </div>
 
+      {/* Conceptual 2-step activation workflow overview */}
       <StepsCard />
-      <HomeServices />
-    </>
+
+      {/* Primary Service Navigation Cards, Feature Highlights, and FAQ */}
+      <HomeOverview />
+    </div>
   );
 }

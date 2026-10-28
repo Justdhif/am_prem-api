@@ -45,13 +45,24 @@ export interface StatsResponse {
   history?: DailyStatItem[];
 }
 
+async function safeJson<T = any>(res: Response, fallback: T = {} as T): Promise<T> {
+  try {
+    const text = await res.text();
+    if (!text || !text.trim()) return fallback;
+    return JSON.parse(text) as T;
+  } catch (err) {
+    console.warn(`[apiClient] Failed to parse JSON from ${res.url} (status ${res.status}):`, err);
+    return fallback;
+  }
+}
+
 export const apiClient = {
   async getStats(): Promise<StatsResponse> {
     const res = await fetch(`${API_BASE_URL}/api/am/stats`, {
       cache: "no-store",
     });
     if (!res.ok) throw new Error("Gagal mengambil data statistik");
-    const json = await res.json();
+    const json = await safeJson(res, { success: false, data: {} } as any);
     return {
       success: Boolean(json.success),
       totalActivations: json.data?.totalPremium ?? json.totalActivations ?? json.totalPremium ?? 0,
@@ -68,7 +79,7 @@ export const apiClient = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
     });
-    const data = await res.json();
+    const data = await safeJson<any>(res, { success: false, message: "Gagal terhubung ke server" });
     return { ok: res.ok, status: res.status, data };
   },
 
@@ -78,7 +89,7 @@ export const apiClient = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email || undefined, link }),
     });
-    const data = await res.json();
+    const data = await safeJson<any>(res, { success: false, message: "Gagal memverifikasi akun" });
     return { ok: res.ok, status: res.status, data };
   },
 
@@ -88,7 +99,7 @@ export const apiClient = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url }),
     });
-    const data = await res.json();
+    const data = await safeJson<any>(res, { success: false, message: "Gagal mencari preset" });
     return { ok: res.ok, status: res.status, data };
   },
 
@@ -97,7 +108,7 @@ export const apiClient = {
       cache: "no-store",
     });
     if (!res.ok) throw new Error("Gagal memuat komentar");
-    return res.json();
+    return safeJson<CommentsResponse>(res, { success: false, comments: [] });
   },
 
   async postComment(payload: {
@@ -111,7 +122,7 @@ export const apiClient = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-    const data = await res.json();
+    const data = await safeJson<any>(res, { success: false, message: "Gagal mengirim komentar" });
     return { ok: res.ok, status: res.status, data };
   },
 };

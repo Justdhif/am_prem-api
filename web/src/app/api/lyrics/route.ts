@@ -22,7 +22,17 @@ export async function GET(request: NextRequest) {
       throw new Error(`LRCLIB returned status ${res.status}`);
     }
 
-    const data = await res.json();
+    const text = await res.text();
+    if (!text || !text.trim()) {
+      return NextResponse.json({ error: "Empty response from LRCLIB" }, { status: 404 });
+    }
+
+    let data: any;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON response from LRCLIB" }, { status: 502 });
+    }
     if (Array.isArray(data)) {
       const match = data.find((item: { syncedLyrics?: string }) => Boolean(item.syncedLyrics));
       if (match?.syncedLyrics) {

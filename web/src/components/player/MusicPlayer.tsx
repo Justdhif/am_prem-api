@@ -164,10 +164,17 @@ export function MusicPlayer() {
         const query = `track=${encodeURIComponent(currentTrack.title)}&artist=${encodeURIComponent(currentTrack.artist)}&duration=${currentTrack.duration}`;
         const res = await fetch(`/api/lyrics?${query}`);
         if (res.ok) {
-          const data = await res.json();
-          if (isMounted && data.lyrics && data.lyrics.length > 0) {
-            setLyrics(data.lyrics);
-            return;
+          const text = await res.text();
+          if (text && text.trim()) {
+            try {
+              const data = JSON.parse(text);
+              if (isMounted && data.lyrics && data.lyrics.length > 0) {
+                setLyrics(data.lyrics);
+                return;
+              }
+            } catch (err) {
+              console.warn("Invalid JSON from /api/lyrics:", err);
+            }
           }
         }
 
@@ -176,14 +183,21 @@ export function MusicPlayer() {
           `https://lrclib.net/api/search?track_name=${encodeURIComponent(currentTrack.title)}&artist_name=${encodeURIComponent(currentTrack.artist)}`
         );
         if (directRes.ok) {
-          const directData = await directRes.json();
-          if (Array.isArray(directData)) {
-            const match = directData.find((item: { syncedLyrics?: string }) => Boolean(item.syncedLyrics));
-            if (match?.syncedLyrics) {
-              const parsed = parseLrcLyrics(match.syncedLyrics, currentTrack.duration);
-              if (isMounted && parsed.length > 0) {
-                setLyrics(parsed);
+          const directText = await directRes.text();
+          if (directText && directText.trim()) {
+            try {
+              const directData = JSON.parse(directText);
+              if (Array.isArray(directData)) {
+                const match = directData.find((item: { syncedLyrics?: string }) => Boolean(item.syncedLyrics));
+                if (match?.syncedLyrics) {
+                  const parsed = parseLrcLyrics(match.syncedLyrics, currentTrack.duration);
+                  if (isMounted && parsed.length > 0) {
+                    setLyrics(parsed);
+                  }
+                }
               }
+            } catch (err) {
+              console.warn("Invalid JSON from direct LRCLIB:", err);
             }
           }
         }

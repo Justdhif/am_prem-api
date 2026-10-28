@@ -72,7 +72,7 @@ export function Header() {
         </Link>
 
         {/* Center: Main Navigation Menu (Desktop: Clean, Floating, No Box Background, Standard Navbar Style) */}
-        <nav className="hidden md:flex items-center space-x-1 lg:space-x-2 bg-transparent border-0 p-0 shadow-none">
+        <nav className="hidden md:flex items-center gap-1 lg:gap-2 bg-transparent border-0 p-0 shadow-none">
           {navItems.map((item, idx) => {
             const isActive =
               item.href === "/"
@@ -84,7 +84,7 @@ export function Header() {
                 key={idx}
                 href={item.href}
                 className={cn(
-                  "px-3.5 py-1.5 rounded-lg text-xs lg:text-sm font-semibold transition-all duration-200 flex items-center space-x-2 cursor-pointer relative group",
+                  "px-3.5 py-1.5 rounded-lg text-xs lg:text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer relative group",
                   isActive
                     ? "text-[#00e599] font-bold"
                     : "text-gray-300 hover:text-white hover:bg-white/5"
@@ -101,7 +101,7 @@ export function Header() {
                 {isActive && (
                   <motion.div
                     layoutId="activeNavIndicator"
-                    className="absolute -bottom-1 inset-x-3 h-0.5 bg-[#00e599] rounded-full shadow-[0_0_8px_rgba(0,229,153,0.8)]"
+                    className="absolute -bottom-1 left-3 right-3 m-0 h-0.5 bg-[#00e599] rounded-full shadow-[0_0_8px_rgba(0,229,153,0.8)] pointer-events-none"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}

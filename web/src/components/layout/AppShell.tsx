@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 
@@ -36,20 +36,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <MusicPlayer />
         </aside>
 
-        {/* Main Content Area with page transition animation */}
+        {/* Main Content Area with instant clean entrance animation (no flash) */}
         <main className="flex-1 w-full min-w-0 pt-0">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={pathname}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
-              className="w-full space-y-6 sm:space-y-8"
-            >
-              {children}
-            </motion.div>
-          </AnimatePresence>
+          <motion.div
+            key={pathname}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="w-full space-y-6 sm:space-y-8"
+          >
+            {children}
+          </motion.div>
         </main>
 
         {/* Comment Drawer Sidebar (Desktop & Mobile) */}

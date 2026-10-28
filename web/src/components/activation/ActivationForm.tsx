@@ -75,12 +75,7 @@ export function ActivationForm() {
   return (
     <div className="space-y-6 sm:space-y-7 text-left w-full">
       {/* CARD 1: Langkah 1 - Kirim Magic Link Email */}
-      <motion.section
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: "easeOut" }}
-        className="p-5 sm:p-7 bg-[#121826] border border-gray-800/90 rounded-2xl shadow-xl space-y-5"
-      >
+      <section className="p-5 sm:p-7 bg-[#121826] border border-gray-800/90 rounded-2xl shadow-xl space-y-5">
         <div className="space-y-1.5">
           <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-[#00e599]/15 text-[#00e599] border border-[#00e599]/30 text-[11px] font-bold">
             <span className="w-4 h-4 rounded-full bg-[#00e599] text-gray-950 flex items-center justify-center text-[10px] font-black">
@@ -176,14 +171,11 @@ export function ActivationForm() {
             )}
           </button>
         </form>
-      </motion.section>
+      </section>
 
       {/* CARD 2: Langkah 2 - Verifikasi & Aktivasi Lisensi */}
-      <motion.section
+      <section
         id="step-2-form"
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.08, ease: "easeOut" }}
         className="p-5 sm:p-7 bg-[#121826] border border-gray-800/90 rounded-2xl shadow-xl space-y-5"
       >
         <div className="space-y-1.5">
@@ -343,7 +335,7 @@ export function ActivationForm() {
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.section>
+      </section>
     </div>
   );
 }

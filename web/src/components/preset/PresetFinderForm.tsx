@@ -45,12 +45,7 @@ export function PresetFinderForm() {
 
   return (
     <div className="space-y-6 text-left w-full">
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: "easeOut" }}
-        className="p-5 sm:p-7 bg-[#121826] border border-gray-800/90 rounded-2xl shadow-xl space-y-5"
-      >
+      <div className="p-5 sm:p-7 bg-[#121826] border border-gray-800/90 rounded-2xl shadow-xl space-y-5">
         <div className="space-y-1">
           <h2 className="text-base sm:text-lg font-bold text-white tracking-wide font-piximisa flex items-center space-x-2">
             <i className="fa-solid fa-magnifying-glass text-[#00e599]"></i>
@@ -243,7 +238,7 @@ export function PresetFinderForm() {
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.div>
+      </div>
     </div>
   );
 }

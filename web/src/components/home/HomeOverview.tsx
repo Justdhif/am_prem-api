@@ -5,9 +5,9 @@ import { motion } from "framer-motion";
 export function HomeOverview() {
   const features = [
     {
-      icon: "fa-solid fa-shield-halved",
-      title: "Resmi & Anti-Banned",
-      desc: "Lisensi diaktivasi langsung ke server Firebase Alight Creative resmi. 100% aman tanpa modifikasi APK berbahaya.",
+      icon: "fa-solid fa-bolt",
+      title: "Aktivasi Instan",
+      desc: "Proses aktivasi lisensi berlangsung instan dalam hitungan detik langsung ke akun email Anda tanpa perlu menunggu lama.",
     },
     {
       icon: "fa-solid fa-ban",

@@ -10,6 +10,15 @@ export interface YouTubeVideoMetadata {
   title: string;
   description: string;
   author: YouTubeVideoAuthor;
+  cover?: string;
+  videoUrl?: string;
+  audioUrl?: string;
+  embedUrl?: string;
+  downloads?: {
+    type: 'video' | 'audio';
+    quality?: string;
+    url: string;
+  }[];
   stats?: {
     views?: number;
     likes?: number;

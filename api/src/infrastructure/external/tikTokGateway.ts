@@ -55,6 +55,21 @@ export class TikTokGateway implements ITikTokGateway {
     }
 
     const d = videoRes.data.data;
+    const playUrl = d.play ? (d.play.startsWith('http') ? d.play : `https://www.tikwm.com${d.play}`) : undefined;
+    const hdPlayUrl = d.hdplay ? (d.hdplay.startsWith('http') ? d.hdplay : `https://www.tikwm.com${d.hdplay}`) : undefined;
+    const musicUrl = d.music ? (d.music.startsWith('http') ? d.music : `https://www.tikwm.com${d.music}`) : undefined;
+
+    const downloads: { type: 'video' | 'audio'; quality?: string; url: string }[] = [];
+    if (playUrl) {
+      downloads.push({ type: 'video', quality: 'Tanpa Watermark', url: playUrl });
+    }
+    if (hdPlayUrl) {
+      downloads.push({ type: 'video', quality: 'HD Tanpa Watermark', url: hdPlayUrl });
+    }
+    if (musicUrl) {
+      downloads.push({ type: 'audio', quality: 'Audio MP3', url: musicUrl });
+    }
+
     const metadata: TikTokVideoMetadata = {
       id: d.id || '',
       platform: 'tiktok',
@@ -67,6 +82,10 @@ export class TikTokGateway implements ITikTokGateway {
         avatar: d.author?.avatar,
       },
       cover: d.cover,
+      videoUrl: playUrl || hdPlayUrl,
+      hdVideoUrl: hdPlayUrl,
+      audioUrl: musicUrl,
+      downloads,
       stats: {
         likes: d.digg_count,
         comments: d.comment_count,
@@ -236,6 +255,14 @@ export class TikTokGateway implements ITikTokGateway {
       throw new Error('Video tidak ditemukan di TikTok Aweme Feed.');
     }
 
+    const playUrl = aweme.video?.play_addr?.url_list?.[0];
+    const musicUrl = aweme.music?.play_url?.url_list?.[0];
+    const coverUrl = aweme.video?.cover?.url_list?.[0] || aweme.video?.origin_cover?.url_list?.[0];
+
+    const downloads: { type: 'video' | 'audio'; quality?: string; url: string }[] = [];
+    if (playUrl) downloads.push({ type: 'video', quality: 'Tanpa Watermark', url: playUrl });
+    if (musicUrl) downloads.push({ type: 'audio', quality: 'Audio MP3', url: musicUrl });
+
     const metadata: TikTokVideoMetadata = {
       id: aweme.aweme_id || videoId,
       platform: 'tiktok',
@@ -246,6 +273,10 @@ export class TikTokGateway implements ITikTokGateway {
         username: aweme.author?.unique_id || 'unknown',
         nickname: aweme.author?.nickname,
       },
+      cover: coverUrl,
+      videoUrl: playUrl,
+      audioUrl: musicUrl,
+      downloads,
       stats: {
         likes: aweme.statistics?.digg_count,
         comments: aweme.statistics?.comment_count,

@@ -5,6 +5,7 @@ import {
   YouTubeVideoMetadata,
   YouTubeCommentItem,
 } from '../../domain/gateways/IYouTubeGateway.js';
+import { YouTubeMediaResolver } from './youTubeMediaResolver.js';
 
 export class YouTubeGateway implements IYouTubeGateway {
   private readonly defaultTimeout = 12000;
@@ -84,6 +85,23 @@ export class YouTubeGateway implements IYouTubeGateway {
       }
     }
 
+    const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0`;
+    const coverUrl = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+
+    // Coba selesaikan direct media streams (MP4 & MP3)
+    let mediaDownloads: { type: 'video' | 'audio'; quality: string; url: string }[] = [];
+    let directVideoUrl: string | undefined;
+    let directAudioUrl: string | undefined;
+
+    try {
+      const mediaResult = await YouTubeMediaResolver.resolveMedia(videoId);
+      directVideoUrl = mediaResult.videoUrl;
+      directAudioUrl = mediaResult.audioUrl;
+      mediaDownloads = mediaResult.downloads;
+    } catch {
+      // Graceful fallback jika resolver lambat atau gagal
+    }
+
     const metadata: YouTubeVideoMetadata = {
       id: videoId,
       url: watchUrl,
@@ -94,6 +112,11 @@ export class YouTubeGateway implements IYouTubeGateway {
         username: authorName || 'unknown',
         nickname: authorName,
       },
+      cover: coverUrl,
+      embedUrl,
+      videoUrl: directVideoUrl,
+      audioUrl: directAudioUrl,
+      downloads: mediaDownloads,
       stats: {
         views: viewCount,
       },

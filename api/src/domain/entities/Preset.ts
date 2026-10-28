@@ -33,6 +33,12 @@ export interface VideoAuthor {
   avatar?: string;
 }
 
+export interface MediaDownloadItem {
+  type: 'video' | 'audio';
+  quality?: string;
+  url: string;
+}
+
 export interface VideoMetadata {
   id: string;
   platform?: VideoPlatform;
@@ -41,6 +47,11 @@ export interface VideoMetadata {
   description?: string;
   author: VideoAuthor;
   cover?: string;
+  videoUrl?: string; // Direct video MP4 url (with audio)
+  hdVideoUrl?: string; // HD MP4 if available
+  audioUrl?: string; // Direct audio MP3 url
+  embedUrl?: string; // Embed player URL (especially for YouTube)
+  downloads?: MediaDownloadItem[];
   stats?: {
     likes?: number;
     comments?: number;

@@ -187,28 +187,6 @@ export function HomeOverview() {
           ))}
         </div>
       </section>
-
-      {/* 4. FOOTER CALL-TO-ACTION BANNER */}
-      <section className="p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-[#0d1e18] via-[#121826] to-[#121826] border border-[#00e599]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-1 max-w-xl">
-          <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
-            Siap Mengaktifkan Akun Pro VIP Anda?
-          </h3>
-          <p className="text-xs text-gray-400 leading-relaxed">
-            Hanya butuh 2 langkah mudah untuk mendapatkan akun Alight Motion Pro VIP Resmi 1 Tahun tanpa watermark.
-          </p>
-        </div>
-
-        <div className="flex items-center space-x-3 shrink-0">
-          <Link
-            href="/aktivasi"
-            className="px-5 py-2.5 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm transition shadow-lg shadow-[#00e599]/20 flex items-center space-x-2 cursor-pointer active:scale-95"
-          >
-            <span>Buka Halaman Aktivasi</span>
-            <i className="fa-solid fa-arrow-right text-xs"></i>
-          </Link>
-        </div>
-      </section>
     </div>
   );
 }

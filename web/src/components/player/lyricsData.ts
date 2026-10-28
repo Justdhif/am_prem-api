@@ -16,7 +16,7 @@ export const PLAYLIST: Track[] = [
     src: "/audio/aint-in-la.mp3",
     cover: "/audio/cover-aint-in-la.webp",
     video: "/audio/aint-in-la-canvas.mp4",
-    duration: 219,
+    duration: 185,
   },
   {
     id: "nervousness",
@@ -97,7 +97,7 @@ export const AINT_IN_LA_LYRICS: LyricLine[] = [
   { time: 161.3, startTime: 161.3, endTime: 164.8, text: "Light the cigarette with the propane" },
   { time: 164.8, startTime: 164.8, endTime: 172.2, text: "Honda Civic doing donuts in the rain" },
   { time: 172.2, startTime: 172.2, endTime: 179.0, text: "The baddest bitches ain't in L.A." },
-  { time: 179.0, startTime: 179.0, endTime: 219.0, text: "..." },
+  { time: 179.0, startTime: 179.0, endTime: 185.0, text: "..." },
 ];
 
 // Synced lyrics for "Joon - nervousness"

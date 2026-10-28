@@ -36,7 +36,7 @@ export function EmojiPicker({ onSelectEmoji, onBackspace, onClose }: EmojiPicker
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95, y: 8 }}
       transition={{ duration: 0.18, ease: "easeOut" }}
-      className="absolute bottom-full left-3 right-3 mb-2 bg-[#131927] border border-gray-700/80 rounded-2xl shadow-2xl p-3 z-50 flex flex-col max-h-80 select-none"
+      className="absolute bottom-full left-3 right-3 mb-2 bg-[#131927] border border-gray-700/80 rounded-2xl shadow-2xl p-3 z-[60] flex flex-col max-h-80 select-none"
     >
       {/* Search Bar & Controls */}
       <div className="flex items-center space-x-2 pb-2 mb-2 border-b border-gray-800/80">

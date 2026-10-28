@@ -120,7 +120,7 @@ export function CommentDrawer() {
       {/* Floating Action Button (FAB) Bottom Right - Dynamically shifts down when mini player hides on scroll */}
       <div
         className={cn(
-          "fixed right-4 sm:right-6 z-40 transition-all duration-500 ease-in-out",
+          "fixed right-4 sm:right-6 z-[135] transition-all duration-500 ease-in-out",
           isMiniPlayerActive
             ? "bottom-[80px] sm:bottom-[84px] lg:bottom-6"
             : "bottom-5 sm:bottom-6 lg:bottom-6"
@@ -156,7 +156,7 @@ export function CommentDrawer() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="fixed inset-0 bg-black/65 backdrop-blur-sm z-50 touch-none"
+              className="fixed inset-0 bg-black/65 backdrop-blur-sm z-[150] touch-none"
             />
 
             {/* Right Drawer */}
@@ -169,7 +169,7 @@ export function CommentDrawer() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 280 }}
-              className="fixed top-0 right-0 h-full w-full sm:w-[420px] max-w-full bg-[#090d16] border-l border-gray-800 shadow-2xl z-50 flex flex-col"
+              className="fixed top-0 right-0 h-full w-full sm:w-[420px] max-w-full bg-[#090d16] border-l border-gray-800 shadow-2xl z-[150] flex flex-col"
             >
               {/* Header */}
               <div className="px-5 py-3.5 border-b border-gray-800 flex items-center justify-between bg-[#0d121f] shrink-0">

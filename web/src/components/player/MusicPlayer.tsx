@@ -950,7 +950,7 @@ export function MusicPlayer() {
         }}
         transition={{ duration: 0.4, ease: "easeOut" }}
         className={cn(
-          "block lg:hidden fixed bottom-0 left-0 right-0 z-40 p-2 sm:p-3 bg-gradient-to-t from-[#070b13] via-[#070b13]/95 to-transparent",
+          "block lg:hidden fixed bottom-0 left-0 right-0 z-[130] lg:z-auto p-2 sm:p-3 bg-gradient-to-t from-[#070b13] via-[#070b13]/95 to-transparent",
           isMiniPlayerVisible && !isMobileModalOpen
             ? "pointer-events-auto"
             : "pointer-events-none"
@@ -1060,7 +1060,7 @@ export function MusicPlayer() {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: "100%", opacity: 0 }}
                 transition={{ type: "spring", damping: 30, stiffness: 320 }}
-                className="fixed inset-0 z-[100] lg:hidden bg-[#0d121f] h-[100dvh] h-full w-full flex flex-col text-left overflow-hidden select-none"
+                className="fixed inset-0 z-[140] lg:hidden bg-[#0d121f] h-[100dvh] h-full w-full flex flex-col text-left overflow-hidden select-none"
                 style={{ touchAction: "none" }}
               >
                 {/* Top Unified Floating Header Bar */}

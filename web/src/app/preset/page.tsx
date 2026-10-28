@@ -46,7 +46,7 @@ export default function PresetPage() {
           Preset Finder Alight Motion
         </h1>
         <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-2xl">
-          Temukan link preset XML dan tautan Alight Creative resmi langsung dari video TikTok maupun YouTube tanpa perlu mencari manual di komentar.
+          Temukan link preset 5MB, XML Drive, dan Sound Audio resmi dari video TikTok maupun YouTube, ekstraksi komentar manual secara instan, serta jelajahi repositori preset trending pilihan komunitas.
         </p>
       </div>
 

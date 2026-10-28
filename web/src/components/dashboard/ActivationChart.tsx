@@ -1,62 +1,54 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { DailyStatItem } from "@/lib/api";
 
 interface ActivationChartProps {
-  totalActivations: number;
-  todayActivations: number;
-  history?: DailyStatItem[];
+  totalActivations?: number;
+  todayActivations?: number;
+  history?: Array<{ date: string; count: number }>;
   loading?: boolean;
 }
 
-interface DataPoint {
-  dayLabel: string;
-  dateLabel: string;
-  count: number;
-  isToday: boolean;
-}
-
 export function ActivationChart({
-  todayActivations,
+  todayActivations = 0,
   history = [],
   loading = false,
 }: ActivationChartProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  // Map data 7 hari riil dari database PostgreSQL
-  const chartData = useMemo<DataPoint[]>(() => {
+  // Synthesize last 7 days from real history array
+  const chartData = useMemo(() => {
     const dayNames = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+    const result: Array<{
+      dayLabel: string;
+      dateLabel: string;
+      count: number;
+      isToday: boolean;
+    }> = [];
+
     const now = new Date();
-    const todayStr = now.toISOString().split("T")[0];
 
-    if (history && history.length > 0) {
-      return history.map((item) => {
-        // Parse date YYYY-MM-DD
-        const parts = item.date.split("-");
-        const itemDate = new Date(
-          parseInt(parts[0], 10),
-          parseInt(parts[1], 10) - 1,
-          parseInt(parts[2], 10)
-        );
-        const isToday = item.date === todayStr;
-
-        return {
-          dayLabel: isToday ? "Hari Ini" : dayNames[itemDate.getDay()] || item.date,
-          dateLabel: itemDate.toLocaleDateString("id-ID", { day: "numeric", month: "short" }),
-          count: loading ? 0 : Math.max(0, item.count),
-          isToday,
-        };
-      });
-    }
-
-    // Fallback jika belum ada data history
-    const result: DataPoint[] = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date(now);
       d.setDate(now.getDate() - i);
+      const iso = d.toISOString().split("T")[0];
       const isToday = i === 0;
+
+      // Find real count in history
+      const found = history.find((h) => h.date === iso);
+
+      if (found) {
+        result.push({
+          dayLabel: isToday ? "Hari Ini" : dayNames[d.getDay()],
+          dateLabel: d.toLocaleDateString("id-ID", { day: "numeric", month: "short" }),
+          count: found.count,
+          isToday,
+        });
+        continue;
+      }
+
+      // If today and not in history, use todayActivations
       result.push({
         dayLabel: isToday ? "Hari Ini" : dayNames[d.getDay()],
         dateLabel: d.toLocaleDateString("id-ID", { day: "numeric", month: "short" }),
@@ -67,13 +59,13 @@ export function ActivationChart({
     return result;
   }, [history, todayActivations, loading]);
 
-  // Chart coordinate dimensions
-  const width = 600;
-  const height = 150;
+  // Chart coordinate dimensions (enhanced height for mobile view)
+  const width = 500;
+  const height = 200;
   const padLeft = 24;
   const padRight = 24;
-  const padTop = 20;
-  const padBottom = 30;
+  const padTop = 24;
+  const padBottom = 38;
 
   const plotWidth = width - padLeft - padRight;
   const plotHeight = height - padTop - padBottom;
@@ -113,25 +105,29 @@ export function ActivationChart({
     const a = `${d} L ${points[points.length - 1].x} ${baselineY} L ${points[0].x} ${baselineY} Z`;
 
     return { linePath: d, areaPath: a };
-  }, [points, plotHeight]);
+  }, [points, plotHeight, padTop]);
 
   const activePoint = hoveredIndex !== null ? points[hoveredIndex] : points[points.length - 1];
 
   return (
     <div className="w-full">
       {/* Chart Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-        <div className="flex items-center space-x-2">
-          <span className="w-2 h-2 rounded-full bg-[#00e599] animate-pulse"></span>
-          <span className="text-xs font-bold text-gray-200">Tren Aktivasi Premium (Riil Database)</span>
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#00e599]/15 text-[#00e599] font-semibold border border-[#00e599]/30">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3.5">
+        <div className="flex items-center justify-between sm:justify-start space-x-2">
+          <div className="flex items-center space-x-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#00e599] animate-pulse shadow-[0_0_8px_#00e599]"></span>
+            <span className="text-xs sm:text-sm font-bold text-gray-200">
+              Tren Aktivasi Premium (Riil Database)
+            </span>
+          </div>
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#00e599]/15 text-[#00e599] font-semibold border border-[#00e599]/30 shrink-0">
             7 Hari Terakhir
           </span>
         </div>
 
         {/* Dynamic Highlight Metric */}
         {activePoint && (
-          <div className="text-xs text-gray-400 flex items-center space-x-1.5 self-start sm:self-auto font-mono">
+          <div className="text-xs text-gray-400 flex items-center space-x-1.5 self-start sm:self-auto font-mono bg-[#0d121f]/60 px-2.5 py-1 rounded-lg border border-gray-800/60">
             <span className="text-gray-400 font-sans">{activePoint.dayLabel} ({activePoint.dateLabel}):</span>
             <span className="text-[#00e599] font-black text-sm">
               {activePoint.count} Aktivasi
@@ -140,8 +136,8 @@ export function ActivationChart({
         )}
       </div>
 
-      {/* Responsive SVG Chart */}
-      <div className="relative w-full aspect-[4/1] min-h-[140px] select-none">
+      {/* Responsive SVG Chart with generous vertical space on mobile (no gepeng) */}
+      <div className="relative w-full h-48 sm:h-56 select-none">
         <svg
           viewBox={`0 0 ${width} ${height}`}
           className="w-full h-full overflow-visible"
@@ -228,12 +224,13 @@ export function ActivationChart({
                 className="cursor-pointer"
                 onMouseEnter={() => setHoveredIndex(idx)}
                 onMouseLeave={() => setHoveredIndex(null)}
+                onTouchStart={() => setHoveredIndex(idx)}
               >
                 {/* Transparent wider hit area for easy hover/touch */}
                 <rect
-                  x={pt.x - 20}
+                  x={pt.x - 25}
                   y={0}
-                  width="40"
+                  width="50"
                   height={height}
                   fill="transparent"
                 />
@@ -263,13 +260,13 @@ export function ActivationChart({
                   className="transition-all duration-200"
                 />
 
-                {/* Day Labels at Bottom */}
+                {/* Day Labels at Bottom with plenty of clearance from curve */}
                 <text
                   x={pt.x}
-                  y={height - 8}
+                  y={height - 10}
                   textAnchor="middle"
                   fill={isHovered || pt.isToday ? "#00e599" : "#64748b"}
-                  fontSize="10"
+                  fontSize="11"
                   fontWeight={isHovered || pt.isToday ? "700" : "500"}
                   className="transition-colors duration-150 font-sans"
                 >

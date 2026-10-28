@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { EndpointCard } from "./EndpointCard";
 import { BotCommands } from "./BotCommands";
 import { FaqSection } from "./FaqSection";
@@ -277,7 +278,13 @@ echo $result;`,
   return (
     <div className="space-y-8 text-left w-full">
       {/* 1. PRO BASE URL HERO CARD */}
-      <div id="overview" className="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-[#121826] via-[#121826] to-[#0d1622] border border-gray-800 shadow-xl space-y-4 text-left scroll-mt-[126px]">
+      <motion.div
+        id="overview"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, delay: 0.1, ease: "easeOut" }}
+        className="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-[#121826] via-[#121826] to-[#0d1622] border border-gray-800 shadow-xl space-y-4 text-left scroll-mt-[126px]"
+      >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
             <span className="text-xs font-bold text-gray-300 uppercase tracking-wider">
@@ -305,15 +312,18 @@ echo $result;`,
             <code className="text-sm sm:text-base font-mono font-bold text-[#00e599] truncate">
               {BASE_URL}
             </code>
-            <button
+            <motion.button
               type="button"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.94 }}
+              transition={{ duration: 0.15 }}
               onClick={handleCopyBaseUrl}
-              className="px-3 py-1.5 rounded-lg bg-gray-800/90 hover:bg-gray-700 text-gray-200 text-xs font-semibold transition active:scale-95 flex items-center space-x-1.5 cursor-pointer shrink-0 ml-2"
+              className="px-3 py-1.5 rounded-lg bg-gray-800/90 hover:bg-gray-700 text-gray-200 text-xs font-semibold transition-colors flex items-center space-x-1.5 cursor-pointer shrink-0 ml-2"
               title="Salin Base URL"
             >
               <i className={cn(copiedBaseUrl ? "fa-solid fa-check text-[#00e599]" : "fa-regular fa-copy text-xs")}></i>
               <span>{copiedBaseUrl ? "Tersalin!" : "Salin URL"}</span>
-            </button>
+            </motion.button>
           </div>
         </div>
 
@@ -336,20 +346,28 @@ echo $result;`,
             <span className="font-mono font-bold text-gray-200">CORS Allowed (*)</span>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* 2. QUICK JUMP NAVIGATION PILLS */}
-      <div className="sticky top-16 z-20 bg-[#0d121f]/90 backdrop-blur-md py-2 border-y border-gray-800/80 -mx-1 px-1 overflow-x-auto no-scrollbar">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, delay: 0.18, ease: "easeOut" }}
+        className="sticky top-16 z-20 bg-[#0d121f]/90 backdrop-blur-md py-2 border-y border-gray-800/80 -mx-1 px-1 overflow-x-auto no-scrollbar"
+      >
         <div className="flex items-center space-x-1.5 min-w-max">
           {navSections.map((nav) => {
             const isActive = activeNav === nav.id;
             return (
-              <button
+              <motion.button
                 key={nav.id}
                 type="button"
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.15 }}
                 onClick={() => scrollTo(nav.id)}
                 className={cn(
-                  "px-3 py-1.5 rounded-xl text-xs font-semibold border transition active:scale-95 cursor-pointer flex items-center space-x-1.5 select-none",
+                  "px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors cursor-pointer flex items-center space-x-1.5 select-none",
                   isActive
                     ? "bg-[#00e599]/15 text-[#00e599] border-[#00e599]/40 shadow-sm shadow-[#00e599]/10 font-bold"
                     : "bg-[#121826] hover:bg-gray-800 text-gray-400 hover:text-white border-gray-800"
@@ -357,11 +375,11 @@ echo $result;`,
               >
                 <i className={cn(nav.icon, "text-[11px]", isActive ? "text-[#00e599]" : "text-gray-400")}></i>
                 <span>{nav.label}</span>
-              </button>
+              </motion.button>
             );
           })}
         </div>
-      </div>
+      </motion.div>
 
       {/* 3. ENDPOINT LIST */}
       <div className="space-y-6 sm:space-y-8">

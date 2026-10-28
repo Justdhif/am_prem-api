@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { MultiCodeBlock, CodeSnippet } from "./MultiCodeBlock";
 import { cn } from "@/lib/utils";
@@ -151,8 +152,12 @@ echo $result;`,
   ];
 
   return (
-    <div
+    <motion.div
       id="bot-commands"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.45, ease: "easeOut" }}
       className="p-5 sm:p-6 rounded-2xl bg-[#121826] border border-gray-800 shadow-xl space-y-5 scroll-mt-[126px] text-left transition hover:border-gray-700/80"
     >
       {/* Endpoint Header */}
@@ -356,6 +361,6 @@ echo $result;`,
           </pre>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

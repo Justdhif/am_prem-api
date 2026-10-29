@@ -50,7 +50,10 @@ export function ActivationForm() {
   // Handlers for Step 2: Verify Magic Link
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!verifyLink) return;
+    if (!verifyEmail.trim() || !verifyLink.trim()) {
+      setVerifyError("Silakan masukkan alamat email akun dan tautan verifikasi.");
+      return;
+    }
 
     setVerifyLoading(true);
     setVerifyError(null);
@@ -88,7 +91,7 @@ export function ActivationForm() {
             <span>Kirim Magic Link Verifikasi Email</span>
           </h2>
           <p className="text-xs text-gray-400 leading-relaxed">
-            Tuliskan alamat email aktif yang Anda pakai untuk aplikasi Alight Motion. Sistem akan mengirim tautan resmi Firebase ke email tersebut.
+            Tuliskan alamat email aktif yang Anda pakai untuk aplikasi Alight Motion. Cek folder spam atau junk atau inbox pada email anda untuk mengambil link verifikasi.
           </p>
         </div>
 
@@ -207,15 +210,16 @@ export function ActivationForm() {
             >
               <div>
                 <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                  Email Akun Terdaftar
+                  Email Akun Terdaftar <span className="text-[#00e599]">*</span>
                 </label>
                 <div className="flex items-center bg-[#0d121f] rounded-xl px-3.5 py-3 border border-gray-700/80 focus-within:border-[#00e599] transition">
                   <i className="fa-regular fa-envelope text-gray-500 mr-2.5 text-sm shrink-0"></i>
                   <input
                     type="email"
+                    required
                     value={verifyEmail}
                     onChange={(e) => setVerifyEmail(e.target.value)}
-                    placeholder="user@gmail.com (opsional jika link lengkap)"
+                    placeholder="contoh: namauser@gmail.com"
                     className="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full"
                   />
                 </div>

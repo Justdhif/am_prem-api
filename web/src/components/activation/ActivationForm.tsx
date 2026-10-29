@@ -193,7 +193,7 @@ export function ActivationForm() {
             <span>Verifikasi &amp; Aktivasi Lisensi Premium</span>
           </h2>
           <p className="text-xs text-gray-400 leading-relaxed">
-            Buka email masuk dari Alight Motion, salin tautan verifikasi masuk (atau parameter oobCode), lalu tempelkan di formulir berikut.
+            Buka email masuk dari Alight Motion, salin tautan verifikasi masuk, lalu tempelkan di formulir berikut.
           </p>
         </div>
 
@@ -227,7 +227,7 @@ export function ActivationForm() {
 
               <div>
                 <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                  Tautan Verifikasi Email / oobCode <span className="text-[#00e599]">*</span>
+                  Tautan Verifikasi Email <span className="text-[#00e599]">*</span>
                 </label>
                 <div className="flex items-start bg-[#0d121f] rounded-xl px-3.5 py-3 border border-gray-700/80 focus-within:border-[#00e599] transition">
                   <i className="fa-solid fa-link text-gray-500 mr-2.5 text-sm mt-1 shrink-0"></i>

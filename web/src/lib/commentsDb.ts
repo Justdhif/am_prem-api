@@ -191,3 +191,35 @@ export async function createCommentInDb(params: {
     createdAt: new Date(row.createdAt).toISOString(),
   };
 }
+
+
+export async function getCommentById(id: string): Promise<DbComment | null> {
+  await ensureCommentsTable();
+  const sql = getSql();
+  const rows = (await sql.query(
+    `
+    SELECT 
+      id, 
+      parent_id as "parentId", 
+      name, 
+      is_anonymous as "isAnonymous", 
+      content, 
+      created_at as "createdAt"
+    FROM comments 
+    WHERE id = $1
+    LIMIT 1
+  `,
+    [id]
+  )) as any[];
+
+  if (!rows || rows.length === 0) return null;
+  const row = rows[0];
+  return {
+    id: row.id,
+    parentId: row.parentId,
+    name: row.name,
+    isAnonymous: Boolean(row.isAnonymous),
+    content: row.content,
+    createdAt: new Date(row.createdAt).toISOString(),
+  };
+}

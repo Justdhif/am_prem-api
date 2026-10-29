@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   getAllCommentsTree,
   createCommentInDb,
+  getCommentById,
   formatRelativeTime,
   CommentNode,
 } from "@/lib/commentsDb";
@@ -102,6 +103,22 @@ export async function POST(request: NextRequest) {
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
 
+    // Jika komentar balasan, cari detail nama dan komentar yang sedang dibalas
+    let replyToName: string | null = null;
+    let replyToContent: string | null = null;
+
+    if (body.parentId) {
+      try {
+        const parentComment = await getCommentById(body.parentId);
+        if (parentComment) {
+          replyToName = parentComment.isAnonymous ? "Anonim" : parentComment.name;
+          replyToContent = parentComment.content;
+        }
+      } catch (parentErr) {
+        console.warn("[Comments POST] Gagal memuat parent comment:", parentErr);
+      }
+    }
+
     const created = await createCommentInDb({
       parentId: body.parentId || null,
       name: displayName,
@@ -115,13 +132,15 @@ export async function POST(request: NextRequest) {
           displayName
         )}&background=00e599&color=0d121f&bold=true`;
 
-    // Kirim notifikasi WhatsApp via Fonnte secara aman
+    // Kirim notifikasi WhatsApp via Fonnte secara aman (dengan detail balasan jika ada)
     try {
       await sendFonnteCommentNotification({
         name: displayName,
         isAnonymous,
         content: sanitizedContent,
         parentId: created.parentId,
+        replyToName,
+        replyToContent,
         createdAt: created.createdAt,
       });
     } catch (notifErr: any) {

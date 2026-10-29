@@ -3,6 +3,8 @@ export interface FonnteNotificationPayload {
   isAnonymous: boolean;
   content: string;
   parentId?: string | null;
+  replyToName?: string | null;
+  replyToContent?: string | null;
   createdAt?: string | Date;
 }
 
@@ -13,7 +15,9 @@ export async function sendFonnteCommentNotification(
   const target = process.env.FONNTE_TARGET;
 
   if (!token || !target) {
-    console.warn("[Fonnte] FONNTE_TOKEN atau FONNTE_TARGET belum diset di environment variables.");
+    console.warn(
+      "[Fonnte] FONNTE_TOKEN atau FONNTE_TARGET belum diset di environment variables."
+    );
     return false;
   }
 
@@ -32,18 +36,40 @@ export async function sendFonnteCommentNotification(
     const senderType = payload.isAnonymous ? "👤 (Anonim)" : "👤 Pengguna";
     const isReply = Boolean(payload.parentId);
 
-    const message = [
-      `🔔 *${isReply ? "Balasan Komentar Baru" : "Komentar Diskusi Baru"}!*`,
-      `━━━━━━━━━━━━━━━━━━━`,
-      `*Pengirim:* ${payload.name} ${senderType}`,
-      `*Waktu:* ${timeStr} WIB`,
-      `*Tipe:* ${isReply ? "Balasan Komentar" : "Komentar Utama"}`,
-      ``,
-      `💬 *Isi Komentar:*`,
-      `"${payload.content}"`,
-      `━━━━━━━━━━━━━━━━━━━`,
-      `🌐 *Alight Motion Premium Web*`,
-    ].join("\n");
+    // Format pesan sesuai apakah komentar baru atau balasan
+    const messageLines: string[] = [];
+
+    if (isReply) {
+      messageLines.push(`🔔 *Balasan Komentar Diskusi!*`);
+      messageLines.push(`━━━━━━━━━━━━━━━━━━━`);
+      messageLines.push(`*Pengirim:* ${payload.name} ${senderType}`);
+      messageLines.push(`*Membalas:* @${payload.replyToName || "Pengguna"}`);
+      if (payload.replyToContent) {
+        const preview =
+          payload.replyToContent.length > 200
+            ? payload.replyToContent.substring(0, 200) + "..."
+            : payload.replyToContent;
+        messageLines.push(``);
+        messageLines.push(`💭 *Komentar yang Dibalas:*`);
+        messageLines.push(`"${preview}"`);
+      }
+      messageLines.push(``);
+      messageLines.push(`💬 *Pesan Balasan:*`);
+      messageLines.push(`"${payload.content}"`);
+    } else {
+      messageLines.push(`🔔 *Komentar Diskusi Baru!*`);
+      messageLines.push(`━━━━━━━━━━━━━━━━━━━`);
+      messageLines.push(`*Pengirim:* ${payload.name} ${senderType}`);
+      messageLines.push(``);
+      messageLines.push(`💬 *Pesan Komentar:*`);
+      messageLines.push(`"${payload.content}"`);
+    }
+
+    messageLines.push(`━━━━━━━━━━━━━━━━━━━`);
+    messageLines.push(`🕒 *Waktu:* ${timeStr} WIB`);
+    messageLines.push(`🌐 *Website:* Alight Motion Premium`);
+
+    const message = messageLines.join("\n");
 
     const formData = new URLSearchParams();
     formData.append("target", target);

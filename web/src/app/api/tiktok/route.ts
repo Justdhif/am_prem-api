@@ -27,12 +27,14 @@ export async function GET() {
     if (res.ok) {
       const html = await res.text();
 
-      // Extract display name from og:title
+      // Extract display name from og:title (strip "di TikTok" or "on TikTok")
       const titleMatch = html.match(
         /<meta\s+property="og:title"\s+content="([^"]*)"/i
       );
       if (titleMatch) {
-        displayName = titleMatch[1].replace(/\s+on TikTok$/i, "").trim();
+        displayName = titleMatch[1]
+          .replace(/\s+(?:di|on)\s+TikTok.*$/i, "")
+          .trim();
       }
 
       // Extract live avatar from og:image

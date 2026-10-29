@@ -18,8 +18,8 @@ interface TikTokProfileData {
   bio: string;
   verified: boolean;
   stats: {
-    followers: string;
     following: string;
+    followers: string;
     likes: string;
   };
   tags: string[];
@@ -27,20 +27,20 @@ interface TikTokProfileData {
 
 const DEFAULT_PROFILE: TikTokProfileData = {
   username: "justdhifbieber",
-  displayName: "𝗝υѕƚ𝗗𝗵ιƒ — order di bio",
+  displayName: "JusłDhıƒ — order di bio",
   profileUrl: "https://www.tiktok.com/@justdhifbieber",
   avatarUrl: "/images/logos/logo-web.webp",
-  bio: "Aktivasi Alight Motion Premium Resmi 1 Tahun & XML Preset Creator. Order di bio ⬇️",
+  bio: "🗎 @ayaa\nrandom account\n\nam prem 1k? order:\nhttps://linkbio-justdhif.vercel.app/",
   verified: true,
   stats: {
-    followers: "15.4K",
-    following: "92",
-    likes: "320.8K",
+    following: "7",
+    followers: "330",
+    likes: "355",
   },
   tags: [
+    "Aktivasi AM Pro 1K",
     "Preset XML Alight Motion",
-    "Aktivasi AM Pro Resmi",
-    "Garansi 1 Tahun Penuh",
+    "Resmi & Bergaransi",
   ],
 };
 
@@ -61,13 +61,13 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
     return () => window.removeEventListener("resize", checkDesktop);
   }, []);
 
-  // Fetch dynamic profile data when opened
+  // Fetch real-time live profile data every time modal is opened
   useEffect(() => {
     if (!isOpen) return;
     let isMounted = true;
     setLoading(true);
 
-    fetch("/api/tiktok")
+    fetch("/api/tiktok", { cache: "no-store" })
       .then((res) => res.json())
       .then((resData) => {
         if (isMounted && resData?.success && resData.data) {
@@ -75,7 +75,7 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
         }
       })
       .catch((err) => {
-        console.warn("[TikTokModal] Fetch error:", err);
+        console.warn("[TikTokModal] Live fetch error:", err);
       })
       .finally(() => {
         if (isMounted) setLoading(false);
@@ -182,7 +182,8 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                           alt={profile.displayName}
                           width={80}
                           height={80}
-                          className="w-full h-full object-cover p-1"
+                          unoptimized
+                          className="w-full h-full object-cover"
                         />
                       </div>
                     </div>
@@ -201,12 +202,32 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                     </span>
                   </div>
 
-                  <p className="text-xs text-gray-300 leading-relaxed max-w-sm">
-                    {profile.bio}
-                  </p>
+                  {/* Bio with clickable URL */}
+                  <div className="text-xs text-gray-300 leading-relaxed max-w-sm whitespace-pre-line text-center">
+                    {profile.bio.split("\n").map((line, i) => {
+                      if (line.startsWith("http://") || line.startsWith("https://")) {
+                        return (
+                          <a
+                            key={i}
+                            href={line}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#00e599] hover:underline font-semibold block mt-1"
+                          >
+                            {line}
+                          </a>
+                        );
+                      }
+                      return (
+                        <span key={i} className="block">
+                          {line}
+                        </span>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                {/* 3-Column Stats Counter Grid */}
+                {/* 3-Column Stats Counter Grid (Mengikuti | Pengikut | Suka) */}
                 <div className="grid grid-cols-3 gap-2.5 bg-[#141b2b] border border-gray-800/90 rounded-2xl p-3.5 text-center">
                   <div className="flex flex-col items-center justify-center space-y-1">
                     <span className="text-[10px] font-medium text-gray-400 flex items-center gap-1">
@@ -328,7 +349,8 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                           alt={profile.displayName}
                           width={64}
                           height={64}
-                          className="w-full h-full object-cover p-1"
+                          unoptimized
+                          className="w-full h-full object-cover"
                         />
                       </div>
                     </div>
@@ -347,12 +369,32 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                     </span>
                   </div>
 
-                  <p className="text-xs text-gray-300 leading-relaxed">
-                    {profile.bio}
-                  </p>
+                  {/* Bio with clickable URL */}
+                  <div className="text-xs text-gray-300 leading-relaxed text-center whitespace-pre-line">
+                    {profile.bio.split("\n").map((line, i) => {
+                      if (line.startsWith("http://") || line.startsWith("https://")) {
+                        return (
+                          <a
+                            key={i}
+                            href={line}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#00e599] hover:underline font-semibold block mt-1"
+                          >
+                            {line}
+                          </a>
+                        );
+                      }
+                      return (
+                        <span key={i} className="block">
+                          {line}
+                        </span>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                {/* 3-Column Stats Counter Grid */}
+                {/* 3-Column Stats Counter Grid (Mengikuti | Pengikut | Suka) */}
                 <div className="grid grid-cols-3 gap-2 bg-[#141b2b] border border-gray-800/90 rounded-2xl p-3 text-center">
                   <div className="flex flex-col items-center justify-center space-y-1">
                     <span className="text-[10px] font-medium text-gray-400 flex items-center gap-1">

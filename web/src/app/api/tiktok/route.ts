@@ -4,39 +4,65 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  let displayName = "𝗝υѕƚ𝗗𝗵ιƒ — order di bio";
   const username = "justdhifbieber";
-  const profileUrl = "https://www.tiktok.com/@justdhifbieber";
+  const profileUrl = `https://www.tiktok.com/@${username}`;
+
+  let displayName = "JusłDhıƒ — order di bio";
+  let avatarUrl = "/images/logos/logo-web.webp";
+  let followers = "330";
+  let following = "7";
+  let likes = "355";
+  const bio = "🗎 @ayaa\nrandom account\n\nam prem 1k? order:\nhttps://linkbio-justdhif.vercel.app/";
 
   try {
-    const res = await fetch(
-      `https://www.tiktok.com/oembed?url=${encodeURIComponent(profileUrl)}`,
-      {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-        },
-        next: { revalidate: 3600 },
-      }
-    );
+    const res = await fetch(profileUrl, {
+      headers: {
+        "User-Agent": "Twitterbot/1.0",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+      },
+      cache: "no-store",
+    });
 
     if (res.ok) {
-      const oembed = await res.json();
-      if (oembed.author_name) {
-        displayName = oembed.author_name;
+      const html = await res.text();
+
+      // Extract display name from og:title
+      const titleMatch = html.match(
+        /<meta\s+property="og:title"\s+content="([^"]*)"/i
+      );
+      if (titleMatch) {
+        displayName = titleMatch[1].replace(/\s+on TikTok$/i, "").trim();
+      }
+
+      // Extract live avatar from og:image
+      const imgMatch = html.match(
+        /<meta\s+property="og:image"\s+content="([^"]*)"/i
+      );
+      if (imgMatch && imgMatch[1]) {
+        avatarUrl = imgMatch[1].replace(/&amp;/g, "&");
+      }
+
+      // Extract exact live stats from og:description
+      // Format: "@justdhifbieber 330 Followers, 7 Following, 355 Likes - Watch awesome short videos..."
+      const descMatch = html.match(
+        /<meta\s+property="og:description"\s+content="([^"]*)"/i
+      );
+      if (descMatch) {
+        const desc = descMatch[1];
+        const statMatch = desc.match(
+          /([\d\.,KMkm]+)\s+Followers,\s*([\d\.,KMkm]+)\s+Following,\s*([\d\.,KMkm]+)\s+Likes/i
+        );
+        if (statMatch) {
+          followers = statMatch[1];
+          following = statMatch[2];
+          likes = statMatch[3];
+        }
       }
     }
   } catch (error) {
-    console.warn("[TikTok API] oEmbed fetch warning:", error);
+    console.warn("[TikTok API] Live scraping warning:", error);
   }
-
-  // Dynamic statistics: configurable via env or high-accuracy baseline
-  const followers = process.env.TIKTOK_FOLLOWERS || "15.4K";
-  const following = process.env.TIKTOK_FOLLOWING || "92";
-  const likes = process.env.TIKTOK_LIKES || "320.8K";
-  const bio =
-    process.env.TIKTOK_BIO ||
-    "Aktivasi Alight Motion Premium Resmi 1 Tahun & XML Preset Creator. Order di bio ⬇️";
 
   return NextResponse.json({
     success: true,
@@ -44,18 +70,18 @@ export async function GET() {
       username,
       displayName,
       profileUrl,
-      avatarUrl: "/images/logos/logo-web.webp",
+      avatarUrl,
       bio,
       verified: true,
       stats: {
-        followers,
         following,
+        followers,
         likes,
       },
       tags: [
+        "Aktivasi AM Pro 1K",
         "Preset XML Alight Motion",
-        "Aktivasi AM Pro Resmi",
-        "Garansi 1 Tahun Penuh",
+        "Resmi & Bergaransi",
       ],
     },
   });

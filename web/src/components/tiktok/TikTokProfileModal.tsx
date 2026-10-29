@@ -153,11 +153,8 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                     <i className="fa-brands fa-tiktok text-base"></i>
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-gray-100 flex items-center space-x-1.5">
-                      <span>Profil TikTok Resmi</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#00e599]/15 text-[#00e599] font-semibold border border-[#00e599]/30">
-                        Official
-                      </span>
+                    <h3 className="text-sm font-bold text-gray-100">
+                      Profil TikTok Resmi
                     </h3>
                     <p className="text-xs text-gray-400 font-mono">@{profile.username}</p>
                   </div>
@@ -302,11 +299,8 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                     <i className="fa-brands fa-tiktok text-base"></i>
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold text-gray-100 flex items-center space-x-1.5">
-                      <span>TikTok Official</span>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#00e599]/15 text-[#00e599] font-semibold border border-[#00e599]/30">
-                        Official
-                      </span>
+                    <h3 className="text-xs font-bold text-gray-100">
+                      Profil TikTok Resmi
                     </h3>
                     <p className="text-[11px] text-gray-400 font-mono">@{profile.username}</p>
                   </div>

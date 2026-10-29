@@ -154,7 +154,7 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-gray-100">
-                      Profil TikTok Resmi
+                      Profil TikTok
                     </h3>
                     <p className="text-xs text-gray-400 font-mono">@{profile.username}</p>
                   </div>
@@ -308,7 +308,7 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                   </div>
                   <div>
                     <h3 className="text-xs font-bold text-gray-100">
-                      Profil TikTok Resmi
+                      Profil TikTok
                     </h3>
                     <p className="text-[11px] text-gray-400 font-mono">@{profile.username}</p>
                   </div>

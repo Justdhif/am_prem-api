@@ -59,6 +59,7 @@ export class FindAlightPresetUseCase {
     // Koleksi preset yang ditemukan (gunakan Set untuk mencegah duplikasi URL/konten)
     const seenItems = new Set<string>();
     const allItems: PresetItem[] = [];
+    const candidateYouTubeUrls: string[] = [];
 
     const addItem = (item: PresetItem) => {
       const key = `${item.priority}:${item.url.toLowerCase()}`;
@@ -77,6 +78,12 @@ export class FindAlightPresetUseCase {
         true
       );
       captionItems.forEach(addItem);
+
+      // Kumpulkan URL YouTube di caption jika video sumber dari TikTok
+      if (platform === 'tiktok') {
+        const ytUrls = this.extractYouTubeLinksFromText(metadata.title);
+        candidateYouTubeUrls.push(...ytUrls);
+      }
     }
 
     // 4. Pindai Deskripsi Video (Khusus YouTube atau jika video memiliki deskripsi)
@@ -88,6 +95,11 @@ export class FindAlightPresetUseCase {
         true
       );
       descItems.forEach(addItem);
+
+      if (platform === 'tiktok') {
+        const ytUrls = this.extractYouTubeLinksFromText(metadata.description);
+        candidateYouTubeUrls.push(...ytUrls);
+      }
     }
 
     // 5. Pindai Komentar Video (prioritaskan komentar kreator dan pinned)
@@ -110,15 +122,79 @@ export class FindAlightPresetUseCase {
       );
 
       commentItems.forEach(addItem);
+
+      // Jika dari TikTok, periksa apakah kreator / komentar menyertakan tautan YouTube
+      if (platform === 'tiktok') {
+        const ytUrls = this.extractYouTubeLinksFromText(comment.text);
+        if (ytUrls.length > 0) {
+          if (comment.isCreator || comment.isAuthorPinned) {
+            candidateYouTubeUrls.unshift(...ytUrls);
+          } else {
+            candidateYouTubeUrls.push(...ytUrls);
+          }
+        }
+      }
     }
 
-    // 6. Pisahkan ke 2 Prioritas:
-    // Prioritas 1: Link preset langsung (alight.link, alightcreative, drive, mediafire, sfile)
-    // Prioritas 2: Ajakan join saluran / join sl (WhatsApp Channel, Telegram, Link Bio)
-    const directPresets = allItems.filter((item) => item.priority === 'preset_link');
+    // =========================================================================
+    // STRATEGI PENCARIAN CERDAS (DUA TAHAP):
+    // Tahap 1: Cek apakah sudah ada link preset langsung (alight.link / XML)
+    // Tahap 2: Jika BELUM ketemu, lakukan pencarian alternatif:
+    //          A) Deep-scan ke video YouTube yang dicantumkan kreator di TikTok
+    //          B) Highlight saluran WhatsApp / Telegram / Link Bio kreator
+    // =========================================================================
+    let directPresets = allItems.filter((item) => item.priority === 'preset_link');
+
+    // Jika belum ada link preset langsung di TikTok, periksa video YouTube rujukan kreator
+    if (directPresets.length === 0 && candidateYouTubeUrls.length > 0 && this.youTubeGateway && platform === 'tiktok') {
+      const uniqueYtUrls = Array.from(new Set(candidateYouTubeUrls));
+      for (const ytUrl of uniqueYtUrls.slice(0, 2)) {
+        try {
+          const ytData = await this.youTubeGateway.fetchVideoAndComments(ytUrl);
+          if (ytData.metadata?.description) {
+            const ytDescItems = this.extractPresetsFromText(
+              ytData.metadata.description,
+              'description',
+              ytData.metadata.author?.username || 'Kreator YouTube',
+              true
+            );
+            ytDescItems.forEach((item) => {
+              if (item.priority === 'preset_link') {
+                item.label = `Preset Alight (via YouTube Kreator)`;
+                item.context = `Ditemukan dari rujukan YouTube kreator: ${ytUrl}`;
+                addItem(item);
+              }
+            });
+          }
+
+          for (const ytComment of ytData.comments) {
+            if (!ytComment.text) continue;
+            const ytCommentItems = this.extractPresetsFromText(
+              ytComment.text,
+              'comment',
+              ytComment.author?.username || 'Kreator YouTube',
+              Boolean(ytComment.isCreator)
+            );
+            ytCommentItems.forEach((item) => {
+              if (item.priority === 'preset_link') {
+                item.label = `Preset Alight (via YouTube Kreator)`;
+                item.context = `Ditemukan dari komentar YouTube kreator: ${ytUrl}`;
+                addItem(item);
+              }
+            });
+          }
+        } catch {
+          // Abaikan jika penelusuran video YouTube rujukan gagal
+        }
+      }
+
+      // Evaluasi ulang directPresets setelah deep scan YouTube
+      directPresets = allItems.filter((item) => item.priority === 'preset_link');
+    }
+
     const channelInvites = allItems.filter((item) => item.priority === 'join_saluran');
 
-    // Urutkan: Prioritas 1 di atas, lalu Prioritas 2 di bawahnya
+    // Urutkan: Prioritas 1 di atas, lalu Prioritas 2 (Alternatif) di bawahnya
     const presets = [...directPresets, ...channelInvites];
 
     // Susun format respon teks (untuk WhatsApp & Markdown)
@@ -162,20 +238,79 @@ export class FindAlightPresetUseCase {
   }
 
   /**
+   * Pembersih Teks Anti-Obfuskasi Cerdas
+   * Mengembalikan teks URL asli jika kreator sengaja menyelipkan emoji (misal channel😁😁/xxx)
+   * atau memisah link dengan spasi / kata 'titik' / 'dot'.
+   */
+  public normalizeObfuscatedText(text: string): string {
+    if (!text) return '';
+    let str = text;
+
+    // 1. Ganti pola (titik), (dot), [dot], [titik] dengan tanda titik '.'
+    str = str.replace(/\s*[\(\[\{]?(?:titik|dot)[\)\]\}]?\s*/gi, '.');
+
+    // 2. Bersihkan karakter emoji dari URL atau link yang disisipi emot
+    // Contoh di screenshot pengguna: https://whatsapp.com/channel😁😁/0029Vb83UYeEquiWEUOQmG24
+    str = str.replace(
+      /(?:https?:\/\/)?(?:whatsapp\.com\/channel|chat\.whatsapp\.com|alight\.link|alightcreative\.com|drive\.google\.com|mediafire\.com|sfile\.mobi|sfile\.co|t\.me|telegram\.me|youtu\.be|youtube\.com)[^\s]*/gi,
+      (match) => {
+        return match.replace(
+          /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1FA70}-\u{1FAFF}\u{200d}\u{FE0F}]/gu,
+          ''
+        );
+      }
+    );
+
+    // 3. Normalisasi spasi di sekeliling protocol dan domain populer yang sengaja dipisah kreator
+    str = str.replace(/https?\s*:\s*\/\s*\/\s*/gi, 'https://');
+    str = str.replace(/alight\s*\.\s*link\s*\/\s*/gi, 'alight.link/');
+    str = str.replace(/alightcreative\s*\.\s*com\s*\/\s*/gi, 'alightcreative.com/');
+    str = str.replace(/mediafire\s*\.\s*com\s*\/\s*/gi, 'mediafire.com/');
+    str = str.replace(/sfile\s*\.\s*(?:co|mobi)\s*\/\s*/gi, 'sfile.mobi/');
+    str = str.replace(/drive\s*\.\s*google\s*\.\s*com\s*\/\s*/gi, 'drive.google.com/');
+    str = str.replace(/whatsapp\s*\.\s*com\s*\/\s*channel\s*\/\s*/gi, 'whatsapp.com/channel/');
+    str = str.replace(/chat\s*\.\s*whatsapp\s*\.\s*com\s*\/\s*/gi, 'chat.whatsapp.com/');
+    str = str.replace(/youtu\s*\.\s*be\s*\/\s*/gi, 'youtu.be/');
+    str = str.replace(/youtube\s*\.\s*com\s*\/\s*/gi, 'youtube.com/');
+    str = str.replace(/t\s*\.\s*me\s*\/\s*/gi, 't.me/');
+
+    return str;
+  }
+
+  /**
+   * Ekstrak URL YouTube yang mungkin dirujuk oleh kreator di dalam teks
+   */
+  public extractYouTubeLinksFromText(rawText: string): string[] {
+    if (!rawText) return [];
+    const text = this.normalizeObfuscatedText(rawText);
+    const ytRegex = /(?:https?:\/\/)?(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/|live\/)|youtu\.be\/)([a-zA-Z0-9_\-]{11})/gi;
+    const matches = text.match(ytRegex);
+    if (!matches) return [];
+    return matches.map((m) => {
+      let clean = m.replace(/[\.\,\)\]\>\'\"\;\:\*\_\~]+$/, '');
+      if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
+        clean = 'https://' + clean;
+      }
+      return clean;
+    });
+  }
+
+  /**
    * Ekstrak seluruh link preset dan ajakan join saluran dari potongan teks
    * Menerapkan 2 Tingkat Prioritas:
    * 1. Prioritas 1: Link Langsung Alight Motion, Google Drive, Mediafire, Sfile, Shortlink
-   * 2. Prioritas 2: Ajakan "Join Saluran" / "Join SL", Saluran WhatsApp, Telegram, Link Bio
+   * 2. Prioritas 2 (Alternatif): Saluran WhatsApp, Telegram, Link Bio
    */
   public extractPresetsFromText(
-    text: string,
+    rawText: string,
     source: PresetSource,
     author: string,
     isCreator: boolean
   ): PresetItem[] {
     const results: PresetItem[] = [];
-    if (!text) return results;
+    if (!rawText) return results;
 
+    const text = this.normalizeObfuscatedText(rawText);
     const seenUrlsInText = new Set<string>();
 
     // ==========================================

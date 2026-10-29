@@ -17,8 +17,6 @@ interface CommentInputProps {
   }) => Promise<boolean>;
 }
 
-const QUICK_EMOJIS = ["👍", "❤️", "🔥", "😂", "✨", "🙏", "🥺", "👏"];
-
 export function CommentInput({
   replyTarget,
   onCancelReply,
@@ -159,21 +157,15 @@ export function CommentInput({
 
   const handleInsertEmoji = (emoji: string) => {
     setContent((prev) => prev + emoji);
-    const activeTextarea = isMobileModalOpen
-      ? mobileTextareaRef.current
-      : desktopTextareaRef.current;
-    if (activeTextarea) {
-      activeTextarea.focus();
+    if (!isMobileModalOpen && desktopTextareaRef.current) {
+      desktopTextareaRef.current.focus();
     }
   };
 
   const handleBackspaceEmoji = () => {
     setContent((prev) => Array.from(prev).slice(0, -1).join(""));
-    const activeTextarea = isMobileModalOpen
-      ? mobileTextareaRef.current
-      : desktopTextareaRef.current;
-    if (activeTextarea) {
-      activeTextarea.focus();
+    if (!isMobileModalOpen && desktopTextareaRef.current) {
+      desktopTextareaRef.current.focus();
     }
   };
 
@@ -416,17 +408,6 @@ export function CommentInput({
 
                   {/* Modal Body (Scrollable if needed) */}
                   <div className="p-3.5 space-y-2.5 overflow-y-auto overscroll-contain relative">
-                    {/* Full Emoji Picker Popup inside mobile modal */}
-                    <AnimatePresence>
-                      {showEmoji && (
-                        <EmojiPicker
-                          onSelectEmoji={handleInsertEmoji}
-                          onBackspace={handleBackspaceEmoji}
-                          onClose={() => setShowEmoji(false)}
-                        />
-                      )}
-                    </AnimatePresence>
-
                     {/* Reply target banner */}
                     {replyTarget && (
                       <div className="flex items-center justify-between px-3 py-1.5 bg-[#00e599]/10 border border-[#00e599]/25 rounded-xl text-xs">
@@ -482,8 +463,8 @@ export function CommentInput({
                       </label>
                     </div>
 
-                    {/* Textarea Container */}
-                    <div className="bg-[#141b2b] rounded-2xl p-3 border border-gray-800 focus-within:border-[#00e599]/60 transition">
+                    {/* Textarea Container with embedded Emoji Trigger & Send Button */}
+                    <div className="bg-[#141b2b] rounded-2xl p-3 border border-gray-800 focus-within:border-[#00e599]/60 transition flex flex-col justify-between min-h-[115px]">
                       <textarea
                         ref={mobileTextareaRef}
                         rows={3}
@@ -495,69 +476,60 @@ export function CommentInput({
                             : "Tulis komentar kamu di sini..."
                         }
                         maxLength={1000}
-                        className="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full resize-none leading-relaxed block no-scrollbar"
+                        className="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full resize-none leading-relaxed block no-scrollbar flex-1"
                       />
-                      <div className="flex items-center justify-between pt-2 border-t border-gray-800/60 mt-1 text-[10px] text-gray-500">
-                        <span>Maks. 1000 karakter</span>
-                        <span>{content.length}/1000</span>
-                      </div>
-                    </div>
 
-                    {/* Quick Emojis Row */}
-                    <div className="flex items-center justify-between gap-1 overflow-x-auto no-scrollbar py-0.5">
-                      <div className="flex items-center gap-1.5">
-                        {QUICK_EMOJIS.map((emoji) => (
+                      {/* Embedded Inner Action Toolbar */}
+                      <div className="flex items-center justify-between pt-2.5 border-t border-gray-800/60 mt-2">
+                        <div className="flex items-center space-x-2">
+                          {/* Emoji Trigger Button */}
                           <button
-                            key={emoji}
                             type="button"
-                            onClick={() => handleInsertEmoji(emoji)}
-                            className="w-7 h-7 rounded-lg bg-[#141b2b] hover:bg-[#1f2b42] active:scale-90 transition flex items-center justify-center text-xs cursor-pointer shrink-0"
+                            onClick={() => setShowEmoji((prev) => !prev)}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer ${
+                              showEmoji
+                                ? "bg-[#00e599]/20 text-[#00e599] border border-[#00e599]/40 shadow-sm shadow-[#00e599]/20"
+                                : "bg-[#1f2b42] text-gray-400 hover:text-white"
+                            }`}
+                            title="Pilih emoji"
                           >
-                            {emoji}
+                            <i className="fa-regular fa-face-smile text-base"></i>
                           </button>
-                        ))}
+
+                          {/* Character counter */}
+                          <span className="text-[10px] text-gray-500 font-medium select-none">
+                            {content.length}/1000
+                          </span>
+                        </div>
+
+                        {/* Embedded Send Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleSubmit()}
+                          disabled={submitting || !content.trim()}
+                          className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#00e599] to-[#00b377] text-gray-950 font-bold flex items-center justify-center transition shadow-md shadow-[#00e599]/25 hover:shadow-[#00e599]/40 active:scale-95 disabled:opacity-30 disabled:grayscale cursor-pointer shrink-0"
+                          title="Kirim Komentar"
+                        >
+                          {submitting ? (
+                            <i className="fa-solid fa-spinner fa-spin text-xs"></i>
+                          ) : (
+                            <i className="fa-solid fa-arrow-up text-xs"></i>
+                          )}
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => setShowEmoji((prev) => !prev)}
-                        className="h-7 px-2 rounded-lg bg-[#141b2b] hover:bg-[#1f2b42] text-gray-400 hover:text-[#00e599] active:scale-95 transition flex items-center space-x-1 text-[11px] shrink-0 cursor-pointer"
-                      >
-                        <i className="fa-regular fa-face-smile"></i>
-                        <span>Lainnya</span>
-                      </button>
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex items-center gap-2 pt-1 pb-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsMobileModalOpen(false);
-                          setShowEmoji(false);
-                        }}
-                        className="flex-1 py-2.5 rounded-xl bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-semibold text-xs transition cursor-pointer active:scale-98"
-                      >
-                        Batal
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleSubmit()}
-                        disabled={submitting || !content.trim()}
-                        className="flex-[2] py-2.5 rounded-xl bg-gradient-to-r from-[#00e599] to-[#00b377] text-gray-950 font-bold text-xs transition shadow-lg shadow-[#00e599]/25 hover:shadow-[#00e599]/40 cursor-pointer active:scale-98 disabled:opacity-40 flex items-center justify-center space-x-2"
-                      >
-                        {submitting ? (
-                          <>
-                            <i className="fa-solid fa-spinner fa-spin text-xs"></i>
-                            <span>Mengirim...</span>
-                          </>
-                        ) : (
-                          <>
-                            <span>Kirim Komentar</span>
-                            <i className="fa-solid fa-arrow-up text-xs"></i>
-                          </>
-                        )}
-                      </button>
-                    </div>
+                    {/* Emoji Picker Popup (toggled inside modal) */}
+                    <AnimatePresence>
+                      {showEmoji && (
+                        <EmojiPicker
+                          onSelectEmoji={handleInsertEmoji}
+                          onBackspace={handleBackspaceEmoji}
+                          onClose={() => setShowEmoji(false)}
+                          className="relative inset-x-0 w-full bg-[#131927] border border-gray-700/80 rounded-2xl shadow-xl p-3 z-[60] flex flex-col max-h-60 select-none"
+                        />
+                      )}
+                    </AnimatePresence>
                   </div>
                 </motion.div>
               </>

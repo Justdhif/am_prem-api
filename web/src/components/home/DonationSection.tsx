@@ -54,36 +54,53 @@ export function DonationSection() {
 
   return (
     <>
-      {/* ── BANNER / TRIGGER CARD PADA HALAMAN BERANDA ── */}
+      {/* ── BANNER MODERN DONASI (PALING BAWAH) ── */}
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-40px" }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#121826] via-[#151c2d] to-[#121826] border border-gray-800/90 hover:border-[#00e599]/30 transition-all shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 text-left"
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-gray-800/80 bg-gradient-to-r from-[#0d121f] via-[#12192b] to-[#0d121f] p-5 sm:p-7 shadow-2xl text-left"
       >
-        <div className="flex items-center space-x-3.5 min-w-0 flex-1">
-          <div className="w-10 h-10 rounded-xl bg-[#00e599]/15 text-[#00e599] flex items-center justify-center text-lg shrink-0 border border-[#00e599]/30">
-            <i className="fa-solid fa-heart text-rose-400 animate-pulse"></i>
-          </div>
-          <div className="min-w-0 space-y-0.5">
-            <h4 className="text-sm font-bold text-white font-piximisa tracking-wide">
-              Dukungan Donasi &amp; Server
-            </h4>
-            <p className="text-xs text-gray-400 truncate sm:whitespace-normal">
-              Suka dengan web ini? Berikan donasi sukarela untuk mendukung operasional server.
-            </p>
-          </div>
-        </div>
+        {/* Subtle Ambient Decorative Glows */}
+        <div className="absolute -top-12 -right-12 w-48 h-48 bg-[#00e599]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <button
-          type="button"
-          onClick={() => setIsOpen(true)}
-          className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs transition flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 cursor-pointer shrink-0"
-        >
-          <i className="fa-solid fa-qrcode text-xs"></i>
-          <span>Buka QR Donasi</span>
-        </button>
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6">
+          {/* Left Column: Icon + Text Content */}
+          <div className="flex items-start sm:items-center space-x-3.5 sm:space-x-4 min-w-0 flex-1">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#00e599]/20 to-[#00b377]/10 border border-[#00e599]/30 text-[#00e599] flex items-center justify-center text-lg sm:text-xl shrink-0 shadow-[0_0_20px_rgba(0,229,153,0.15)]">
+              <i className="fa-solid fa-heart text-rose-400 animate-pulse"></i>
+            </div>
+
+            <div className="min-w-0 space-y-1">
+              <div className="flex items-center space-x-2">
+                <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md bg-[#00e599]/10 text-[#00e599] border border-[#00e599]/25 text-[10px] font-bold tracking-wider uppercase">
+                  <span>Support &amp; Community</span>
+                </span>
+              </div>
+              <h4 className="text-sm sm:text-base md:text-lg font-bold text-white font-piximisa tracking-wide">
+                Dukungan Donasi &amp; Server
+              </h4>
+              <p className="text-xs sm:text-sm text-gray-300/90 leading-relaxed max-w-xl">
+                Suka dengan web ini? Dukung kelangsungan server &amp; update fitur Alight Motion Premium melalui donasi sukarela via QRIS resmi.
+              </p>
+            </div>
+          </div>
+
+          {/* Right Column: CTA Button */}
+          <motion.button
+            type="button"
+            onClick={() => setIsOpen(true)}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="w-full md:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-[#00e599] to-[#00c985] hover:from-[#1affaa] hover:to-[#00e599] text-gray-950 font-bold text-xs sm:text-sm transition-all shadow-[0_0_25px_rgba(0,229,153,0.3)] hover:shadow-[0_0_35px_rgba(0,229,153,0.5)] flex items-center justify-center space-x-2 shrink-0 cursor-pointer active:scale-95 group"
+          >
+            <i className="fa-solid fa-qrcode text-sm transition-transform duration-300 group-hover:rotate-6"></i>
+            <span>Buka QR Donasi</span>
+            <i className="fa-solid fa-arrow-right text-[11px] opacity-75 group-hover:translate-x-0.5 transition-transform duration-300"></i>
+          </motion.button>
+        </div>
       </motion.div>
 
       {/* ── BOTTOM SHEET MODAL (SLIDE DARI BAWAH) ── */}

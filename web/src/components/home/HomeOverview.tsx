@@ -91,10 +91,7 @@ export function HomeOverview() {
         </div>
       </motion.section>
 
-      {/* 2. SECTION DONASI & DUKUNGAN KREATOR */}
-      <DonationSection />
-
-      {/* 3. FAQ SECTION (Overview Pertanyaan Umum) */}
+      {/* 2. FAQ SECTION (Overview Pertanyaan Umum) */}
       <motion.section
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -131,6 +128,9 @@ export function HomeOverview() {
           ))}
         </div>
       </motion.section>
+
+      {/* 3. SECTION DONASI & DUKUNGAN KREATOR (Paling Bawah) */}
+      <DonationSection />
     </div>
   );
 }

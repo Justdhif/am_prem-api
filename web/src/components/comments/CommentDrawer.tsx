@@ -133,11 +133,11 @@ export function CommentDrawer() {
           onClick={() => setIsOpen(true)}
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.94 }}
-          className="relative group p-3.5 bg-gradient-to-tr from-[#00e599] to-[#00b377] text-gray-950 rounded-full shadow-[0_0_25px_rgba(0,229,153,0.45)] hover:shadow-[0_0_35px_rgba(0,229,153,0.7)] transition-shadow duration-300 flex items-center justify-center cursor-pointer border border-[#00e599]/40"
+          className="relative group w-12 h-12 sm:w-[52px] sm:h-[52px] aspect-square shrink-0 bg-gradient-to-tr from-[#00e599] to-[#00b377] text-gray-950 rounded-full shadow-[0_0_25px_rgba(0,229,153,0.45)] hover:shadow-[0_0_35px_rgba(0,229,153,0.7)] transition-shadow duration-300 flex items-center justify-center cursor-pointer border border-[#00e599]/40"
         >
-          <i className="fa-solid fa-comments text-xl"></i>
+          <i className="fa-solid fa-comments text-lg sm:text-xl flex items-center justify-center leading-none"></i>
           {totalComments > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white font-extrabold text-[10px] min-w-5 h-5 rounded-full px-1 flex items-center justify-center border-2 border-[#090d16] shadow-sm">
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white font-extrabold text-[10px] min-w-5 h-5 rounded-full px-1 flex items-center justify-center border-2 border-[#090d16] shadow-sm select-none">
               {totalComments > 99 ? "99+" : totalComments}
             </span>
           )}

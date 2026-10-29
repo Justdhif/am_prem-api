@@ -262,8 +262,8 @@ export function CustomVideoPlayer({
           setIsPlaying(false);
           setShowControls(true);
         }}
-        onClick={togglePlay}
-        className="w-full h-auto max-h-[580px] object-contain block cursor-pointer"
+        onClick={triggerActivity}
+        className="w-full h-auto max-h-[580px] object-contain block cursor-default"
       />
 
       {/* Buffering Indicator */}
@@ -273,23 +273,15 @@ export function CustomVideoPlayer({
         </div>
       )}
 
-      {/* Big Play / Pause Overlay Center Button (saat hover atau sedang paused) */}
-      {(!isPlaying || showControls) && (
+      {/* Big Play Overlay Center Button (hanya tampil saat video dijeda) */}
+      {!isPlaying && (
         <button
           type="button"
           onClick={togglePlay}
-          aria-label={isPlaying ? "Jeda video" : "Putar video"}
-          className={cn(
-            "absolute inset-0 m-auto w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all duration-200 z-10 active:scale-90 cursor-pointer shadow-2xl",
-            isPlaying ? "opacity-0 group-hover:opacity-100" : "opacity-100 scale-100"
-          )}
+          aria-label="Putar video"
+          className="absolute inset-0 m-auto w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all duration-200 z-10 active:scale-90 cursor-pointer shadow-2xl"
         >
-          <i
-            className={cn(
-              "text-xl sm:text-2xl transition-transform",
-              isPlaying ? "fa-solid fa-pause" : "fa-solid fa-play ml-1 text-[#00e599]"
-            )}
-          ></i>
+          <i className="fa-solid fa-play ml-1 text-[#00e599] text-xl sm:text-2xl"></i>
         </button>
       )}
 

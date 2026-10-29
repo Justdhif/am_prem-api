@@ -104,7 +104,7 @@ export const apiClient = {
   },
 
   async getComments(page = 1): Promise<CommentsResponse> {
-    const res = await fetch(`${API_BASE_URL}/api/comments?page=${page}`, {
+    const res = await fetch(`/api/comments?page=${page}`, {
       cache: "no-store",
     });
     if (!res.ok) throw new Error("Gagal memuat komentar");
@@ -117,7 +117,7 @@ export const apiClient = {
     content: string;
     parentId?: string;
   }) {
-    const res = await fetch(`${API_BASE_URL}/api/comments`, {
+    const res = await fetch(`/api/comments`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

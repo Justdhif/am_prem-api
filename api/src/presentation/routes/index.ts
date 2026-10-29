@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import alightMotionRoutes from './alightMotion.routes.js';
-import commentRoutes from './comment.routes.js';
 import { alightMotionController } from '../controllers/alightMotion.controller.js';
 
 const router = Router();
@@ -16,8 +15,7 @@ router.get('/health', (_req, res) => {
 // Alias langsung untuk stats di root /api/stats
 router.get('/stats', alightMotionController.getStats.bind(alightMotionController));
 
+// Rute Alight Motion Premium
 router.use('/am', alightMotionRoutes);
-router.use('/comments', commentRoutes);
-router.use('/am/comments', commentRoutes);
 
 export default router;

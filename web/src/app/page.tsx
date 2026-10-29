@@ -18,24 +18,27 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="space-y-6 sm:space-y-8">
-      {/* Breadcrumb Navigation */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbPage>
-              <i className="fa-solid fa-house text-[10px]"></i>
-              <span>Beranda</span>
-            </BreadcrumbPage>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <span className="text-gray-400 text-xs font-medium">Overview &amp; Layanan</span>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      {/* Header & Breadcrumb Container (Konsisten dengan Docs, Aktivasi, & Preset space-y-4) */}
+      <div className="space-y-4 pt-0">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbPage>
+                <i className="fa-solid fa-house text-[10px]"></i>
+                <span>Beranda</span>
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <span className="text-gray-400 text-xs font-medium">Overview &amp; Layanan</span>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
 
-      {/* Hero Overview */}
-      <HeroStats />
+        {/* Hero Overview */}
+        <HeroStats />
+      </div>
 
       {/* Conceptual 2-step activation workflow overview */}
       <StepsCard />

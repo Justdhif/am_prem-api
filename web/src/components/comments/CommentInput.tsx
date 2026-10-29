@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { EmojiPicker } from "./EmojiPicker";
@@ -16,6 +17,8 @@ interface CommentInputProps {
   }) => Promise<boolean>;
 }
 
+const QUICK_EMOJIS = ["👍", "❤️", "🔥", "😂", "✨", "🙏", "🥺", "👏"];
+
 export function CommentInput({
   replyTarget,
   onCancelReply,
@@ -26,7 +29,76 @@ export function CommentInput({
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  const desktopTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const mobileTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Mount check for client portal
+  useEffect(() => {
+    setHasMounted(true);
+    try {
+      const savedName = localStorage.getItem("am_comment_name");
+      if (savedName) setName(savedName);
+      const savedAnon = localStorage.getItem("am_comment_anon");
+      if (savedAnon === "true") setIsAnonymous(true);
+    } catch {
+      // LocalStorage access fallback
+    }
+  }, []);
+
+  // Automatically open mobile modal when replying on mobile screen
+  useEffect(() => {
+    if (replyTarget && typeof window !== "undefined" && window.innerWidth < 640) {
+      setIsMobileModalOpen(true);
+    }
+  }, [replyTarget]);
+
+  // Visual Viewport tracking for mobile virtual keyboards (iOS & Android)
+  useEffect(() => {
+    if (!isMobileModalOpen || typeof window === "undefined") {
+      setKeyboardHeight(0);
+      return;
+    }
+
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const handleResize = () => {
+      const windowH = window.innerHeight;
+      const currentH = vv.height;
+      const offsetTop = vv.offsetTop;
+      const diff = windowH - (currentH + offsetTop);
+
+      // Mobile keyboard is typically > 60px
+      if (diff > 60) {
+        setKeyboardHeight(diff);
+      } else {
+        setKeyboardHeight(0);
+      }
+    };
+
+    handleResize();
+    vv.addEventListener("resize", handleResize);
+    vv.addEventListener("scroll", handleResize);
+
+    return () => {
+      vv.removeEventListener("resize", handleResize);
+      vv.removeEventListener("scroll", handleResize);
+    };
+  }, [isMobileModalOpen]);
+
+  // Auto-focus mobile textarea when modal opens
+  useEffect(() => {
+    if (isMobileModalOpen) {
+      const timer = setTimeout(() => {
+        mobileTextareaRef.current?.focus();
+      }, 220);
+      return () => clearTimeout(timer);
+    }
+  }, [isMobileModalOpen]);
 
   const displayName = isAnonymous ? "Anonim" : name.trim() || "User";
   const avatarUrl = isAnonymous
@@ -35,9 +107,19 @@ export function CommentInput({
         displayName
       )}&background=00e599&color=0d121f&bold=true`;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!content.trim() || submitting) return;
+
+    // Save author name preference
+    try {
+      if (!isAnonymous && name.trim()) {
+        localStorage.setItem("am_comment_name", name.trim());
+      }
+      localStorage.setItem("am_comment_anon", isAnonymous ? "true" : "false");
+    } catch {
+      // ignore
+    }
 
     setSubmitting(true);
     const success = await onSubmit({
@@ -50,20 +132,25 @@ export function CommentInput({
     if (success) {
       setContent("");
       setShowEmoji(false);
-      if (textareaRef.current) {
-        textareaRef.current.style.height = "auto";
+      setIsMobileModalOpen(false);
+      if (desktopTextareaRef.current) {
+        desktopTextareaRef.current.style.height = "auto";
       }
     }
     setSubmitting(false);
   };
 
-  const handleTextareaInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleDesktopTextareaInput = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setContent(e.target.value);
     e.target.style.height = "auto";
     e.target.style.height = `${Math.min(e.target.scrollHeight, 112)}px`;
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleDesktopKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>
+  ) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
@@ -72,129 +159,412 @@ export function CommentInput({
 
   const handleInsertEmoji = (emoji: string) => {
     setContent((prev) => prev + emoji);
-    if (textareaRef.current) {
-      textareaRef.current.focus();
+    const activeTextarea = isMobileModalOpen
+      ? mobileTextareaRef.current
+      : desktopTextareaRef.current;
+    if (activeTextarea) {
+      activeTextarea.focus();
     }
   };
 
   const handleBackspaceEmoji = () => {
     setContent((prev) => Array.from(prev).slice(0, -1).join(""));
-    if (textareaRef.current) {
-      textareaRef.current.focus();
+    const activeTextarea = isMobileModalOpen
+      ? mobileTextareaRef.current
+      : desktopTextareaRef.current;
+    if (activeTextarea) {
+      activeTextarea.focus();
     }
   };
 
   return (
-    <div className="bg-[#0d121f] px-3 pb-3 pt-2 shrink-0 relative border-t border-gray-800/80">
-      {/* Emoji Picker Popup */}
-      <AnimatePresence>
-        {showEmoji && (
-          <EmojiPicker
-            onSelectEmoji={handleInsertEmoji}
-            onBackspace={handleBackspaceEmoji}
-            onClose={() => setShowEmoji(false)}
-          />
-        )}
-      </AnimatePresence>
+    <>
+      {/* ─────────────────────────────────────────────────────────────
+          1. DESKTOP VIEW (sm:block, hidden on mobile)
+          Normal inline comment composer inside CommentDrawer
+         ───────────────────────────────────────────────────────────── */}
+      <div className="hidden sm:block bg-[#0d121f] px-3 pb-3 pt-2 shrink-0 relative border-t border-gray-800/80">
+        {/* Emoji Picker Popup */}
+        <AnimatePresence>
+          {showEmoji && (
+            <EmojiPicker
+              onSelectEmoji={handleInsertEmoji}
+              onBackspace={handleBackspaceEmoji}
+              onClose={() => setShowEmoji(false)}
+            />
+          )}
+        </AnimatePresence>
 
-      {/* Reply Banner */}
-      <AnimatePresence>
-        {replyTarget && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="flex items-center justify-between pb-2 text-xs text-gray-400 overflow-hidden"
+        {/* Reply Banner */}
+        <AnimatePresence>
+          {replyTarget && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="flex items-center justify-between pb-2 text-xs text-gray-400 overflow-hidden"
+            >
+              <div className="flex items-center space-x-1.5">
+                <i className="fa-solid fa-reply text-[10px] text-[#00e599]"></i>
+                <span>
+                  Membalas <strong className="text-[#00e599]">@{replyTarget.name}</strong>
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={onCancelReply}
+                className="text-gray-500 hover:text-white text-xs cursor-pointer flex items-center"
+              >
+                <i className="fa-solid fa-xmark mr-1"></i>Batal
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Author Name & Anonymous Toggle */}
+        <div className="flex items-center justify-between gap-3 pb-2 text-xs border-b border-gray-800/60 mb-2.5">
+          <div className="flex items-center space-x-2 flex-1 min-w-0">
+            <div className="w-6 h-6 rounded-full overflow-hidden border border-gray-700/80 shrink-0">
+              <Image
+                src={avatarUrl}
+                alt="Avatar"
+                width={24}
+                height={24}
+                unoptimized
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <input
+              type="text"
+              value={isAnonymous ? "" : name}
+              disabled={isAnonymous}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={isAnonymous ? "Anonim" : "Nama kamu..."}
+              maxLength={50}
+              className="bg-transparent border-0 p-0 text-xs text-white placeholder-gray-500 focus:outline-none w-full disabled:opacity-50"
+            />
+          </div>
+
+          <label className="flex items-center space-x-1.5 cursor-pointer select-none shrink-0">
+            <input
+              type="checkbox"
+              checked={isAnonymous}
+              onChange={(e) => setIsAnonymous(e.target.checked)}
+              className="rounded bg-gray-800 border-gray-700 text-[#00e599] focus:ring-0 w-3.5 h-3.5 accent-[#00e599]"
+            />
+            <span className="text-[11px] text-gray-400">Anonim</span>
+          </label>
+        </div>
+
+        {/* Comment Form Input */}
+        <form onSubmit={handleSubmit} className="flex items-end space-x-2">
+          <div className="flex-1 bg-[#1a2234] rounded-2xl px-4 py-2 flex items-center border border-transparent focus-within:border-[#00e599]/60 transition min-h-[38px]">
+            <textarea
+              ref={desktopTextareaRef}
+              rows={1}
+              value={content}
+              onChange={handleDesktopTextareaInput}
+              onKeyDown={handleDesktopKeyDown}
+              placeholder="Tambahkan komentar..."
+              required
+              maxLength={1000}
+              className="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none w-full resize-none leading-relaxed max-h-28 overflow-y-auto block no-scrollbar"
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowEmoji((prev) => !prev)}
+            className="w-9 h-9 rounded-full bg-[#1a2234] hover:bg-gray-800 text-gray-400 hover:text-[#00e599] flex items-center justify-center transition shadow-md shrink-0 active:scale-95 mb-0.5 border border-transparent hover:border-gray-700 cursor-pointer"
+            title="Pilih emoji"
           >
-            <div className="flex items-center space-x-1.5">
+            <i className="fa-regular fa-face-smile text-lg"></i>
+          </button>
+
+          <button
+            type="submit"
+            disabled={submitting || !content.trim()}
+            className="w-9 h-9 rounded-full bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold flex items-center justify-center transition shadow-md shrink-0 active:scale-95 disabled:opacity-40 mb-0.5 cursor-pointer"
+          >
+            {submitting ? (
+              <i className="fa-solid fa-spinner fa-spin text-xs"></i>
+            ) : (
+              <i className="fa-solid fa-arrow-up text-sm"></i>
+            )}
+          </button>
+        </form>
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          2. MOBILE VIEW TRIGGER BAR (block sm:hidden)
+          Tapping this bar slides up the dedicated Bottom Sheet Modal
+         ───────────────────────────────────────────────────────────── */}
+      <div className="block sm:hidden bg-[#0d121f] px-3.5 py-2.5 border-t border-gray-800/80 shrink-0">
+        {replyTarget && (
+          <div className="flex items-center justify-between pb-2 text-xs text-gray-400">
+            <div className="flex items-center space-x-1.5 text-[11px] truncate">
               <i className="fa-solid fa-reply text-[10px] text-[#00e599]"></i>
-              <span>
+              <span className="truncate">
                 Membalas <strong className="text-[#00e599]">@{replyTarget.name}</strong>
               </span>
             </div>
             <button
               type="button"
               onClick={onCancelReply}
-              className="text-gray-500 hover:text-white text-xs cursor-pointer flex items-center"
+              className="text-gray-500 hover:text-white text-[11px] cursor-pointer flex items-center shrink-0 ml-2"
             >
               <i className="fa-solid fa-xmark mr-1"></i>Batal
             </button>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
 
-      {/* Author Name & Anonymous Toggle */}
-      <div className="flex items-center justify-between gap-3 pb-2 text-xs border-b border-gray-800/60 mb-2.5">
-        <div className="flex items-center space-x-2 flex-1 min-w-0">
-          <div className="w-6 h-6 rounded-full overflow-hidden border border-gray-700/80 shrink-0">
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => setIsMobileModalOpen(true)}
+          className="flex items-center space-x-2.5 bg-[#141b2b] hover:bg-[#1a2337] active:scale-[0.99] border border-gray-800 hover:border-gray-700 rounded-full px-3.5 py-2 cursor-pointer transition select-none"
+        >
+          <div className="w-7 h-7 rounded-full overflow-hidden border border-gray-700 shrink-0">
             <Image
               src={avatarUrl}
               alt="Avatar"
-              width={24}
-              height={24}
+              width={28}
+              height={28}
               unoptimized
               className="w-full h-full object-cover"
             />
           </div>
-          <input
-            type="text"
-            value={isAnonymous ? "" : name}
-            disabled={isAnonymous}
-            onChange={(e) => setName(e.target.value)}
-            placeholder={isAnonymous ? "Anonim" : "Nama kamu..."}
-            maxLength={50}
-            className="bg-transparent border-0 p-0 text-xs text-white placeholder-gray-500 focus:outline-none w-full disabled:opacity-50"
-          />
+          <span className="flex-1 text-xs text-gray-400 truncate">
+            {replyTarget
+              ? `Balas @${replyTarget.name}...`
+              : content.trim()
+              ? content
+              : "Tulis komentar..."}
+          </span>
+          <div className="flex items-center space-x-1.5 shrink-0">
+            <span className="w-7 h-7 rounded-full bg-[#1a2337] text-gray-400 flex items-center justify-center text-xs">
+              <i className="fa-regular fa-face-smile"></i>
+            </span>
+            <span className="w-7 h-7 rounded-full bg-[#00e599] text-gray-950 flex items-center justify-center font-bold text-xs shadow-sm shadow-[#00e599]/30">
+              <i className="fa-solid fa-arrow-up"></i>
+            </span>
+          </div>
         </div>
-
-        <label className="flex items-center space-x-1.5 cursor-pointer select-none shrink-0">
-          <input
-            type="checkbox"
-            checked={isAnonymous}
-            onChange={(e) => setIsAnonymous(e.target.checked)}
-            className="rounded bg-gray-800 border-gray-700 text-[#00e599] focus:ring-0 w-3.5 h-3.5 accent-[#00e599]"
-          />
-          <span className="text-[11px] text-gray-400">Anonim</span>
-        </label>
       </div>
 
-      {/* Comment Form Input */}
-      <form onSubmit={handleSubmit} className="flex items-end space-x-2">
-        <div className="flex-1 bg-[#1a2234] rounded-2xl px-4 py-2 flex items-center border border-transparent focus-within:border-[#00e599]/60 transition min-h-[38px]">
-          <textarea
-            ref={textareaRef}
-            rows={1}
-            value={content}
-            onChange={handleTextareaInput}
-            onKeyDown={handleKeyDown}
-            placeholder="Tambahkan komentar..."
-            required
-            maxLength={1000}
-            className="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none w-full resize-none leading-relaxed max-h-28 overflow-y-auto block no-scrollbar"
-          />
-        </div>
+      {/* ─────────────────────────────────────────────────────────────
+          3. MOBILE DEDICATED BOTTOM SHEET MODAL (Via Portal)
+          Adapts perfectly to virtual mobile keyboards without disrupting drawer
+         ───────────────────────────────────────────────────────────── */}
+      {hasMounted &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {isMobileModalOpen && (
+              <>
+                {/* Backdrop */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={() => {
+                    setIsMobileModalOpen(false);
+                    setShowEmoji(false);
+                  }}
+                  className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[200] touch-none"
+                />
 
-        <button
-          type="button"
-          onClick={() => setShowEmoji((prev) => !prev)}
-          className="w-9 h-9 rounded-full bg-[#1a2234] hover:bg-gray-800 text-gray-400 hover:text-[#00e599] flex items-center justify-center transition shadow-md shrink-0 active:scale-95 mb-0.5 border border-transparent hover:border-gray-700 cursor-pointer"
-          title="Pilih emoji"
-        >
-          <i className="fa-regular fa-face-smile text-lg"></i>
-        </button>
+                {/* Bottom Sheet Container */}
+                <motion.div
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  exit={{ y: "100%" }}
+                  transition={{ type: "spring", damping: 28, stiffness: 320 }}
+                  style={{
+                    bottom: keyboardHeight > 0 ? `${keyboardHeight}px` : "0px",
+                  }}
+                  className="fixed inset-x-0 z-[201] bg-[#0d121f] border-t border-gray-800 rounded-t-3xl shadow-[0_-12px_45px_rgba(0,0,0,0.85)] flex flex-col max-h-[88dvh] overflow-hidden transition-[bottom] duration-150 ease-out select-none"
+                >
+                  {/* Top Drag Handle Indicator */}
+                  <div className="pt-2 pb-1 flex justify-center">
+                    <div className="w-12 h-1 bg-gray-700/80 rounded-full" />
+                  </div>
 
-        <button
-          type="submit"
-          disabled={submitting || !content.trim()}
-          className="w-9 h-9 rounded-full bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold flex items-center justify-center transition shadow-md shrink-0 active:scale-95 disabled:opacity-40 mb-0.5 cursor-pointer"
-        >
-          {submitting ? (
-            <i className="fa-solid fa-spinner fa-spin text-xs"></i>
-          ) : (
-            <i className="fa-solid fa-arrow-up text-sm"></i>
-          )}
-        </button>
-      </form>
-    </div>
+                  {/* Modal Header */}
+                  <div className="px-4 py-2 border-b border-gray-800/70 flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-6 h-6 rounded-full bg-[#00e599]/15 border border-[#00e599]/30 flex items-center justify-center text-[#00e599] text-xs">
+                        <i className="fa-solid fa-comment-dots"></i>
+                      </div>
+                      <span className="text-xs font-bold text-gray-200">
+                        {replyTarget ? `Balas Komentar` : `Tulis Komentar`}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMobileModalOpen(false);
+                        setShowEmoji(false);
+                      }}
+                      className="w-7 h-7 rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white flex items-center justify-center text-xs transition cursor-pointer active:scale-95"
+                      aria-label="Tutup"
+                    >
+                      <i className="fa-solid fa-xmark"></i>
+                    </button>
+                  </div>
+
+                  {/* Modal Body (Scrollable if needed) */}
+                  <div className="p-3.5 space-y-2.5 overflow-y-auto overscroll-contain relative">
+                    {/* Full Emoji Picker Popup inside mobile modal */}
+                    <AnimatePresence>
+                      {showEmoji && (
+                        <EmojiPicker
+                          onSelectEmoji={handleInsertEmoji}
+                          onBackspace={handleBackspaceEmoji}
+                          onClose={() => setShowEmoji(false)}
+                        />
+                      )}
+                    </AnimatePresence>
+
+                    {/* Reply target banner */}
+                    {replyTarget && (
+                      <div className="flex items-center justify-between px-3 py-1.5 bg-[#00e599]/10 border border-[#00e599]/25 rounded-xl text-xs">
+                        <div className="flex items-center space-x-1.5 text-[#00e599] font-medium truncate">
+                          <i className="fa-solid fa-reply text-[10px]"></i>
+                          <span className="truncate">
+                            Membalas <strong>@{replyTarget.name}</strong>
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={onCancelReply}
+                          className="text-gray-400 hover:text-white text-xs px-1.5 py-0.5 rounded cursor-pointer shrink-0 ml-2"
+                        >
+                          <i className="fa-solid fa-xmark mr-1"></i>Batal
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Author Name & Anonymous Switch Row */}
+                    <div className="flex items-center justify-between gap-2 px-3 py-2 bg-[#141b2b] rounded-xl border border-gray-800">
+                      <div className="flex items-center space-x-2 flex-1 min-w-0">
+                        <div className="w-6 h-6 rounded-full overflow-hidden border border-gray-700 shrink-0">
+                          <Image
+                            src={avatarUrl}
+                            alt="Avatar"
+                            width={24}
+                            height={24}
+                            unoptimized
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <input
+                          type="text"
+                          value={isAnonymous ? "" : name}
+                          disabled={isAnonymous}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder={isAnonymous ? "Anonim" : "Nama kamu..."}
+                          maxLength={50}
+                          className="bg-transparent border-0 p-0 text-xs text-white placeholder-gray-500 focus:outline-none w-full disabled:opacity-50"
+                        />
+                      </div>
+                      <label className="flex items-center space-x-1.5 cursor-pointer select-none shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={isAnonymous}
+                          onChange={(e) => setIsAnonymous(e.target.checked)}
+                          className="rounded bg-gray-800 border-gray-700 text-[#00e599] focus:ring-0 w-3.5 h-3.5 accent-[#00e599]"
+                        />
+                        <span className="text-[11px] text-gray-400 font-medium">
+                          Anonim
+                        </span>
+                      </label>
+                    </div>
+
+                    {/* Textarea Container */}
+                    <div className="bg-[#141b2b] rounded-2xl p-3 border border-gray-800 focus-within:border-[#00e599]/60 transition">
+                      <textarea
+                        ref={mobileTextareaRef}
+                        rows={3}
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        placeholder={
+                          replyTarget
+                            ? `Tulis balasan untuk @${replyTarget.name}...`
+                            : "Tulis komentar kamu di sini..."
+                        }
+                        maxLength={1000}
+                        className="bg-transparent border-0 p-0 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none w-full resize-none leading-relaxed block no-scrollbar"
+                      />
+                      <div className="flex items-center justify-between pt-2 border-t border-gray-800/60 mt-1 text-[10px] text-gray-500">
+                        <span>Maks. 1000 karakter</span>
+                        <span>{content.length}/1000</span>
+                      </div>
+                    </div>
+
+                    {/* Quick Emojis Row */}
+                    <div className="flex items-center justify-between gap-1 overflow-x-auto no-scrollbar py-0.5">
+                      <div className="flex items-center gap-1.5">
+                        {QUICK_EMOJIS.map((emoji) => (
+                          <button
+                            key={emoji}
+                            type="button"
+                            onClick={() => handleInsertEmoji(emoji)}
+                            className="w-7 h-7 rounded-lg bg-[#141b2b] hover:bg-[#1f2b42] active:scale-90 transition flex items-center justify-center text-xs cursor-pointer shrink-0"
+                          >
+                            {emoji}
+                          </button>
+                        ))}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowEmoji((prev) => !prev)}
+                        className="h-7 px-2 rounded-lg bg-[#141b2b] hover:bg-[#1f2b42] text-gray-400 hover:text-[#00e599] active:scale-95 transition flex items-center space-x-1 text-[11px] shrink-0 cursor-pointer"
+                      >
+                        <i className="fa-regular fa-face-smile"></i>
+                        <span>Lainnya</span>
+                      </button>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-2 pt-1 pb-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsMobileModalOpen(false);
+                          setShowEmoji(false);
+                        }}
+                        className="flex-1 py-2.5 rounded-xl bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-semibold text-xs transition cursor-pointer active:scale-98"
+                      >
+                        Batal
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSubmit()}
+                        disabled={submitting || !content.trim()}
+                        className="flex-[2] py-2.5 rounded-xl bg-gradient-to-r from-[#00e599] to-[#00b377] text-gray-950 font-bold text-xs transition shadow-lg shadow-[#00e599]/25 hover:shadow-[#00e599]/40 cursor-pointer active:scale-98 disabled:opacity-40 flex items-center justify-center space-x-2"
+                      >
+                        {submitting ? (
+                          <>
+                            <i className="fa-solid fa-spinner fa-spin text-xs"></i>
+                            <span>Mengirim...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Kirim Komentar</span>
+                            <i className="fa-solid fa-arrow-up text-xs"></i>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
+    </>
   );
 }

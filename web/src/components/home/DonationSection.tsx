@@ -144,7 +144,7 @@ export function DonationSection() {
                   </div>
 
                   {/* Gambar QRIS Resmi */}
-                  <div className="p-3 rounded-2xl bg-[#080d16] border border-gray-800/90 shadow-inner flex flex-col items-center justify-center space-y-2">
+                  <div className="p-3 rounded-2xl bg-[#080d16] border border-gray-800/90 shadow-inner flex flex-col items-center justify-center">
                     <div className="relative w-full max-w-[270px] sm:max-w-[290px] aspect-[727/1024] rounded-xl overflow-hidden shadow-lg border border-gray-700/60 bg-white">
                       <Image
                         src="/images/qr_donasi.webp"
@@ -154,9 +154,6 @@ export function DonationSection() {
                         priority
                       />
                     </div>
-                    <span className="text-[10px] text-gray-400">
-                      Scan via GoPay, OVO, Dana, ShopeePay, BCA, atau Mobile Banking apa saja
-                    </span>
                   </div>
 
                   {/* Button Unduh QR */}

@@ -39,10 +39,6 @@ export default function AktivasiPage() {
 
       {/* Header Title */}
       <div className="space-y-1.5">
-        <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-[#00e599]/15 text-[#00e599] border border-[#00e599]/30 text-[11px] font-bold">
-          <i className="fa-solid fa-crown text-[10px]"></i>
-          <span>Layanan Mandiri Resmi</span>
-        </div>
         <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide font-piximisa">
           Aktivasi Alight Motion Premium 1 Tahun
         </h1>

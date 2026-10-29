@@ -1,18 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 
 export function DonationSection() {
-  const [copied, setCopied] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
 
-  const handleCopyInfo = () => {
-    navigator.clipboard.writeText("Dukung layanan Alight Motion Premium melalui Saweria / QRIS resmi: Justdhif");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  // Lock body scroll when modal sheet is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   const handleDownloadQR = () => {
     const a = document.createElement("a");
@@ -24,166 +35,125 @@ export function DonationSection() {
   };
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 18 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.45, ease: "easeOut" }}
-      className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#121826]/90 via-[#0e1422] to-[#0a0f1a] border border-gray-800/90 shadow-2xl relative overflow-hidden"
-    >
-      {/* Background Ambient Glow Accents */}
-      <div className="absolute top-0 right-0 w-80 h-80 bg-[#00e599]/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="relative z-10 space-y-6">
-        {/* Section Header */}
-        <div className="space-y-1.5 text-left">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#00e599]/10 text-[#00e599] border border-[#00e599]/30 text-xs font-bold">
-            <i className="fa-solid fa-heart text-xs text-rose-400 animate-pulse"></i>
-            <span>Dukungan Kreator &amp; Server</span>
+    <>
+      {/* ── BANNER / TRIGGER CARD PADA HALAMAN BERANDA ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#121826] via-[#151c2d] to-[#121826] border border-gray-800/90 hover:border-[#00e599]/30 transition-all shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 text-left"
+      >
+        <div className="flex items-center space-x-3.5 min-w-0 flex-1">
+          <div className="w-10 h-10 rounded-xl bg-[#00e599]/15 text-[#00e599] flex items-center justify-center text-lg shrink-0 border border-[#00e599]/30">
+            <i className="fa-solid fa-heart text-rose-400 animate-pulse"></i>
           </div>
-          <h2 className="text-lg sm:text-2xl font-black text-white tracking-wide font-piximisa flex items-center space-x-2">
-            <span>Donasi &amp; Dukung Layanan Ini</span>
-          </h2>
-          <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-2xl">
-            Layanan aktivasi Alight Motion Premium dan Preset Finder ini disediakan gratis untuk seluruh komunitas editor. Donasi sukarela Anda sangat berharga untuk pemeliharaan server, API, dan pengembangan fitur baru.
-          </p>
+          <div className="min-w-0 space-y-0.5">
+            <h4 className="text-sm font-bold text-white font-piximisa tracking-wide">
+              Dukungan Donasi &amp; Server
+            </h4>
+            <p className="text-xs text-gray-400 truncate sm:whitespace-normal">
+              Suka dengan web ini? Berikan donasi sukarela untuk mendukung operasional server.
+            </p>
+          </div>
         </div>
 
-        {/* Content Container: QR Card + Info & Methods */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-          {/* QR CODE CARD (Col 1 - 5) */}
-          <div className="lg:col-span-5 flex flex-col items-center">
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
-              className="relative p-5 sm:p-6 rounded-2xl bg-[#090d16]/90 border border-gray-800/90 shadow-[0_0_35px_rgba(0,0,0,0.6)] flex flex-col items-center text-center space-y-3.5 w-full max-w-xs group"
-            >
-              {/* Top Saweria Badge */}
-              <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#1b2538] border border-gray-700/80 text-[11px] font-semibold text-gray-200">
-                <span className="w-2 h-2 rounded-full bg-[#00e599] animate-pulse"></span>
-                <span>QRIS / Saweria Resmi</span>
-              </div>
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs transition flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 cursor-pointer shrink-0"
+        >
+          <i className="fa-solid fa-qrcode text-xs"></i>
+          <span>Buka QR Donasi</span>
+        </button>
+      </motion.div>
 
-              {/* QR Image Container with Subtle Ambient Glow */}
-              <div className="relative w-56 h-56 sm:w-60 sm:h-60 rounded-2xl overflow-hidden bg-[#0d121f]/95 border border-gray-800/80 p-3 flex items-center justify-center shadow-inner group-hover:border-[#00e599]/40 transition-colors duration-300">
-                <Image
-                  src="/images/qr_donasi.webp"
-                  alt="QR Code Donasi Saweria"
-                  width={240}
-                  height={240}
-                  className="w-full h-full object-contain filter drop-shadow-[0_0_12px_rgba(255,255,255,0.08)]"
-                  priority
+      {/* ── BOTTOM SHEET MODAL (SLIDE DARI BAWAH) ── */}
+      {hasMounted &&
+        createPortal(
+          <AnimatePresence>
+            {isOpen && (
+              <div className="fixed inset-0 z-[160] flex items-end justify-center">
+                {/* Backdrop Overlay */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  onClick={() => setIsOpen(false)}
+                  className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[160] touch-none cursor-pointer"
                 />
-              </div>
 
-              <div className="space-y-1">
-                <span className="text-[11px] text-[#00e599] font-bold tracking-wider uppercase block">
-                  Scan Bebas Semua Aplikasi
-                </span>
-                <p className="text-[10px] text-gray-400">
-                  QRIS kompatibel dengan GoPay, OVO, Dana, ShopeePay, LinkAja, BCA, Mandiri, BRI, &amp; Mobile Banking lainnya.
-                </p>
-              </div>
+                {/* Bottom Sheet Container */}
+                <motion.div
+                  role="dialog"
+                  aria-modal="true"
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  exit={{ y: "100%" }}
+                  transition={{ type: "spring", damping: 28, stiffness: 300 }}
+                  className="relative z-[165] w-full max-w-md bg-[#0d121f] border-t border-x border-gray-800/90 rounded-t-3xl shadow-[0_-12px_45px_rgba(0,0,0,0.85)] p-5 sm:p-6 text-center space-y-4 max-h-[90vh] overflow-y-auto"
+                >
+                  {/* Top Drag Handle */}
+                  <div className="w-12 h-1.5 rounded-full bg-gray-700/80 mx-auto -mt-1 cursor-grab" />
 
-              {/* Download QR Button */}
-              <button
-                type="button"
-                onClick={handleDownloadQR}
-                className="w-full py-2 px-3 rounded-xl bg-gray-800/80 hover:bg-gray-700 text-gray-200 text-xs font-semibold transition flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer border border-gray-700/60"
-              >
-                <i className="fa-solid fa-download text-[11px]"></i>
-                <span>Simpan Gambar QR</span>
-              </button>
-            </motion.div>
-          </div>
-
-          {/* RIGHT DETAIL & INSTRUCTIONS (Col 6 - 12) */}
-          <div className="lg:col-span-7 space-y-4 text-left">
-            {/* Step-by-step Quick Guide */}
-            <div className="space-y-2.5">
-              <h3 className="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center space-x-1.5">
-                <i className="fa-solid fa-circle-check text-[#00e599]"></i>
-                <span>Cara Melakukan Donasi:</span>
-              </h3>
-
-              <div className="space-y-2">
-                {[
-                  {
-                    step: "1",
-                    title: "Buka Aplikasi E-Wallet / Mobile Banking",
-                    desc: "Buka aplikasi pembayaran favorit Anda (Dana, GoPay, OVO, ShopeePay, BCA, atau bank apa saja).",
-                  },
-                  {
-                    step: "2",
-                    title: "Pilih Menu 'Scan QR / QRIS'",
-                    desc: "Arahkan kamera ke kode QR di samping, atau pilih gambar QR yang telah Anda simpan.",
-                  },
-                  {
-                    step: "3",
-                    title: "Masukkan Nominal Sukarela",
-                    desc: "Tentukan nominal dukungan Anda dan kirimkan ucapan/pesan hangat untuk pengembang.",
-                  },
-                ].map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3 rounded-xl bg-[#0d121f]/80 border border-gray-800/70 flex items-start space-x-3 transition hover:border-gray-700"
-                  >
-                    <div className="w-6 h-6 rounded-lg bg-[#00e599]/15 text-[#00e599] font-black text-xs flex items-center justify-center shrink-0 border border-[#00e599]/30">
-                      {item.step}
-                    </div>
-                    <div className="min-w-0 flex-1 space-y-0.5">
-                      <h4 className="text-xs font-bold text-white">{item.title}</h4>
-                      <p className="text-[11px] text-gray-400 leading-relaxed">{item.desc}</p>
-                    </div>
+                  {/* Header & Close Button */}
+                  <div className="flex items-center justify-between pb-1">
+                    <span className="text-[11px] font-bold text-[#00e599] uppercase tracking-wider flex items-center space-x-1.5">
+                      <i className="fa-solid fa-heart text-rose-400"></i>
+                      <span>Saweria &amp; QRIS</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setIsOpen(false)}
+                      className="w-8 h-8 rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white flex items-center justify-center transition active:scale-90 cursor-pointer"
+                      aria-label="Tutup"
+                    >
+                      <i className="fa-solid fa-xmark text-sm"></i>
+                    </button>
                   </div>
-                ))}
-              </div>
-            </div>
 
-            {/* Inspiration Badges */}
-            <div className="pt-1 space-y-2">
-              <span className="text-[11px] font-semibold text-gray-400 block">
-                Pilihan Dukungan:
-              </span>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {[
-                  { label: "Beli Kopi", amount: "Rp 5.000", icon: "fa-mug-hot" },
-                  { label: "Cemilan", amount: "Rp 10.000", icon: "fa-cookie-bite" },
-                  { label: "Server", amount: "Rp 25.000", icon: "fa-server" },
-                  { label: "Sultan Backer", amount: "Rp 50.000+", icon: "fa-crown" },
-                ].map((tier, i) => (
-                  <div
-                    key={i}
-                    className="p-2.5 rounded-xl bg-[#090d16] border border-gray-800 text-center space-y-0.5 hover:border-[#00e599]/40 transition"
-                  >
-                    <div className="text-[#00e599] text-xs">
-                      <i className={cn("fa-solid", tier.icon)}></i>
-                    </div>
-                    <div className="text-[10px] text-gray-400 font-medium">{tier.label}</div>
-                    <div className="text-xs font-bold text-white font-mono">{tier.amount}</div>
+                  {/* Ucapan Terimakasih */}
+                  <div className="space-y-1.5 px-2">
+                    <h3 className="text-lg sm:text-xl font-bold text-white font-piximisa">
+                      Terima Kasih Banyak! 💚
+                    </h3>
+                    <p className="text-xs text-gray-300 leading-relaxed">
+                      Terima kasih sudah menggunakan, mampir, atau memberikan donasi sukarela untuk mendukung layanan Alight Motion Premium ini.
+                    </p>
                   </div>
-                ))}
-              </div>
-            </div>
 
-            {/* Thank you note & copy button */}
-            <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-gray-800/80">
-              <p className="text-[11px] text-gray-400 italic">
-                Terima kasih atas segala bentuk apresiasi dan dukungan Anda untuk kelangsungan proyek ini! 💚
-              </p>
-              <button
-                type="button"
-                onClick={handleCopyInfo}
-                className="px-3.5 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white text-xs font-medium transition cursor-pointer flex items-center justify-center space-x-1.5 shrink-0 active:scale-95"
-              >
-                <i className={cn("text-xs", copied ? "fa-solid fa-check text-[#00e599]" : "fa-regular fa-copy")}></i>
-                <span>{copied ? "Tersalin!" : "Salin Info"}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.section>
+                  {/* Gambar QR Code WebP Transparan */}
+                  <div className="p-3.5 rounded-2xl bg-[#080d16] border border-gray-800/90 shadow-inner flex flex-col items-center justify-center space-y-2">
+                    <div className="relative w-48 h-48 sm:w-56 sm:h-56">
+                      <Image
+                        src="/images/qr_donasi.webp"
+                        alt="QR Donasi"
+                        fill
+                        className="object-contain filter drop-shadow-[0_0_10px_rgba(255,255,255,0.06)]"
+                        priority
+                      />
+                    </div>
+                    <span className="text-[10px] text-gray-400">
+                      Scan via GoPay, OVO, Dana, ShopeePay, BCA, atau Mobile Banking apa saja
+                    </span>
+                  </div>
+
+                  {/* Button Unduh QR */}
+                  <button
+                    type="button"
+                    onClick={handleDownloadQR}
+                    className="w-full py-3 px-4 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/20 transition active:scale-95 cursor-pointer"
+                  >
+                    <i className="fa-solid fa-download text-sm"></i>
+                    <span>Unduh QR Code</span>
+                  </button>
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
+    </>
   );
 }

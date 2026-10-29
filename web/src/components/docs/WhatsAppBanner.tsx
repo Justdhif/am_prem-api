@@ -16,12 +16,12 @@ export function WhatsAppBanner() {
         <div>
           <span className="font-bold text-white block text-sm">Butuh Bantuan Lebih Lanjut?</span>
           <span className="text-gray-400 text-xs">
-            Hubungi WhatsApp kami di +44 7762 422507 atau TikTok @justdhifbieber
+            Hubungi WhatsApp resmi kami di +44 7762 422507 untuk bantuan aktivasi, tanya jawab, atau kendala layanan.
           </span>
         </div>
       </div>
       <motion.a
-        href="https://wa.me/447762422507"
+        href="https://wa.me/447762422507?text=Halo%20Admin%2C%20saya%20butuh%20bantuan%20terkait%20layanan%20Alight%20Motion%20Premium"
         target="_blank"
         rel="noopener noreferrer"
         whileHover={{ scale: 1.05 }}

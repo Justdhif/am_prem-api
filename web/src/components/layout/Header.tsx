@@ -6,12 +6,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { TikTokProfileModal } from "@/components/tiktok/TikTokProfileModal";
+import { GitHubProfileModal } from "@/components/github/GitHubProfileModal";
 
 export function Header() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isTikTokModalOpen, setIsTikTokModalOpen] = useState(false);
+  const [isGitHubModalOpen, setIsGitHubModalOpen] = useState(false);
 
   const navItems = [
     { label: "Beranda", href: "/", icon: "fa-solid fa-house" },
@@ -194,17 +194,17 @@ export function Header() {
           />
         </nav>
 
-        {/* Right: TikTok Icon & Mobile Hamburger Toggle */}
+        {/* Right: GitHub Icon & Mobile Hamburger Toggle */}
         <div className="flex items-center space-x-2 shrink-0">
-          {/* TikTok Profile Button - Opens Bottom Sheet Modal */}
+          {/* GitHub Profile Button - Opens Profile Modal */}
           <button
             type="button"
-            onClick={() => setIsTikTokModalOpen(true)}
+            onClick={() => setIsGitHubModalOpen(true)}
             className="p-2 text-gray-400 hover:text-[#00e599] transition active:scale-95 flex items-center justify-center rounded-lg hover:bg-white/5 cursor-pointer"
-            title="Lihat Profil TikTok @justdhifbieber"
-            aria-label="Lihat Profil TikTok @justdhifbieber"
+            title="Lihat Profil GitHub @Justdhif"
+            aria-label="Lihat Profil GitHub @Justdhif"
           >
-            <i className="fa-brands fa-tiktok text-xl"></i>
+            <i className="fa-brands fa-github text-xl"></i>
           </button>
 
           {/* Mobile Hamburger Button */}
@@ -288,16 +288,35 @@ export function Header() {
                 );
               })}
 
-              {/* Extra Mobile Link to TikTok removed as requested */}
+              {/* WhatsApp Help Shortcut in Mobile Menu */}
+              <div className="pt-2 mt-2 border-t border-gray-800/80">
+                <a
+                  href="https://wa.me/447762422507?text=Halo%20Admin%2C%20saya%20butuh%20bantuan%20terkait%20layanan%20Alight%20Motion%20Premium"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 hover:bg-emerald-500/15 transition text-xs font-semibold"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-7 h-7 rounded-lg bg-emerald-500 text-gray-950 flex items-center justify-center text-sm font-bold shrink-0">
+                      <i className="fa-brands fa-whatsapp"></i>
+                    </div>
+                    <div>
+                      <span className="text-white block font-bold text-xs">Pusat Bantuan WhatsApp</span>
+                      <span className="text-[10px] text-gray-400">+44 7762 422507</span>
+                    </div>
+                  </div>
+                  <i className="fa-solid fa-arrow-up-right-from-square text-[10px] text-emerald-400"></i>
+                </a>
+              </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
 
-      {/* Dynamic TikTok Profile Bottom Sheet Modal */}
-      <TikTokProfileModal
-        isOpen={isTikTokModalOpen}
-        onClose={() => setIsTikTokModalOpen(false)}
+      {/* Dynamic GitHub Profile Modal */}
+      <GitHubProfileModal
+        isOpen={isGitHubModalOpen}
+        onClose={() => setIsGitHubModalOpen(false)}
       />
 
       {/* Spacer to preserve content flow offset since header is fixed */}

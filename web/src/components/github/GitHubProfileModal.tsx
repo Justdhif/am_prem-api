@@ -5,51 +5,42 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
-interface TikTokProfileModalProps {
+interface GitHubProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-interface TikTokProfileData {
+interface GitHubProfileData {
   username: string;
   displayName: string;
   profileUrl: string;
   avatarUrl: string;
   bio: string;
-  verified: boolean;
   stats: {
-    following: string;
+    repos: string;
     followers: string;
-    likes: string;
+    following: string;
   };
-  tags: string[];
 }
 
-const DEFAULT_PROFILE: TikTokProfileData = {
-  username: "justdhifbieber",
-  displayName: "JusłDhıƒ — order di bio",
-  profileUrl: "https://www.tiktok.com/@justdhifbieber",
-  avatarUrl: "/images/logos/logo-web.webp",
-  bio: "🗎 @ayaa\nrandom account\n\nam prem 1k? order:\nhttps://linkbio-justdhif.vercel.app/",
-  verified: true,
+const DEFAULT_PROFILE: GitHubProfileData = {
+  username: "Justdhif",
+  displayName: "Nadhif Ararya",
+  profileUrl: "https://github.com/Justdhif",
+  avatarUrl: "https://avatars.githubusercontent.com/u/155049684?v=4",
+  bio: "try to be better",
   stats: {
+    repos: "19",
+    followers: "7",
     following: "7",
-    followers: "330",
-    likes: "355",
   },
-  tags: [
-    "Aktivasi AM Pro 1K",
-    "Preset XML Alight Motion",
-    "Resmi & Bergaransi",
-  ],
 };
 
-export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps) {
+export function GitHubProfileModal({ isOpen, onClose }: GitHubProfileModalProps) {
   const [hasMounted, setHasMounted] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [profile, setProfile] = useState<TikTokProfileData>(DEFAULT_PROFILE);
-  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<GitHubProfileData>(DEFAULT_PROFILE);
 
   useEffect(() => {
     setHasMounted(true);
@@ -61,13 +52,12 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
     return () => window.removeEventListener("resize", checkDesktop);
   }, []);
 
-  // Fetch real-time live profile data every time modal is opened
+  // Fetch live GitHub profile data when modal opens
   useEffect(() => {
     if (!isOpen) return;
     let isMounted = true;
-    setLoading(true);
 
-    fetch("/api/tiktok", { cache: "no-store" })
+    fetch("/api/github", { cache: "no-store" })
       .then((res) => res.json())
       .then((resData) => {
         if (isMounted && resData?.success && resData.data) {
@@ -75,10 +65,7 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
         }
       })
       .catch((err) => {
-        console.warn("[TikTokModal] Live fetch error:", err);
-      })
-      .finally(() => {
-        if (isMounted) setLoading(false);
+        console.warn("[GitHubModal] Fetch error:", err);
       });
 
     return () => {
@@ -139,7 +126,7 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                1. DESKTOP MODE: Centered Floating Dialog Modal
                ───────────────────────────────────────────────────────────── */
             <motion.div
-              key="tiktok-desktop-dialog"
+              key="github-desktop-dialog"
               initial={{ opacity: 0, scale: 0.94, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.94, y: 12 }}
@@ -150,12 +137,10 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
               <div className="px-6 py-4 border-b border-gray-800/80 flex items-center justify-between bg-[#111726]/90 shrink-0">
                 <div className="flex items-center space-x-2.5">
                   <div className="w-8 h-8 rounded-xl bg-black border border-[#00e599]/40 flex items-center justify-center text-[#00e599] shadow-sm shadow-[#00e599]/25">
-                    <i className="fa-brands fa-tiktok text-base"></i>
+                    <i className="fa-brands fa-github text-lg"></i>
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-gray-100">
-                      Profil TikTok
-                    </h3>
+                    <h3 className="text-sm font-bold text-gray-100">Profil GitHub</h3>
                     <p className="text-xs text-gray-400 font-mono">@{profile.username}</p>
                   </div>
                 </div>
@@ -188,7 +173,7 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                       </div>
                     </div>
                     <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-black border border-[#00e599]/50 flex items-center justify-center text-[#00e599] text-xs shadow-md">
-                      <i className="fa-brands fa-tiktok"></i>
+                      <i className="fa-brands fa-github"></i>
                     </div>
                   </div>
 
@@ -201,40 +186,23 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                     </span>
                   </div>
 
-                  {/* Bio with clickable URL */}
-                  <div className="text-xs text-gray-300 leading-relaxed max-w-sm whitespace-pre-line text-center">
-                    {profile.bio.split("\n").map((line, i) => {
-                      if (line.startsWith("http://") || line.startsWith("https://")) {
-                        return (
-                          <a
-                            key={i}
-                            href={line}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[#00e599] hover:underline font-semibold block mt-1"
-                          >
-                            {line}
-                          </a>
-                        );
-                      }
-                      return (
-                        <span key={i} className="block">
-                          {line}
-                        </span>
-                      );
-                    })}
-                  </div>
+                  {/* Bio */}
+                  {profile.bio && (
+                    <div className="text-xs text-gray-300 leading-relaxed max-w-sm text-center">
+                      &ldquo;{profile.bio}&rdquo;
+                    </div>
+                  )}
                 </div>
 
-                {/* 3-Column Stats Counter Grid (Mengikuti | Pengikut | Suka) */}
+                {/* 3-Column Stats Grid (Repos | Pengikut | Mengikuti) */}
                 <div className="grid grid-cols-3 gap-2.5 bg-[#141b2b] border border-gray-800/90 rounded-2xl p-3.5 text-center">
                   <div className="flex flex-col items-center justify-center space-y-1">
                     <span className="text-[10px] font-medium text-gray-400 flex items-center gap-1">
-                      <i className="fa-solid fa-user-plus text-[10px] text-blue-400"></i>
-                      <span>Mengikuti</span>
+                      <i className="fa-solid fa-book-bookmark text-[10px] text-amber-400"></i>
+                      <span>Repositori</span>
                     </span>
                     <span className="text-sm sm:text-base font-extrabold text-white font-mono">
-                      {profile.stats.following}
+                      {profile.stats.repos}
                     </span>
                   </div>
 
@@ -250,11 +218,11 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
 
                   <div className="flex flex-col items-center justify-center space-y-1">
                     <span className="text-[10px] font-medium text-gray-400 flex items-center gap-1">
-                      <i className="fa-solid fa-heart text-[10px] text-rose-500"></i>
-                      <span>Suka</span>
+                      <i className="fa-solid fa-user-plus text-[10px] text-blue-400"></i>
+                      <span>Mengikuti</span>
                     </span>
                     <span className="text-sm sm:text-base font-extrabold text-white font-mono">
-                      {profile.stats.likes}
+                      {profile.stats.following}
                     </span>
                   </div>
                 </div>
@@ -277,8 +245,8 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                   rel="noopener noreferrer"
                   className="flex-[2] py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#00e599] to-[#00b377] hover:brightness-105 active:scale-98 text-gray-950 font-bold text-xs transition shadow-lg shadow-[#00e599]/25 flex items-center justify-center space-x-2"
                 >
-                  <i className="fa-brands fa-tiktok text-sm"></i>
-                  <span>Buka di TikTok</span>
+                  <i className="fa-brands fa-github text-sm"></i>
+                  <span>Buka di GitHub</span>
                   <i className="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
                 </a>
               </div>
@@ -288,7 +256,7 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                2. MOBILE MODE: Bottom Sheet Modal with Drag Indicator
                ───────────────────────────────────────────────────────────── */
             <motion.div
-              key="tiktok-mobile-sheet"
+              key="github-mobile-sheet"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -304,12 +272,10 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
               <div className="px-4 py-3 border-b border-gray-800/80 flex items-center justify-between bg-[#111726]/80 shrink-0">
                 <div className="flex items-center space-x-2.5">
                   <div className="w-8 h-8 rounded-xl bg-black border border-[#00e599]/40 flex items-center justify-center text-[#00e599] shadow-sm shadow-[#00e599]/20">
-                    <i className="fa-brands fa-tiktok text-base"></i>
+                    <i className="fa-brands fa-github text-base"></i>
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold text-gray-100">
-                      Profil TikTok
-                    </h3>
+                    <h3 className="text-xs font-bold text-gray-100">Profil GitHub</h3>
                     <p className="text-[11px] text-gray-400 font-mono">@{profile.username}</p>
                   </div>
                 </div>
@@ -342,7 +308,7 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                       </div>
                     </div>
                     <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-black border border-[#00e599]/50 flex items-center justify-center text-[#00e599] text-[10px]">
-                      <i className="fa-brands fa-tiktok"></i>
+                      <i className="fa-brands fa-github"></i>
                     </div>
                   </div>
 
@@ -355,40 +321,23 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                     </span>
                   </div>
 
-                  {/* Bio with clickable URL */}
-                  <div className="text-xs text-gray-300 leading-relaxed text-center whitespace-pre-line">
-                    {profile.bio.split("\n").map((line, i) => {
-                      if (line.startsWith("http://") || line.startsWith("https://")) {
-                        return (
-                          <a
-                            key={i}
-                            href={line}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[#00e599] hover:underline font-semibold block mt-1"
-                          >
-                            {line}
-                          </a>
-                        );
-                      }
-                      return (
-                        <span key={i} className="block">
-                          {line}
-                        </span>
-                      );
-                    })}
-                  </div>
+                  {/* Bio */}
+                  {profile.bio && (
+                    <div className="text-xs text-gray-300 leading-relaxed text-center">
+                      &ldquo;{profile.bio}&rdquo;
+                    </div>
+                  )}
                 </div>
 
-                {/* 3-Column Stats Counter Grid (Mengikuti | Pengikut | Suka) */}
+                {/* 3-Column Stats Grid (Repos | Pengikut | Mengikuti) */}
                 <div className="grid grid-cols-3 gap-2 bg-[#141b2b] border border-gray-800/90 rounded-2xl p-3 text-center">
                   <div className="flex flex-col items-center justify-center space-y-1">
                     <span className="text-[10px] font-medium text-gray-400 flex items-center gap-1">
-                      <i className="fa-solid fa-user-plus text-[9px] text-blue-400"></i>
-                      <span>Mengikuti</span>
+                      <i className="fa-solid fa-book-bookmark text-[9px] text-amber-400"></i>
+                      <span>Repositori</span>
                     </span>
                     <span className="text-xs sm:text-sm font-extrabold text-white font-mono">
-                      {profile.stats.following}
+                      {profile.stats.repos}
                     </span>
                   </div>
 
@@ -404,11 +353,11 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
 
                   <div className="flex flex-col items-center justify-center space-y-1">
                     <span className="text-[10px] font-medium text-gray-400 flex items-center gap-1">
-                      <i className="fa-solid fa-heart text-[9px] text-rose-500"></i>
-                      <span>Suka</span>
+                      <i className="fa-solid fa-user-plus text-[9px] text-blue-400"></i>
+                      <span>Mengikuti</span>
                     </span>
                     <span className="text-xs sm:text-sm font-extrabold text-white font-mono">
-                      {profile.stats.likes}
+                      {profile.stats.following}
                     </span>
                   </div>
                 </div>
@@ -431,8 +380,8 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                   rel="noopener noreferrer"
                   className="flex-[2] py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#00e599] to-[#00b377] hover:brightness-105 active:scale-98 text-gray-950 font-bold text-xs transition shadow-lg shadow-[#00e599]/20 flex items-center justify-center space-x-1.5"
                 >
-                  <i className="fa-brands fa-tiktok text-xs"></i>
-                  <span>Buka di TikTok</span>
+                  <i className="fa-brands fa-github text-xs"></i>
+                  <span>Buka di GitHub</span>
                   <i className="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                 </a>
               </div>

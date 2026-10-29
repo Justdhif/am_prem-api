@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { DonationSection } from "./DonationSection";
 
 export function HomeOverview() {
   const features = [
@@ -90,7 +91,10 @@ export function HomeOverview() {
         </div>
       </motion.section>
 
-      {/* 2. FAQ SECTION (Overview Pertanyaan Umum) */}
+      {/* 2. SECTION DONASI & DUKUNGAN KREATOR */}
+      <DonationSection />
+
+      {/* 3. FAQ SECTION (Overview Pertanyaan Umum) */}
       <motion.section
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}

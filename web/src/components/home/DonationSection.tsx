@@ -13,16 +13,34 @@ export function DonationSection() {
     setHasMounted(true);
   }, []);
 
-  // Lock body scroll when modal sheet is open
+  // Lock body & html scroll completely when modal sheet is open
   useEffect(() => {
     if (isOpen) {
+      const originalBodyOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+      const originalTouchAction = document.body.style.touchAction;
+
       document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+
+      const handlePreventDefault = (e: TouchEvent) => {
+        const sheetEl = document.getElementById("donationSheetContent");
+        if (sheetEl && sheetEl.contains(e.target as Node)) {
+          return;
+        }
+        e.preventDefault();
+      };
+
+      window.addEventListener("touchmove", handlePreventDefault, { passive: false });
+
+      return () => {
+        document.body.style.overflow = originalBodyOverflow;
+        document.documentElement.style.overflow = originalHtmlOverflow;
+        document.body.style.touchAction = originalTouchAction;
+        window.removeEventListener("touchmove", handlePreventDefault);
+      };
     }
-    return () => {
-      document.body.style.overflow = "";
-    };
   }, [isOpen]);
 
   const handleDownloadQR = () => {
@@ -92,6 +110,8 @@ export function DonationSection() {
                   animate={{ y: 0 }}
                   exit={{ y: "100%" }}
                   transition={{ type: "spring", damping: 28, stiffness: 300 }}
+                  id="donationSheetContent"
+                  style={{ overscrollBehavior: "contain" }}
                   className="relative z-[165] w-full max-w-md bg-[#0d121f] border-t border-x border-gray-800/90 rounded-t-3xl shadow-[0_-12px_45px_rgba(0,0,0,0.85)] p-5 sm:p-6 text-center space-y-4 max-h-[90vh] overflow-y-auto"
                 >
                   {/* Top Drag Handle */}
@@ -101,7 +121,7 @@ export function DonationSection() {
                   <div className="flex items-center justify-between pb-1">
                     <span className="text-[11px] font-bold text-[#00e599] uppercase tracking-wider flex items-center space-x-1.5">
                       <i className="fa-solid fa-qrcode text-xs"></i>
-                      <span>QRIS Resmi (Justdhif Store)</span>
+                      <span>Justdhif Store</span>
                     </span>
                     <button
                       type="button"

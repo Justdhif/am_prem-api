@@ -117,7 +117,7 @@ export function ActivationChart({
           <div className="flex items-center space-x-2">
             <span className="w-2.5 h-2.5 rounded-full bg-[#00e599] animate-pulse shadow-[0_0_8px_#00e599]"></span>
             <span className="text-xs sm:text-sm font-bold text-gray-200">
-              Tren Aktivasi Premium (Riil Database)
+              Tren Aktivasi Premium
             </span>
           </div>
           <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#00e599]/15 text-[#00e599] font-semibold border border-[#00e599]/30 shrink-0">

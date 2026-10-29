@@ -17,33 +17,36 @@ export const metadata: Metadata = {
 export default function PresetPage() {
   return (
     <div className="space-y-6 sm:space-y-8">
-      {/* Breadcrumb Navigation */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">
-              <i className="fa-solid fa-house text-[10px] text-gray-400"></i>
-              <span>Beranda</span>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>
-              <i className="fa-solid fa-wand-magic-sparkles text-[10px]"></i>
-              <span>Preset Finder</span>
-            </BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      {/* Header & Breadcrumb Container (Konsisten dengan Docs space-y-4) */}
+      <div className="space-y-4 pt-0">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">
+                <i className="fa-solid fa-house text-[10px] text-gray-400"></i>
+                <span>Beranda</span>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>
+                <i className="fa-solid fa-wand-magic-sparkles text-[10px]"></i>
+                <span>Preset Finder</span>
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
 
-      {/* Header Title */}
-      <div className="space-y-1.5">
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide font-piximisa">
-          Preset Finder Alight Motion
-        </h1>
-        <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-2xl">
-          Temukan link preset XML dan tautan Alight Creative resmi langsung dari video TikTok maupun YouTube tanpa perlu mencari manual di komentar.
-        </p>
+        {/* Header Title */}
+        <div className="space-y-1.5 pt-0">
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide font-piximisa">
+            Preset Finder Alight Motion
+          </h1>
+          <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-2xl">
+            Temukan link preset XML dan tautan Alight Creative resmi langsung dari video TikTok maupun YouTube tanpa perlu mencari manual di komentar.
+          </p>
+        </div>
       </div>
 
       {/* Interactive Preset Finder Form */}

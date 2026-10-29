@@ -9,11 +9,11 @@ export interface FonnteNotificationPayload {
 export async function sendFonnteCommentNotification(
   payload: FonnteNotificationPayload
 ): Promise<boolean> {
-  const token = process.env.FONNTE_TOKEN || "8BBLpU7XwqBb9U46iJAN";
-  const target = process.env.FONNTE_TARGET || "6282213111575";
+  const token = process.env.FONNTE_TOKEN;
+  const target = process.env.FONNTE_TARGET;
 
   if (!token || !target) {
-    console.warn("[Fonnte] Token atau target belum diset.");
+    console.warn("[Fonnte] FONNTE_TOKEN atau FONNTE_TARGET belum diset di environment variables.");
     return false;
   }
 

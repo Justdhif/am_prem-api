@@ -17,12 +17,12 @@ export interface CommentNode extends DbComment {
   replies: CommentNode[];
 }
 
-const DATABASE_URL =
-  process.env.DATABASE_URL ||
-  "postgresql://neondb_owner:npg_y7TUMAVvtWz3@ep-round-night-b3dxsp8w-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require";
-
 function getSql() {
-  return neon(DATABASE_URL);
+  const dbUrl = process.env.DATABASE_URL;
+  if (!dbUrl) {
+    throw new Error("[CommentsDB] DATABASE_URL environment variable is missing.");
+  }
+  return neon(dbUrl);
 }
 
 let isTableReady = false;

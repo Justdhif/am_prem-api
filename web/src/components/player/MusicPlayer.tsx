@@ -1060,7 +1060,7 @@ export function MusicPlayer() {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: "100%", opacity: 0 }}
                 transition={{ type: "spring", damping: 30, stiffness: 320 }}
-                className="fixed inset-0 z-[140] lg:hidden bg-[#0d121f] h-[100dvh] h-full w-full flex flex-col text-left overflow-hidden select-none"
+                className="fixed inset-0 z-[190] lg:hidden bg-[#0d121f] h-[100dvh] h-full w-full flex flex-col text-left overflow-hidden select-none"
                 style={{ touchAction: "none" }}
               >
                 {/* Top Unified Floating Header Bar */}

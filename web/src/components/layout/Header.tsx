@@ -117,7 +117,7 @@ export function Header() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-[120] w-full bg-[#0d121f]/60 backdrop-blur-xl border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.25)] transition-all duration-300">
+      <header className="fixed top-0 left-0 right-0 z-[170] w-full bg-[#0d121f]/60 backdrop-blur-xl border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.25)] transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 md:px-10 lg:px-12 xl:px-16 h-16 flex items-center justify-between gap-4">
         {/* Left: Brand (Nama Web & Logo) */}
         <Link href="/" className="flex items-center space-x-3 shrink-0 group">
@@ -226,7 +226,7 @@ export function Header() {
       {/* Mobile Hamburger Dropdown Menu & Screen Backdrop */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <div className="fixed inset-0 top-16 z-[110] md:hidden">
+          <div className="fixed inset-0 top-16 z-[160] md:hidden">
             {/* Backdrop with touch-none to prevent background interaction */}
             <motion.div
               initial={{ opacity: 0 }}

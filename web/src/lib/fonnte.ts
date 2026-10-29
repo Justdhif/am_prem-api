@@ -65,9 +65,17 @@ export async function sendFonnteCommentNotification(
       messageLines.push(`"${payload.content}"`);
     }
 
+    const siteUrl =
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      process.env.SITE_URL ||
+      (process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        : "") ||
+      "https://amprem-justdhif.vercel.app";
+
     messageLines.push(`━━━━━━━━━━━━━━━━━━━`);
     messageLines.push(`🕒 *Waktu:* ${timeStr} WIB`);
-    messageLines.push(`🌐 *Website:* Alight Motion Premium`);
+    messageLines.push(`🌐 *Link Web:* ${siteUrl}`);
 
     const message = messageLines.join("\n");
 

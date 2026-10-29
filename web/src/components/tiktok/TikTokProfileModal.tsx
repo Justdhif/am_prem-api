@@ -193,9 +193,8 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                   </div>
 
                   <div>
-                    <h4 className="text-base font-bold text-white flex items-center justify-center gap-1.5">
+                    <h4 className="text-base font-bold text-white flex items-center justify-center">
                       <span>{profile.displayName}</span>
-                      <i className="fa-solid fa-circle-check text-xs text-[#00e599]" title="Verified Creator"></i>
                     </h4>
                     <span className="inline-block mt-0.5 px-2.5 py-0.5 rounded-full bg-gray-800/80 text-gray-400 text-xs font-mono">
                       @{profile.username}
@@ -258,18 +257,6 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                       {profile.stats.likes}
                     </span>
                   </div>
-                </div>
-
-                {/* Category Tags */}
-                <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
-                  {profile.tags.map((tag, idx) => (
-                    <span
-                      key={idx}
-                      className="px-2.5 py-1 rounded-lg bg-gray-800/60 border border-gray-700/60 text-[11px] text-gray-300 font-medium"
-                    >
-                      {tag}
-                    </span>
-                  ))}
                 </div>
               </div>
 
@@ -360,9 +347,8 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                   </div>
 
                   <div>
-                    <h4 className="text-sm font-bold text-white flex items-center justify-center gap-1.5">
+                    <h4 className="text-sm font-bold text-white flex items-center justify-center">
                       <span>{profile.displayName}</span>
-                      <i className="fa-solid fa-circle-check text-[11px] text-[#00e599]"></i>
                     </h4>
                     <span className="inline-block mt-0.5 px-2 py-0.5 rounded-full bg-gray-800/80 text-gray-400 text-[11px] font-mono">
                       @{profile.username}
@@ -425,18 +411,6 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                       {profile.stats.likes}
                     </span>
                   </div>
-                </div>
-
-                {/* Category Tags */}
-                <div className="flex flex-wrap items-center justify-center gap-1.5 pt-0.5">
-                  {profile.tags.map((tag, idx) => (
-                    <span
-                      key={idx}
-                      className="px-2 py-0.5 rounded-md bg-gray-800/60 border border-gray-700/60 text-[10px] text-gray-300 font-medium"
-                    >
-                      {tag}
-                    </span>
-                  ))}
                 </div>
               </div>
 

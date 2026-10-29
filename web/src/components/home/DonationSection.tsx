@@ -28,7 +28,7 @@ export function DonationSection() {
   const handleDownloadQR = () => {
     const a = document.createElement("a");
     a.href = "/images/qr_donasi.webp";
-    a.download = "QR_Donasi_AlightMotionPrem.webp";
+    a.download = "QRIS_Justdhif_Store.webp";
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -100,8 +100,8 @@ export function DonationSection() {
                   {/* Header & Close Button */}
                   <div className="flex items-center justify-between pb-1">
                     <span className="text-[11px] font-bold text-[#00e599] uppercase tracking-wider flex items-center space-x-1.5">
-                      <i className="fa-solid fa-heart text-rose-400"></i>
-                      <span>Saweria &amp; QRIS</span>
+                      <i className="fa-solid fa-qrcode text-xs"></i>
+                      <span>QRIS Resmi (Justdhif Store)</span>
                     </span>
                     <button
                       type="button"
@@ -123,14 +123,14 @@ export function DonationSection() {
                     </p>
                   </div>
 
-                  {/* Gambar QR Code WebP Transparan */}
-                  <div className="p-3.5 rounded-2xl bg-[#080d16] border border-gray-800/90 shadow-inner flex flex-col items-center justify-center space-y-2">
-                    <div className="relative w-48 h-48 sm:w-56 sm:h-56">
+                  {/* Gambar QRIS Resmi */}
+                  <div className="p-3 rounded-2xl bg-[#080d16] border border-gray-800/90 shadow-inner flex flex-col items-center justify-center space-y-2">
+                    <div className="relative w-full max-w-[270px] sm:max-w-[290px] aspect-[727/1024] rounded-xl overflow-hidden shadow-lg border border-gray-700/60 bg-white">
                       <Image
                         src="/images/qr_donasi.webp"
-                        alt="QR Donasi"
+                        alt="QRIS Donasi Justdhif Store"
                         fill
-                        className="object-contain filter drop-shadow-[0_0_10px_rgba(255,255,255,0.06)]"
+                        className="object-contain"
                         priority
                       />
                     </div>

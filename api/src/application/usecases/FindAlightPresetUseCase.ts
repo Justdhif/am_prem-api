@@ -248,18 +248,29 @@ export class FindAlightPresetUseCase {
 
     // 1. Ganti pola (titik), (dot), [dot], [titik] dengan tanda titik '.'
     str = str.replace(/\s*[\(\[\{]?(?:titik|dot)[\)\]\}]?\s*/gi, '.');
+    str = str.replace(/\s*[\(\[\{]?(?:slash|garis\s*miring)[\)\]\}]?\s*/gi, '/');
 
     // 2. Bersihkan karakter emoji dari URL atau link yang disisipi emot
-    // Contoh di screenshot pengguna: https://whatsapp.com/channel😁😁/0029Vb83UYeEquiWEUOQmG24
+    // Contoh di komentar kreator TikTok: https://whatsapp.com/channel😁😁/0029Vb83UYeEquiWEUOQmG24
+    // atau yang dipisah spasi: https://whatsapp.com/channel 😁😁 /0029Vb83UYeEquiWEUOQmG24
+    const emojiRegex =
+      /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1FA70}-\u{1FAFF}\u{200d}\u{FE0F}]/gu;
+
     str = str.replace(
-      /(?:https?:\/\/)?(?:whatsapp\.com\/channel|chat\.whatsapp\.com|alight\.link|alightcreative\.com|drive\.google\.com|mediafire\.com|sfile\.mobi|sfile\.co|t\.me|telegram\.me|youtu\.be|youtube\.com)[^\s]*/gi,
-      (match) => {
-        return match.replace(
-          /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1FA70}-\u{1FAFF}\u{200d}\u{FE0F}]/gu,
-          ''
-        );
+      /((?:https?:\/\/)?(?:[a-zA-Z0-9_\-]+\.)?(?:whatsapp\.com|alight\.link|alightcreative\.com|drive\.google\.com|mediafire\.com|sfile\.mobi|sfile\.co|t\.me|telegram\.me|youtu\.be|youtube\.com|linktr\.ee|bio\.link|campsite\.bio|heylink\.me|lynk\.id))\s*([^\s]*)/gi,
+      (fullMatch) => {
+        return fullMatch.replace(emojiRegex, '');
       }
     );
+
+    // Jika setelah segmen / ada emoji dan spasi, e.g. "channel 😁😁 /0029" -> "channel/0029"
+    str = str.replace(
+      /(\/(?:channel|am\/share|watch|shorts|drive|d|file)?)\s*([\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1FA70}-\u{1FAFF}\u{200d}\u{FE0F}\s]+)\/?/giu,
+      '$1/'
+    );
+
+    // Hapus spasi di dalam link (misal: "https://whatsapp.com/channel /0029..." -> "https://whatsapp.com/channel/0029...")
+    str = str.replace(/(https?:\/\/[^\s]+)\s+(\/[a-zA-Z0-9_\-\.\/]+)/gi, '$1$2');
 
     // 3. Normalisasi spasi di sekeliling protocol dan domain populer yang sengaja dipisah kreator
     str = str.replace(/https?\s*:\s*\/\s*\/\s*/gi, 'https://');
@@ -299,7 +310,7 @@ export class FindAlightPresetUseCase {
    * Ekstrak seluruh link preset dan ajakan join saluran dari potongan teks
    * Menerapkan 2 Tingkat Prioritas:
    * 1. Prioritas 1: Link Langsung Alight Motion, Google Drive, Mediafire, Sfile, Shortlink
-   * 2. Prioritas 2 (Alternatif): Saluran WhatsApp, Telegram, Link Bio
+   * 2. Prioritas 2 (Alternatif): Saluran WhatsApp, Telegram, Link Bio, YouTube Video / Channel
    */
   public extractPresetsFromText(
     rawText: string,
@@ -339,12 +350,17 @@ export class FindAlightPresetUseCase {
       },
       {
         type: 'sfile',
-        regex: /(?:https?:\/\/)?(?:www\.)?sfile\.mobi\/[^\s"')]+/gi,
+        regex: /(?:https?:\/\/)?(?:www\.)?sfile\.(?:mobi|co)\/[^\s"')]+/gi,
         label: 'Sfile Mobi',
       },
       {
+        type: 'other',
+        regex: /(?:https?:\/\/)?(?:www\.)?(?:dropbox\.com|mega\.nz)\/[^\s"')]+/gi,
+        label: 'Cloud Storage (XML/Preset)',
+      },
+      {
         type: 'shortlink',
-        regex: /(?:https?:\/\/)?(?:bit\.ly|tinyurl\.com|s\.id|cutt\.ly|linkvertise\.com)\/[^\s"')]+/gi,
+        regex: /(?:https?:\/\/)?(?:bit\.ly|tinyurl\.com|s\.id|cutt\.ly|linkvertise\.com|shorturl\.at)\/[^\s"')]+/gi,
         label: 'Shortlink Preset',
       },
     ];
@@ -377,9 +393,9 @@ export class FindAlightPresetUseCase {
     }
 
     // ==========================================
-    // PRIORITAS 2: AJAKAN JOIN SALURAN (JOIN SL)
+    // PRIORITAS 2: AJAKAN JOIN SALURAN / LINK ALTERNATIF
     // ==========================================
-    // 2A. Tautan Saluran (WhatsApp Channel, Telegram, Link Bio)
+    // 2A. Tautan Saluran (WhatsApp Channel, Telegram, Link Bio, YouTube, Discord)
     const channelLinkPatterns: Array<{ type: PresetType; regex: RegExp; label: string }> = [
       {
         type: 'whatsapp_channel',
@@ -393,8 +409,18 @@ export class FindAlightPresetUseCase {
       },
       {
         type: 'channel_invite',
-        regex: /(?:https?:\/\/)?(?:linktr\.ee|bio\.link|campsite\.bio|heylink\.me)\/[a-zA-Z0-9_\-\.\/]+/gi,
+        regex: /(?:https?:\/\/)?(?:linktr\.ee|bio\.link|campsite\.bio|heylink\.me|lynk\.id|msha\.ke|taplink\.cc|beacons\.ai|direct\.me)\/[a-zA-Z0-9_\-\.\/]+/gi,
         label: 'Link Bio Profil (Join Saluran)',
+      },
+      {
+        type: 'channel_invite',
+        regex: /(?:https?:\/\/)?(?:discord\.gg|discord\.com\/invite)\/[a-zA-Z0-9_\-\.\/]+/gi,
+        label: 'Discord Komunitas (Preset)',
+      },
+      {
+        type: 'channel_invite',
+        regex: /(?:https?:\/\/)?(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/|live\/|@[a-zA-Z0-9_\-]+)|youtu\.be\/)[a-zA-Z0-9_\-\.\/\?\=\&]+/gi,
+        label: 'Video / Saluran YouTube Kreator',
       },
     ];
 
@@ -435,7 +461,7 @@ export class FindAlightPresetUseCase {
     // - "preset di saluran"
     // - "masuk saluran"
     const joinSaluranPhraseRegex =
-      /\b(?:join\s+saluran|join\s+sl|masuk\s+saluran|cek\s+saluran|link\s+saluran|saluran\s+wa|saluran\s+whatsapp|saluran\s+tele|preset\s+(?:ada\s+)?di\s+saluran|xml\s+(?:ada\s+)?di\s+saluran|sl\s+wa)\b/i;
+      /\b(?:join\s+saluran|join\s+sl|masuk\s+saluran|cek\s+saluran|link\s+saluran|saluran\s+wa|saluran\s+whatsapp|saluran\s+tele|preset\s+(?:ada\s+)?di\s+saluran|xml\s+(?:ada\s+)?di\s+saluran|sl\s+wa|cek\s+bio|link\s+di\s+bio|preset\s+di\s+bio|linknya\s+di\s+bio)\b/i;
 
     if (joinSaluranPhraseRegex.test(text)) {
       // Jika belum ada channel link spesifik yang diekstrak dari potongan teks ini,

@@ -533,7 +533,30 @@ export function PresetFinderForm() {
                       linkUrl.includes("alightcreative.com") || linkUrl.includes("alight.link");
                     const isDrive = linkUrl.includes("drive.google.com");
                     const isMediaFire = linkUrl.includes("mediafire.com");
-                    const isChannel = item.priority === "join_saluran" || linkUrl.includes("whatsapp.com/channel") || linkUrl.includes("t.me/");
+                    const isWhatsApp = linkUrl.includes("whatsapp.com");
+                    const isTelegram = linkUrl.includes("t.me") || linkUrl.includes("telegram.me");
+                    const isYouTube = linkUrl.includes("youtube.com") || linkUrl.includes("youtu.be");
+                    const isDiscord = linkUrl.includes("discord.gg") || linkUrl.includes("discord.com");
+                    const isChannel =
+                      item.priority === "join_saluran" || isWhatsApp || isTelegram || isYouTube || isDiscord;
+
+                    const buttonLabel = isAlightCreative
+                      ? "Buka Preset"
+                      : isDrive
+                      ? "Buka Google Drive"
+                      : isMediaFire
+                      ? "Buka MediaFire"
+                      : isWhatsApp
+                      ? "Buka Saluran WA"
+                      : isTelegram
+                      ? "Buka Telegram"
+                      : isYouTube
+                      ? "Buka YouTube"
+                      : isDiscord
+                      ? "Buka Discord"
+                      : isChannel
+                      ? "Buka Saluran"
+                      : "Buka Tautan";
 
                     return (
                       <motion.div
@@ -543,7 +566,11 @@ export function PresetFinderForm() {
                         transition={{ duration: 0.2, delay: idx * 0.04 }}
                         className={cn(
                           "p-3.5 rounded-xl border transition flex flex-col sm:flex-row sm:items-center justify-between gap-3",
-                          isChannel
+                          isYouTube
+                            ? "bg-[#180e12] border-red-900/50 hover:border-red-600/70"
+                            : isWhatsApp
+                            ? "bg-[#0b1a15] border-emerald-900/50 hover:border-emerald-600/70"
+                            : isChannel
                             ? "bg-[#0d1620] border-sky-800/60 hover:border-sky-600/80"
                             : "bg-[#0d121f] border-gray-800 hover:border-gray-700"
                         )}
@@ -552,24 +579,56 @@ export function PresetFinderForm() {
                           <div className="flex items-center space-x-1.5 mb-1 flex-wrap gap-y-1">
                             <span
                               className={cn(
-                                "text-[10px] px-2 py-0.5 rounded-md font-semibold border",
+                                "text-[10px] px-2 py-0.5 rounded-md font-semibold border flex items-center space-x-1",
                                 isAlightCreative
                                   ? "bg-[#00e599]/15 text-[#00e599] border-[#00e599]/30"
                                   : isDrive
                                   ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
                                   : isMediaFire
                                   ? "bg-blue-500/15 text-blue-300 border-blue-500/30"
+                                  : isWhatsApp
+                                  ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                                  : isYouTube
+                                  ? "bg-red-500/15 text-red-400 border-red-500/30"
+                                  : isTelegram
+                                  ? "bg-sky-500/15 text-sky-300 border-sky-500/30"
+                                  : isDiscord
+                                  ? "bg-indigo-500/15 text-indigo-300 border-indigo-500/30"
                                   : isChannel
                                   ? "bg-sky-500/15 text-sky-300 border-sky-500/30"
                                   : "bg-gray-800 text-gray-300 border-gray-700"
                               )}
                             >
-                              {item.label || (isAlightCreative ? "Alight Link" : isDrive ? "Google Drive (XML)" : isMediaFire ? "MediaFire (XML)" : isChannel ? "Saluran Kreator" : "Preset Link")}
+                              {isWhatsApp && <i className="fa-brands fa-whatsapp mr-1 text-[11px]"></i>}
+                              {isYouTube && <i className="fa-brands fa-youtube mr-1 text-[11px]"></i>}
+                              {isTelegram && <i className="fa-brands fa-telegram mr-1 text-[11px]"></i>}
+                              {isDiscord && <i className="fa-brands fa-discord mr-1 text-[11px]"></i>}
+                              <span>
+                                {item.label ||
+                                  (isAlightCreative
+                                    ? "Alight Link"
+                                    : isDrive
+                                    ? "Google Drive (XML)"
+                                    : isMediaFire
+                                    ? "MediaFire (XML)"
+                                    : isWhatsApp
+                                    ? "Saluran WhatsApp"
+                                    : isYouTube
+                                    ? "Video / Saluran YouTube"
+                                    : isChannel
+                                    ? "Saluran Kreator"
+                                    : "Preset Link")}
+                              </span>
                             </span>
 
                             {item.source && (
                               <span className="text-[10px] text-gray-400">
-                                Dari: {item.source === "comment" ? `Komentar (@${item.author || "User"})` : item.source === "description" ? "Deskripsi" : "Caption"}
+                                Dari:{" "}
+                                {item.source === "comment"
+                                  ? `Komentar (@${item.author || "User"})`
+                                  : item.source === "description"
+                                  ? "Deskripsi"
+                                  : "Caption"}
                               </span>
                             )}
                           </div>
@@ -589,7 +648,14 @@ export function PresetFinderForm() {
                             onClick={() => handleCopy(linkUrl, idx)}
                             className="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-medium transition cursor-pointer flex items-center space-x-1 active:scale-95"
                           >
-                            <i className={cn("text-xs", copiedIndex === idx ? "fa-solid fa-check text-[#00e599]" : "fa-regular fa-copy")}></i>
+                            <i
+                              className={cn(
+                                "text-xs",
+                                copiedIndex === idx
+                                  ? "fa-solid fa-check text-[#00e599]"
+                                  : "fa-regular fa-copy"
+                              )}
+                            ></i>
                             <span>{copiedIndex === idx ? "Tersalin!" : "Salin"}</span>
                           </button>
 
@@ -599,12 +665,16 @@ export function PresetFinderForm() {
                             rel="noopener noreferrer"
                             className={cn(
                               "px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1 shadow-md cursor-pointer active:scale-95",
-                              isChannel
+                              isYouTube
+                                ? "bg-red-600 hover:bg-red-500 text-white"
+                                : isWhatsApp
+                                ? "bg-emerald-500 hover:bg-emerald-400 text-gray-950"
+                                : isChannel
                                 ? "bg-sky-500 hover:bg-sky-400 text-gray-950"
                                 : "bg-[#00e599] hover:bg-[#1affaa] text-gray-950"
                             )}
                           >
-                            <span>{isChannel ? "Buka Saluran" : "Buka Preset"}</span>
+                            <span>{buttonLabel}</span>
                             <i className="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                           </a>
                         </div>

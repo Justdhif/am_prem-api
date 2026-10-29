@@ -140,29 +140,40 @@ export class TikTokGateway implements ITikTokGateway {
         );
 
         if (commentsWithReplies.length > 0 && d.id) {
-          // Prioritaskan komentar kreator/pinned dulu, lalu komentar dengan replies terbanyak
-          const prioritized = [...commentsWithReplies].sort((a: any, b: any) => {
-            const aIsCreator =
-              Boolean(a.author_pin) ||
-              (metadata.author.id && a.user?.id && String(a.user.id) === String(metadata.author.id)) ||
-              (metadata.author.username &&
-                a.user?.unique_id &&
-                a.user.unique_id.toLowerCase() === metadata.author.username.toLowerCase());
-            const bIsCreator =
-              Boolean(b.author_pin) ||
-              (metadata.author.id && b.user?.id && String(b.user.id) === String(metadata.author.id)) ||
-              (metadata.author.username &&
-                b.user?.unique_id &&
-                b.user.unique_id.toLowerCase() === metadata.author.username.toLowerCase());
+          const PRESET_KEYWORDS =
+            /\b(?:preset|xml|link|info|sl|saluran|mana|tutor|drive|bagi|drop|file|channel|yt|youtube|wa|linknya|bagi\s*preset|minta\s*preset)\b/i;
 
-            if (aIsCreator && !bIsCreator) return -1;
-            if (!aIsCreator && bIsCreator) return 1;
-            return (b.reply_total || 0) - (a.reply_total || 0);
+          // Smart relevance scoring
+          const scored = commentsWithReplies.map((c: any) => {
+            let score = 0;
+            const text = c.text || '';
+            const isCreatorComment =
+              Boolean(c.author_pin) ||
+              (metadata.author.id && c.user?.id && String(c.user.id) === String(metadata.author.id)) ||
+              (metadata.author.username &&
+                c.user?.unique_id &&
+                c.user.unique_id.toLowerCase() === metadata.author.username.toLowerCase());
+
+            if (PRESET_KEYWORDS.test(text)) score += 50;
+            if (c.author_pin) score += 30;
+            if (isCreatorComment) score += 40;
+            score += Math.min(c.reply_total || 0, 20);
+
+            return { ...c, score };
           });
 
-          // Ambil balasan hingga 10 komentar induk secara paralel
-          const targetParents = prioritized.slice(0, 10);
-          const replyPromises = targetParents.map(async (parent: any) => {
+          scored.sort((a: any, b: any) => b.score - a.score);
+
+          // Ambil balasan hingga 5 komentar induk paling relevan secara serial
+          // TikWM membatasi Free Api Limit: 1 request/second, sehingga harus ada jeda ~1100ms
+          const targetParents = scored.slice(0, 5);
+
+          for (let i = 0; i < targetParents.length; i++) {
+            const parent = targetParents[i];
+            if (i > 0) {
+              await new Promise((r) => setTimeout(r, 1100));
+            }
+
             try {
               const replyRes = await axios.get(
                 `https://www.tikwm.com/api/comment/reply?comment_id=${parent.id}&video_id=${d.id}&count=50`,
@@ -176,6 +187,8 @@ export class TikTokGateway implements ITikTokGateway {
               );
 
               if (replyRes.data?.code === 0 && Array.isArray(replyRes.data?.data?.comments)) {
+                let foundLinkInThisParent = false;
+
                 for (const r of replyRes.data.data.comments) {
                   const isReplyCreator =
                     (metadata.author.id && r.user?.id && String(r.user.id) === String(metadata.author.id)) ||
@@ -196,14 +209,27 @@ export class TikTokGateway implements ITikTokGateway {
                     likeCount: r.digg_count || 0,
                     createdAt: r.create_time,
                   });
+
+                  if (
+                    isReplyCreator &&
+                    /(?:whatsapp\.com|chat\.whatsapp\.com|alight\.link|alightcreative\.com|drive\.google\.com|mediafire\.com|sfile\.mobi|t\.me|youtu\.be|youtube\.com)/i.test(
+                      r.text || ''
+                    )
+                  ) {
+                    foundLinkInThisParent = true;
+                  }
+                }
+
+                // Jika balasan dari kreator ini sudah memuat link preset/saluran,
+                // kita cukupkan penelusuran agar respon tetap cepat
+                if (foundLinkInThisParent) {
+                  break;
                 }
               }
             } catch {
               // Abaikan jika fetch reply untuk komentar tertentu timeout/gagal
             }
-          });
-
-          await Promise.allSettled(replyPromises);
+          }
         }
       }
     } catch {

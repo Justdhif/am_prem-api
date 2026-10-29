@@ -6,10 +6,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { TikTokProfileModal } from "@/components/tiktok/TikTokProfileModal";
 
 export function Header() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isTikTokModalOpen, setIsTikTokModalOpen] = useState(false);
 
   const navItems = [
     { label: "Beranda", href: "/", icon: "fa-solid fa-house" },
@@ -194,16 +196,16 @@ export function Header() {
 
         {/* Right: TikTok Icon & Mobile Hamburger Toggle */}
         <div className="flex items-center space-x-2 shrink-0">
-          {/* TikTok Icon Button */}
-          <a
-            href="https://www.tiktok.com/@justdhifbieber"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 text-gray-400 hover:text-[#00e599] transition active:scale-95 flex items-center justify-center rounded-lg hover:bg-white/5"
-            title="Kunjungi TikTok @justdhifbieber"
+          {/* TikTok Profile Button - Opens Bottom Sheet Modal */}
+          <button
+            type="button"
+            onClick={() => setIsTikTokModalOpen(true)}
+            className="p-2 text-gray-400 hover:text-[#00e599] transition active:scale-95 flex items-center justify-center rounded-lg hover:bg-white/5 cursor-pointer"
+            title="Lihat Profil TikTok @justdhifbieber"
+            aria-label="Lihat Profil TikTok @justdhifbieber"
           >
             <i className="fa-brands fa-tiktok text-xl"></i>
-          </a>
+          </button>
 
           {/* Mobile Hamburger Button */}
           <button
@@ -286,22 +288,17 @@ export function Header() {
                 );
               })}
 
-              {/* Extra Mobile Link to TikTok */}
-              <div className="pt-2 mt-2 border-t border-gray-800/80 px-1">
-                <a
-                  href="https://www.tiktok.com/@justdhifbieber"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white hover:bg-gray-800/40 transition"
-                >
-                  <i className="fa-brands fa-tiktok text-sm text-[#00e599]"></i>
-                  <span>TikTok Official: @justdhifbieber</span>
-                </a>
-              </div>
+              {/* Extra Mobile Link to TikTok removed as requested */}
             </motion.div>
           </div>
         )}
       </AnimatePresence>
+
+      {/* Dynamic TikTok Profile Bottom Sheet Modal */}
+      <TikTokProfileModal
+        isOpen={isTikTokModalOpen}
+        onClose={() => setIsTikTokModalOpen(false)}
+      />
 
       {/* Spacer to preserve content flow offset since header is fixed */}
       <div className="h-16 w-full shrink-0 pointer-events-none" aria-hidden="true" />

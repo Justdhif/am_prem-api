@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export function Header() {
@@ -80,7 +80,10 @@ export function Header() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-[120] w-full bg-[#0d121f]/60 backdrop-blur-xl border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.25)] transition-all duration-300">
+      <motion.header
+        layoutRoot
+        className="fixed top-0 left-0 right-0 z-[120] w-full bg-[#0d121f]/60 backdrop-blur-xl border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.25)] transition-all duration-300"
+      >
       <div className="max-w-7xl mx-auto px-4 sm:px-8 md:px-10 lg:px-12 xl:px-16 h-16 flex items-center justify-between gap-4">
         {/* Left: Brand (Nama Web & Logo) */}
         <Link href="/" className="flex items-center space-x-3 shrink-0 group">
@@ -105,43 +108,46 @@ export function Header() {
         </Link>
 
         {/* Center: Main Navigation Menu (Desktop: Clean, Floating, No Box Background, Standard Navbar Style) */}
-        <nav className="hidden md:flex items-center gap-1 lg:gap-2 bg-transparent border-0 p-0 shadow-none">
-          {navItems.map((item, idx) => {
-            const isActive =
-              item.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.href);
+        <LayoutGroup id="desktop-navbar">
+          <nav className="hidden md:flex items-center gap-1 lg:gap-2 bg-transparent border-0 p-0 shadow-none">
+            {navItems.map((item, idx) => {
+              const isActive =
+                item.href === "/"
+                  ? pathname === "/"
+                  : pathname.startsWith(item.href);
 
-            return (
-              <Link
-                key={idx}
-                href={item.href}
-                className={cn(
-                  "px-3.5 py-1.5 rounded-lg text-xs lg:text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer relative group",
-                  isActive
-                    ? "text-[#00e599] font-bold"
-                    : "text-gray-300 hover:text-white hover:bg-white/5"
-                )}
-              >
-                <i
+              return (
+                <Link
+                  key={idx}
+                  href={item.href}
                   className={cn(
-                    item.icon,
-                    "text-xs transition-colors",
-                    isActive ? "text-[#00e599]" : "text-gray-400 group-hover:text-gray-200"
+                    "px-3.5 py-1.5 rounded-lg text-xs lg:text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer relative group",
+                    isActive
+                      ? "text-[#00e599] font-bold"
+                      : "text-gray-300 hover:text-white hover:bg-white/5"
                   )}
-                />
-                <span>{item.label}</span>
-                {isActive && (
-                  <motion.div
-                    layoutId="activeNavIndicator"
-                    className="absolute -bottom-1 left-3 right-3 m-0 h-0.5 bg-[#00e599] rounded-full shadow-[0_0_8px_rgba(0,229,153,0.8)] pointer-events-none"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                >
+                  <i
+                    className={cn(
+                      item.icon,
+                      "text-xs transition-colors",
+                      isActive ? "text-[#00e599]" : "text-gray-400 group-hover:text-gray-200"
+                    )}
                   />
-                )}
-              </Link>
-            );
-          })}
-        </nav>
+                  <span>{item.label}</span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeNavIndicator"
+                      layout="position"
+                      className="absolute -bottom-1 left-3 right-3 m-0 h-0.5 bg-[#00e599] rounded-full shadow-[0_0_8px_rgba(0,229,153,0.8)] pointer-events-none"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+        </LayoutGroup>
 
         {/* Right: TikTok Icon & Mobile Hamburger Toggle */}
         <div className="flex items-center space-x-2 shrink-0">
@@ -172,7 +178,7 @@ export function Header() {
           </button>
         </div>
       </div>
-    </header>
+    </motion.header>
 
       {/* Mobile Hamburger Dropdown Menu & Screen Backdrop */}
       <AnimatePresence>

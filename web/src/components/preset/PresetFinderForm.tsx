@@ -495,21 +495,6 @@ export function PresetFinderForm() {
               transition={{ duration: 0.3 }}
               className="space-y-4 pt-5 border-t border-gray-800"
             >
-              {/* Notice Cerdas jika Link Alight langsung tidak ada, tapi ditemukan Saluran Kreator */}
-              {presetResult.directPresets?.length === 0 && presetResult.channelInvites?.length > 0 && (
-                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-start space-x-2.5">
-                  <i className="fa-solid fa-circle-info text-amber-400 mt-0.5 shrink-0 text-sm"></i>
-                  <div className="space-y-1">
-                    <p className="font-semibold text-white">
-                      Kreator Membagikan Preset Melalui Saluran (Pencarian Alternatif)
-                    </p>
-                    <p className="text-[11px] text-amber-200/80 leading-relaxed">
-                      Link preset Alight Motion tidak ditaruh langsung di komentar publik, melainkan melalui <strong>Saluran WhatsApp / Telegram</strong> resmi di bawah ini. Klik <strong>Buka Saluran</strong> untuk masuk dan mengunduh preset dari pesan kreator.
-                    </p>
-                  </div>
-                </div>
-              )}
-
               {/* Ringkasan Presets Ditemukan */}
               <div className="flex items-center justify-between text-xs font-semibold text-gray-300 px-1">
                 <span className="flex items-center space-x-1.5">

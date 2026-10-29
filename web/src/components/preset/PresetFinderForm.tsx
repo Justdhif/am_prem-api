@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { apiClient } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { CustomVideoPlayer } from "./CustomVideoPlayer";
+import { VideoPlayer } from "@/components/player/VideoPlayer";
 
 export function PresetFinderForm() {
   const [presetUrl, setPresetUrl] = useState("");
@@ -271,7 +271,7 @@ export function PresetFinderForm() {
                   />
                 </div>
               ) : activeVideo.videoUrl ? (
-                <CustomVideoPlayer
+                <VideoPlayer
                   src={activeVideo.videoUrl}
                   poster={activeVideo.cover}
                   title={activeVideo.title}

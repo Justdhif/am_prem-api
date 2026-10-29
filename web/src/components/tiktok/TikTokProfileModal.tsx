@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface TikTokProfileModalProps {
@@ -9,14 +10,46 @@ interface TikTokProfileModalProps {
   onClose: () => void;
 }
 
+interface TikTokProfileData {
+  username: string;
+  displayName: string;
+  profileUrl: string;
+  avatarUrl: string;
+  bio: string;
+  verified: boolean;
+  stats: {
+    followers: string;
+    following: string;
+    likes: string;
+  };
+  tags: string[];
+}
+
+const DEFAULT_PROFILE: TikTokProfileData = {
+  username: "justdhifbieber",
+  displayName: "𝗝υѕƚ𝗗𝗵ιƒ — order di bio",
+  profileUrl: "https://www.tiktok.com/@justdhifbieber",
+  avatarUrl: "/images/logos/logo-web.webp",
+  bio: "Aktivasi Alight Motion Premium Resmi 1 Tahun & XML Preset Creator. Order di bio ⬇️",
+  verified: true,
+  stats: {
+    followers: "15.4K",
+    following: "92",
+    likes: "320.8K",
+  },
+  tags: [
+    "Preset XML Alight Motion",
+    "Aktivasi AM Pro Resmi",
+    "Garansi 1 Tahun Penuh",
+  ],
+};
+
 export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps) {
   const [hasMounted, setHasMounted] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [loadingEmbed, setLoadingEmbed] = useState(true);
-
-  const profileUrl = "https://www.tiktok.com/@justdhifbieber";
-  const username = "@justdhifbieber";
+  const [profile, setProfile] = useState<TikTokProfileData>(DEFAULT_PROFILE);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setHasMounted(true);
@@ -27,6 +60,31 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
     window.addEventListener("resize", checkDesktop);
     return () => window.removeEventListener("resize", checkDesktop);
   }, []);
+
+  // Fetch dynamic profile data when opened
+  useEffect(() => {
+    if (!isOpen) return;
+    let isMounted = true;
+    setLoading(true);
+
+    fetch("/api/tiktok")
+      .then((res) => res.json())
+      .then((resData) => {
+        if (isMounted && resData?.success && resData.data) {
+          setProfile(resData.data);
+        }
+      })
+      .catch((err) => {
+        console.warn("[TikTokModal] Fetch error:", err);
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen]);
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -50,38 +108,8 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Dynamically load TikTok Embed Script and trigger re-render
-  useEffect(() => {
-    if (!isOpen) return;
-    setLoadingEmbed(true);
-
-    const scriptId = "tiktok-embed-script";
-    const existingScript = document.getElementById(scriptId);
-
-    if (!existingScript) {
-      const script = document.createElement("script");
-      script.id = scriptId;
-      script.src = "https://www.tiktok.com/embed.js";
-      script.async = true;
-      script.onload = () => {
-        setLoadingEmbed(false);
-      };
-      document.body.appendChild(script);
-    } else {
-      const timer = setTimeout(() => {
-        try {
-          (window as any).tiktokEmbed?.load();
-        } catch {
-          // ignore
-        }
-        setLoadingEmbed(false);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen]);
-
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(profileUrl);
+    navigator.clipboard.writeText(profile.profileUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -106,7 +134,6 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
             className="fixed inset-0 bg-black/75 backdrop-blur-sm touch-none"
           />
 
-          {/* Conditional: Desktop Centered Dialog vs Mobile Bottom Sheet */}
           {isDesktop ? (
             /* ─────────────────────────────────────────────────────────────
                1. DESKTOP MODE: Centered Floating Dialog Modal
@@ -117,22 +144,22 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.94, y: 12 }}
               transition={{ duration: 0.22, ease: "easeOut" }}
-              className="relative z-[201] w-full max-w-lg bg-[#0d121f] border border-gray-800 rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.9)] flex flex-col max-h-[85vh] overflow-hidden select-none"
+              className="relative z-[201] w-full max-w-md bg-[#0d121f] border border-gray-800 rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.9)] flex flex-col overflow-hidden select-none"
             >
-              {/* Desktop Dialog Header */}
+              {/* Header */}
               <div className="px-6 py-4 border-b border-gray-800/80 flex items-center justify-between bg-[#111726]/90 shrink-0">
-                <div className="flex items-center space-x-3">
-                  <div className="w-9 h-9 rounded-xl bg-black border border-[#00e599]/40 flex items-center justify-center text-[#00e599] shadow-sm shadow-[#00e599]/25">
-                    <i className="fa-brands fa-tiktok text-lg"></i>
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-black border border-[#00e599]/40 flex items-center justify-center text-[#00e599] shadow-sm shadow-[#00e599]/25">
+                    <i className="fa-brands fa-tiktok text-base"></i>
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-gray-100 flex items-center space-x-2">
+                    <h3 className="text-sm font-bold text-gray-100 flex items-center space-x-1.5">
                       <span>Profil TikTok Resmi</span>
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#00e599]/15 text-[#00e599] font-semibold border border-[#00e599]/30">
-                        Live Data
+                        Official
                       </span>
                     </h3>
-                    <p className="text-xs text-gray-400 font-mono">{username}</p>
+                    <p className="text-xs text-gray-400 font-mono">@{profile.username}</p>
                   </div>
                 </div>
 
@@ -146,89 +173,107 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                 </button>
               </div>
 
-              {/* Desktop Dialog Content */}
-              <div className="p-5 overflow-y-auto overscroll-contain space-y-4 custom-scrollbar">
-                {/* Creator Showcase Card */}
-                <div className="bg-[#141b2b] border border-gray-800/90 rounded-2xl p-4 flex items-center justify-between">
-                  <div className="flex items-center space-x-3.5 min-w-0">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#00e599] to-[#00b377] p-0.5 shrink-0 shadow-md shadow-[#00e599]/25">
-                      <div className="w-full h-full rounded-full bg-[#0d121f] flex items-center justify-center text-white">
-                        <i className="fa-brands fa-tiktok text-2xl text-[#00e599]"></i>
+              {/* Body */}
+              <div className="p-6 space-y-5">
+                {/* Hero Profile Info */}
+                <div className="flex flex-col items-center text-center space-y-3">
+                  <div className="relative">
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-[#00e599] to-[#00b377] p-1 shadow-lg shadow-[#00e599]/25">
+                      <div className="w-full h-full rounded-full overflow-hidden bg-[#0d121f]">
+                        <Image
+                          src={profile.avatarUrl}
+                          alt={profile.displayName}
+                          width={80}
+                          height={80}
+                          className="w-full h-full object-cover p-1"
+                        />
                       </div>
                     </div>
-                    <div className="min-w-0">
-                      <h4 className="text-sm font-bold text-white truncate flex items-center gap-1.5">
-                        <span>Justdhif Official</span>
-                        <i className="fa-solid fa-circle-check text-xs text-[#00e599]" title="Verified"></i>
-                      </h4>
-                      <p className="text-xs text-gray-400 truncate">{username}</p>
-                      <p className="text-[11px] text-gray-500 mt-0.5">Alight Motion Pro & XML Preset</p>
+                    <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-black border border-[#00e599]/50 flex items-center justify-center text-[#00e599] text-xs shadow-md">
+                      <i className="fa-brands fa-tiktok"></i>
                     </div>
                   </div>
 
-                  <a
-                    href={profileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3.5 py-1.5 rounded-xl bg-[#00e599]/15 hover:bg-[#00e599]/25 border border-[#00e599]/30 text-[#00e599] text-xs font-bold transition flex items-center space-x-1.5 shrink-0 active:scale-95 hover:shadow-sm hover:shadow-[#00e599]/20"
-                  >
-                    <span>Kunjungi</span>
-                    <i className="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
-                  </a>
+                  <div>
+                    <h4 className="text-base font-bold text-white flex items-center justify-center gap-1.5">
+                      <span>{profile.displayName}</span>
+                      <i className="fa-solid fa-circle-check text-xs text-[#00e599]" title="Verified Creator"></i>
+                    </h4>
+                    <span className="inline-block mt-0.5 px-2.5 py-0.5 rounded-full bg-gray-800/80 text-gray-400 text-xs font-mono">
+                      @{profile.username}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-gray-300 leading-relaxed max-w-sm">
+                    {profile.bio}
+                  </p>
                 </div>
 
-                {/* TikTok Live Creator Embed Widget */}
-                <div className="relative rounded-2xl overflow-hidden bg-black/40 border border-gray-800/80 min-h-[300px] flex items-center justify-center">
-                  {loadingEmbed && (
-                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#0d121f]/90 space-y-2.5">
-                      <div className="w-7 h-7 border-2 border-[#00e599] border-t-transparent rounded-full animate-spin"></div>
-                      <span className="text-xs text-gray-400">Memuat profil TikTok...</span>
-                    </div>
-                  )}
-
-                  <div className="w-full flex justify-center py-2">
-                    <blockquote
-                      className="tiktok-embed"
-                      cite={profileUrl}
-                      data-unique-id="justdhifbieber"
-                      data-embed-from="oembed"
-                      data-embed-type="creator"
-                      style={{ maxWidth: "100%", minWidth: "288px", margin: "0 auto" }}
-                    >
-                      <section className="p-4 text-center">
-                        <a
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          href="https://www.tiktok.com/@justdhifbieber?refer=creator_embed"
-                          className="text-xs text-[#00e599] hover:underline"
-                        >
-                          @justdhifbieber
-                        </a>
-                      </section>
-                    </blockquote>
+                {/* 3-Column Stats Counter Grid */}
+                <div className="grid grid-cols-3 gap-2.5 bg-[#141b2b] border border-gray-800/90 rounded-2xl p-3.5 text-center">
+                  <div className="flex flex-col items-center justify-center space-y-1">
+                    <span className="text-[10px] font-medium text-gray-400 flex items-center gap-1">
+                      <i className="fa-solid fa-user-plus text-[10px] text-blue-400"></i>
+                      <span>Mengikuti</span>
+                    </span>
+                    <span className="text-sm sm:text-base font-extrabold text-white font-mono">
+                      {profile.stats.following}
+                    </span>
                   </div>
+
+                  <div className="flex flex-col items-center justify-center space-y-1 border-x border-gray-800/80 px-2">
+                    <span className="text-[10px] font-medium text-gray-400 flex items-center gap-1">
+                      <i className="fa-solid fa-users text-[10px] text-[#00e599]"></i>
+                      <span>Pengikut</span>
+                    </span>
+                    <span className="text-sm sm:text-base font-extrabold text-[#00e599] font-mono">
+                      {profile.stats.followers}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col items-center justify-center space-y-1">
+                    <span className="text-[10px] font-medium text-gray-400 flex items-center gap-1">
+                      <i className="fa-solid fa-heart text-[10px] text-rose-500"></i>
+                      <span>Suka</span>
+                    </span>
+                    <span className="text-sm sm:text-base font-extrabold text-white font-mono">
+                      {profile.stats.likes}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Category Tags */}
+                <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
+                  {profile.tags.map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="px-2.5 py-1 rounded-lg bg-gray-800/60 border border-gray-700/60 text-[11px] text-gray-300 font-medium"
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
 
-              {/* Desktop Dialog Footer Actions */}
+              {/* Actions Footer */}
               <div className="px-6 py-4 border-t border-gray-800/80 bg-[#111726]/90 flex items-center gap-3 shrink-0">
                 <button
                   type="button"
                   onClick={handleCopyLink}
-                  className="flex-1 py-2.5 px-4 rounded-xl bg-gray-800/90 hover:bg-gray-700 active:scale-98 text-gray-200 font-semibold text-xs transition flex items-center justify-center space-x-2 cursor-pointer border border-gray-700/60"
+                  className="flex-1 py-2.5 px-3 rounded-xl bg-gray-800/90 hover:bg-gray-700 active:scale-98 text-gray-200 font-semibold text-xs transition flex items-center justify-center space-x-2 cursor-pointer border border-gray-700/60"
                 >
                   <i className={copied ? "fa-solid fa-check text-[#00e599]" : "fa-regular fa-clone"}></i>
                   <span>{copied ? "Link Tersalin!" : "Salin Link"}</span>
                 </button>
 
                 <a
-                  href={profileUrl}
+                  href={profile.profileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-[2] py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#00e599] to-[#00b377] hover:brightness-105 active:scale-98 text-gray-950 font-bold text-xs transition shadow-lg shadow-[#00e599]/25 flex items-center justify-center space-x-2"
                 >
                   <i className="fa-brands fa-tiktok text-sm"></i>
-                  <span>Buka di Aplikasi TikTok</span>
+                  <span>Buka di TikTok</span>
                   <i className="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
                 </a>
               </div>
@@ -243,7 +288,7 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 320 }}
-              className="relative z-[201] w-full bg-[#0d121f] border-t border-gray-800 rounded-t-3xl shadow-[0_-12px_45px_rgba(0,0,0,0.9)] flex flex-col max-h-[88dvh] overflow-hidden select-none"
+              className="relative z-[201] w-full bg-[#0d121f] border-t border-gray-800 rounded-t-3xl shadow-[0_-12px_45px_rgba(0,0,0,0.9)] flex flex-col max-h-[90dvh] overflow-hidden select-none"
             >
               {/* Mobile Drag Indicator Handle */}
               <div className="pt-2.5 pb-1 flex justify-center">
@@ -260,10 +305,10 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                     <h3 className="text-xs font-bold text-gray-100 flex items-center space-x-1.5">
                       <span>TikTok Official</span>
                       <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#00e599]/15 text-[#00e599] font-semibold border border-[#00e599]/30">
-                        Live
+                        Official
                       </span>
                     </h3>
-                    <p className="text-[11px] text-gray-400 font-mono">{username}</p>
+                    <p className="text-[11px] text-gray-400 font-mono">@{profile.username}</p>
                   </div>
                 </div>
 
@@ -278,65 +323,84 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
               </div>
 
               {/* Mobile Sheet Content */}
-              <div className="p-3.5 overflow-y-auto overscroll-contain space-y-3.5 custom-scrollbar">
-                {/* Creator Showcase Card */}
-                <div className="bg-[#141b2b] border border-gray-800 rounded-2xl p-3 flex items-center justify-between">
-                  <div className="flex items-center space-x-2.5 min-w-0">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#00e599] to-[#00b377] p-0.5 shrink-0 shadow-md shadow-[#00e599]/20">
-                      <div className="w-full h-full rounded-full bg-[#0d121f] flex items-center justify-center text-white">
-                        <i className="fa-brands fa-tiktok text-lg text-[#00e599]"></i>
+              <div className="p-4 space-y-4 overflow-y-auto overscroll-contain custom-scrollbar">
+                {/* Hero Profile Info */}
+                <div className="flex flex-col items-center text-center space-y-2.5">
+                  <div className="relative">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#00e599] to-[#00b377] p-0.5 shadow-md shadow-[#00e599]/25">
+                      <div className="w-full h-full rounded-full overflow-hidden bg-[#0d121f]">
+                        <Image
+                          src={profile.avatarUrl}
+                          alt={profile.displayName}
+                          width={64}
+                          height={64}
+                          className="w-full h-full object-cover p-1"
+                        />
                       </div>
                     </div>
-                    <div className="min-w-0">
-                      <h4 className="text-xs font-bold text-white truncate flex items-center gap-1">
-                        <span>Justdhif Official</span>
-                        <i className="fa-solid fa-circle-check text-[10px] text-[#00e599]" title="Verified"></i>
-                      </h4>
-                      <p className="text-[11px] text-gray-400 truncate">{username}</p>
+                    <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-black border border-[#00e599]/50 flex items-center justify-center text-[#00e599] text-[10px]">
+                      <i className="fa-brands fa-tiktok"></i>
                     </div>
                   </div>
 
-                  <a
-                    href={profileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-2.5 py-1 rounded-xl bg-[#00e599]/15 hover:bg-[#00e599]/25 border border-[#00e599]/30 text-[#00e599] text-[11px] font-bold transition flex items-center space-x-1 shrink-0 active:scale-95"
-                  >
-                    <span>Buka</span>
-                    <i className="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-                  </a>
+                  <div>
+                    <h4 className="text-sm font-bold text-white flex items-center justify-center gap-1.5">
+                      <span>{profile.displayName}</span>
+                      <i className="fa-solid fa-circle-check text-[11px] text-[#00e599]"></i>
+                    </h4>
+                    <span className="inline-block mt-0.5 px-2 py-0.5 rounded-full bg-gray-800/80 text-gray-400 text-[11px] font-mono">
+                      @{profile.username}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-gray-300 leading-relaxed">
+                    {profile.bio}
+                  </p>
                 </div>
 
-                {/* TikTok Live Creator Embed Widget */}
-                <div className="relative rounded-2xl overflow-hidden bg-black/40 border border-gray-800/80 min-h-[290px] flex items-center justify-center">
-                  {loadingEmbed && (
-                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#0d121f]/90 space-y-2">
-                      <div className="w-6 h-6 border-2 border-[#00e599] border-t-transparent rounded-full animate-spin"></div>
-                      <span className="text-[11px] text-gray-400">Memuat profil TikTok...</span>
-                    </div>
-                  )}
-
-                  <div className="w-full flex justify-center py-1.5">
-                    <blockquote
-                      className="tiktok-embed"
-                      cite={profileUrl}
-                      data-unique-id="justdhifbieber"
-                      data-embed-from="oembed"
-                      data-embed-type="creator"
-                      style={{ maxWidth: "100%", minWidth: "288px", margin: "0 auto" }}
-                    >
-                      <section className="p-3 text-center">
-                        <a
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          href="https://www.tiktok.com/@justdhifbieber?refer=creator_embed"
-                          className="text-xs text-[#00e599] hover:underline"
-                        >
-                          @justdhifbieber
-                        </a>
-                      </section>
-                    </blockquote>
+                {/* 3-Column Stats Counter Grid */}
+                <div className="grid grid-cols-3 gap-2 bg-[#141b2b] border border-gray-800/90 rounded-2xl p-3 text-center">
+                  <div className="flex flex-col items-center justify-center space-y-1">
+                    <span className="text-[10px] font-medium text-gray-400 flex items-center gap-1">
+                      <i className="fa-solid fa-user-plus text-[9px] text-blue-400"></i>
+                      <span>Mengikuti</span>
+                    </span>
+                    <span className="text-xs sm:text-sm font-extrabold text-white font-mono">
+                      {profile.stats.following}
+                    </span>
                   </div>
+
+                  <div className="flex flex-col items-center justify-center space-y-1 border-x border-gray-800/80 px-1">
+                    <span className="text-[10px] font-medium text-gray-400 flex items-center gap-1">
+                      <i className="fa-solid fa-users text-[9px] text-[#00e599]"></i>
+                      <span>Pengikut</span>
+                    </span>
+                    <span className="text-xs sm:text-sm font-extrabold text-[#00e599] font-mono">
+                      {profile.stats.followers}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col items-center justify-center space-y-1">
+                    <span className="text-[10px] font-medium text-gray-400 flex items-center gap-1">
+                      <i className="fa-solid fa-heart text-[9px] text-rose-500"></i>
+                      <span>Suka</span>
+                    </span>
+                    <span className="text-xs sm:text-sm font-extrabold text-white font-mono">
+                      {profile.stats.likes}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Category Tags */}
+                <div className="flex flex-wrap items-center justify-center gap-1.5 pt-0.5">
+                  {profile.tags.map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="px-2 py-0.5 rounded-md bg-gray-800/60 border border-gray-700/60 text-[10px] text-gray-300 font-medium"
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
 
@@ -352,13 +416,13 @@ export function TikTokProfileModal({ isOpen, onClose }: TikTokProfileModalProps)
                 </button>
 
                 <a
-                  href={profileUrl}
+                  href={profile.profileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-[2] py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#00e599] to-[#00b377] hover:brightness-105 active:scale-98 text-gray-950 font-bold text-xs transition shadow-lg shadow-[#00e599]/20 flex items-center justify-center space-x-1.5"
                 >
                   <i className="fa-brands fa-tiktok text-xs"></i>
-                  <span>Buka TikTok</span>
+                  <span>Buka di TikTok</span>
                   <i className="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                 </a>
               </div>

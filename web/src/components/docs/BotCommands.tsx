@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MultiCodeBlock, CodeSnippet } from "./MultiCodeBlock";
+import { JsonViewer } from "./JsonViewer";
 import { cn } from "@/lib/utils";
 
 const BASE_URL = "https://amprem-api.vercel.app";
@@ -299,9 +300,7 @@ echo $result;`,
           </Button>
         </div>
         <div className="rounded-xl border border-gray-800 bg-[#070b13] p-3.5 sm:p-4 overflow-x-auto custom-scrollbar">
-          <pre className="font-mono text-xs leading-relaxed text-[#00e599] whitespace-pre">
-            <code>{rawBodyExample}</code>
-          </pre>
+          <JsonViewer code={rawBodyExample} />
         </div>
       </div>
 
@@ -360,10 +359,19 @@ echo $result;`,
           </div>
         </div>
 
-        <div className="relative rounded-xl overflow-hidden border border-gray-800 bg-[#070b13]">
-          <pre className="p-4 text-xs font-mono text-gray-300 overflow-x-auto leading-relaxed custom-scrollbar">
-            <code>{activeResponse.payload}</code>
-          </pre>
+        <div className="relative rounded-xl overflow-hidden border border-gray-800 bg-[#070b13] p-3.5 sm:p-4 overflow-x-auto custom-scrollbar">
+          {activeResponse.status < 400 ? (
+            <JsonViewer code={activeResponse.payload} />
+          ) : (
+            <pre
+              className={cn(
+                "font-mono text-xs leading-relaxed whitespace-pre",
+                activeResponse.status >= 500 ? "text-red-400" : "text-amber-300"
+              )}
+            >
+              <code>{activeResponse.payload}</code>
+            </pre>
+          )}
         </div>
       </div>
     </motion.div>

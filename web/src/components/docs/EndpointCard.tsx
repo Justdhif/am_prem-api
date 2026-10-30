@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MultiCodeBlock, CodeSnippet } from "./MultiCodeBlock";
+import { JsonViewer } from "./JsonViewer";
 import { cn } from "@/lib/utils";
 
 export interface EndpointParam {
@@ -181,9 +182,7 @@ export function EndpointCard({
           </div>
 
           <div className="rounded-xl border border-gray-800 bg-[#070b13] p-3.5 sm:p-4 overflow-x-auto custom-scrollbar">
-            <pre className="font-mono text-xs leading-relaxed text-[#00e599] whitespace-pre">
-              <code>{rawBodyJson}</code>
-            </pre>
+            <JsonViewer code={rawBodyJson} />
           </div>
         </div>
       )}
@@ -255,18 +254,18 @@ export function EndpointCard({
         </div>
 
         <div className="rounded-xl border border-gray-800 bg-[#070b13] p-3.5 sm:p-4 overflow-x-auto custom-scrollbar">
-          <pre
-            className={cn(
-              "font-mono text-xs leading-relaxed whitespace-pre",
-              activeResponse.status >= 500
-                ? "text-red-400"
-                : activeResponse.status >= 400
-                ? "text-amber-300"
-                : "text-[#00e599]"
-            )}
-          >
-            <code>{activeResponse.payload}</code>
-          </pre>
+          {activeResponse.status < 400 ? (
+            <JsonViewer code={activeResponse.payload} />
+          ) : (
+            <pre
+              className={cn(
+                "font-mono text-xs leading-relaxed whitespace-pre",
+                activeResponse.status >= 500 ? "text-red-400" : "text-amber-300"
+              )}
+            >
+              <code>{activeResponse.payload}</code>
+            </pre>
+          )}
         </div>
       </div>
     </motion.div>

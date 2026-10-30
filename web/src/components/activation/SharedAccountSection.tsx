@@ -76,7 +76,7 @@ export function SharedAccountSection() {
       <div className="p-4 sm:p-5 rounded-2xl bg-[#0a0e17] border border-gray-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 relative z-10">
         <div className="space-y-1 min-w-0">
           <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block">
-            Alamat Email Bersama (Aktif 1 Tahun):
+            Alamat Email Bersama
           </span>
           <div className="flex items-center space-x-2">
             <i className="fa-regular fa-envelope text-[#00e599] text-base shrink-0"></i>

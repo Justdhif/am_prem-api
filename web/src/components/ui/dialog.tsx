@@ -136,7 +136,7 @@ export function DialogOverlay({ className, ...props }: DialogOverlayProps) {
       transition={{ duration: 0.2 }}
       onClick={() => setOpen(false)}
       className={cn(
-        "fixed inset-0 bg-black/75 backdrop-blur-sm z-[200] touch-none",
+        "fixed inset-0 bg-black/75 backdrop-blur-sm touch-none",
         className
       )}
       {...props}

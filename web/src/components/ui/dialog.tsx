@@ -246,7 +246,7 @@ export function DialogHeader({
   return (
     <div
       className={cn(
-        "px-6 py-4 border-b border-gray-800/80 flex items-center justify-between bg-[#111726]/90 shrink-0",
+        "px-6 py-4 border-b border-gray-800/80 flex items-center justify-between shrink-0",
         className
       )}
       {...props}
@@ -261,7 +261,7 @@ export function DialogFooter({
   return (
     <div
       className={cn(
-        "px-6 py-4 border-t border-gray-800/80 bg-[#111726]/90 flex items-center gap-3 shrink-0",
+        "px-6 py-4 border-t border-gray-800/80 flex items-center gap-3 shrink-0",
         className
       )}
       {...props}

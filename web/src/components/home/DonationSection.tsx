@@ -1,48 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { createPortal } from "react-dom";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogClose,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 export function DonationSection() {
   const [isOpen, setIsOpen] = useState(false);
-  const [hasMounted, setHasMounted] = useState(false);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  // Lock body & html scroll completely when modal sheet is open
-  useEffect(() => {
-    if (isOpen) {
-      const originalBodyOverflow = document.body.style.overflow;
-      const originalHtmlOverflow = document.documentElement.style.overflow;
-      const originalTouchAction = document.body.style.touchAction;
-
-      document.body.style.overflow = "hidden";
-      document.documentElement.style.overflow = "hidden";
-      document.body.style.touchAction = "none";
-
-      const handlePreventDefault = (e: TouchEvent) => {
-        const sheetEl = document.getElementById("donationSheetContent");
-        if (sheetEl && sheetEl.contains(e.target as Node)) {
-          return;
-        }
-        e.preventDefault();
-      };
-
-      window.addEventListener("touchmove", handlePreventDefault, { passive: false });
-
-      return () => {
-        document.body.style.overflow = originalBodyOverflow;
-        document.documentElement.style.overflow = originalHtmlOverflow;
-        document.body.style.touchAction = originalTouchAction;
-        window.removeEventListener("touchmove", handlePreventDefault);
-      };
-    }
-  }, [isOpen]);
 
   const handleDownloadQR = () => {
     const a = document.createElement("a");
@@ -104,93 +75,74 @@ export function DonationSection() {
         </div>
       </motion.div>
 
-      {/* Donation Bottom Sheet Modal */}
-      {hasMounted &&
-        createPortal(
-          <AnimatePresence>
-            {isOpen && (
-              <div className="fixed inset-0 z-[160] flex items-end justify-center">
-                {/* Backdrop Overlay */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.25 }}
-                  onClick={() => setIsOpen(false)}
-                  className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[160] touch-none cursor-pointer"
-                />
+      {/* Donation Dialog Modal */}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent
+          id="donationSheetContent"
+          containerClassName="items-end justify-center p-0"
+          className="relative z-[165] w-full max-w-md bg-[#0d121f] border-t border-x border-gray-800/90 rounded-t-3xl shadow-[0_-12px_45px_rgba(0,0,0,0.85)] p-5 sm:p-6 text-center space-y-4 max-h-[90vh] overflow-y-auto"
+          initial={{ y: "100%" }}
+          animate={{ y: 0 }}
+          exit={{ y: "100%" }}
+          transition={{ type: "spring", damping: 28, stiffness: 300 }}
+          style={{ overscrollBehavior: "contain" }}
+        >
+          {/* Top Drag Handle */}
+          <div className="w-12 h-1.5 rounded-full bg-gray-700/80 mx-auto -mt-1 cursor-grab" />
 
-                {/* Bottom Sheet Container */}
-                <motion.div
-                  role="dialog"
-                  aria-modal="true"
-                  initial={{ y: "100%" }}
-                  animate={{ y: 0 }}
-                  exit={{ y: "100%" }}
-                  transition={{ type: "spring", damping: 28, stiffness: 300 }}
-                  id="donationSheetContent"
-                  style={{ overscrollBehavior: "contain" }}
-                  className="relative z-[165] w-full max-w-md bg-[#0d121f] border-t border-x border-gray-800/90 rounded-t-3xl shadow-[0_-12px_45px_rgba(0,0,0,0.85)] p-5 sm:p-6 text-center space-y-4 max-h-[90vh] overflow-y-auto"
-                >
-                  {/* Top Drag Handle */}
-                  <div className="w-12 h-1.5 rounded-full bg-gray-700/80 mx-auto -mt-1 cursor-grab" />
+          {/* Header & Close Button */}
+          <div className="flex items-center justify-between pb-1">
+            <span className="text-[11px] font-bold text-[#00e599] uppercase tracking-wider flex items-center space-x-1.5">
+              <i className="fa-solid fa-qrcode text-xs"></i>
+              <span>Justdhif Store</span>
+            </span>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="w-8 h-8 rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white"
+                aria-label="Tutup"
+              >
+                <i className="fa-solid fa-xmark text-sm"></i>
+              </Button>
+            </DialogClose>
+          </div>
 
-                  {/* Header & Close Button */}
-                  <div className="flex items-center justify-between pb-1">
-                    <span className="text-[11px] font-bold text-[#00e599] uppercase tracking-wider flex items-center space-x-1.5">
-                      <i className="fa-solid fa-qrcode text-xs"></i>
-                      <span>Justdhif Store</span>
-                    </span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setIsOpen(false)}
-                      className="w-8 h-8 rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white"
-                      aria-label="Tutup"
-                    >
-                      <i className="fa-solid fa-xmark text-sm"></i>
-                    </Button>
-                  </div>
+          {/* Thank You Note */}
+          <div className="space-y-1.5 px-2">
+            <DialogTitle className="text-lg sm:text-xl font-bold text-white font-piximisa text-center">
+              Terima Kasih Banyak! 💚
+            </DialogTitle>
+            <DialogDescription className="text-xs text-gray-300 leading-relaxed text-center">
+              Terima kasih sudah menggunakan, mampir, atau memberikan donasi sukarela untuk mendukung layanan Alight Motion Premium ini.
+            </DialogDescription>
+          </div>
 
-                  {/* Thank You Note */}
-                  <div className="space-y-1.5 px-2">
-                    <h3 className="text-lg sm:text-xl font-bold text-white font-piximisa">
-                      Terima Kasih Banyak! 💚
-                    </h3>
-                    <p className="text-xs text-gray-300 leading-relaxed">
-                      Terima kasih sudah menggunakan, mampir, atau memberikan donasi sukarela untuk mendukung layanan Alight Motion Premium ini.
-                    </p>
-                  </div>
+          {/* Official QRIS Image */}
+          <div className="p-3 rounded-2xl bg-[#080d16] border border-gray-800/90 shadow-inner flex flex-col items-center justify-center">
+            <div className="relative w-full max-w-[270px] sm:max-w-[290px] aspect-[727/1024] rounded-xl overflow-hidden shadow-lg border border-gray-700/60 bg-white">
+              <Image
+                src="/images/qr_donasi.webp"
+                alt="QRIS Donasi Justdhif Store"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          </div>
 
-                  {/* Official QRIS Image */}
-                  <div className="p-3 rounded-2xl bg-[#080d16] border border-gray-800/90 shadow-inner flex flex-col items-center justify-center">
-                    <div className="relative w-full max-w-[270px] sm:max-w-[290px] aspect-[727/1024] rounded-xl overflow-hidden shadow-lg border border-gray-700/60 bg-white">
-                      <Image
-                        src="/images/qr_donasi.webp"
-                        alt="QRIS Donasi Justdhif Store"
-                        fill
-                        className="object-contain"
-                        priority
-                      />
-                    </div>
-                  </div>
-
-                  {/* Download QR Button */}
-                  <Button
-                    type="button"
-                    onClick={handleDownloadQR}
-                    className="w-full h-auto py-3 px-4 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/20"
-                  >
-                    <i className="fa-solid fa-download text-sm"></i>
-                    <span>Unduh QR Code</span>
-                  </Button>
-                </motion.div>
-              </div>
-            )}
-          </AnimatePresence>,
-          document.body
-        )}
+          {/* Download QR Button */}
+          <Button
+            type="button"
+            onClick={handleDownloadQR}
+            className="w-full h-auto py-3 px-4 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/20"
+          >
+            <i className="fa-solid fa-download text-sm"></i>
+            <span>Unduh QR Code</span>
+          </Button>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -122,9 +122,18 @@ export async function GET() {
     );
 
     // 4. Ambil detail konten tiap pesan untuk ekstrak magic login link
+    const now = Date.now();
     const detailedMessages = await Promise.all(
       actualMessages.slice(0, 5).map(async (m: any) => {
         try {
+          const createdAtDate = new Date(Number(m.mail_timestamp) * 1000);
+          const ageMs = now - createdAtDate.getTime();
+
+          // Batasi masa aktif tautan login maksimal 1 menit (60 detik)
+          if (ageMs > 60 * 1000) {
+            return null;
+          }
+
           const mailRes = await fetch(
             `https://api.guerrillamail.com/ajax.php?f=fetch_email&email_id=${m.mail_id}&sid_token=${sid}`,
             { cache: "no-store" }
@@ -140,7 +149,7 @@ export async function GET() {
             from: "Alight Creative Official",
             subject: "Tautan Masuk Alight Motion",
             rawSubject: m.mail_subject,
-            createdAt: new Date(Number(m.mail_timestamp) * 1000).toISOString(),
+            createdAt: createdAtDate.toISOString(),
             loginLink,
           };
         } catch {

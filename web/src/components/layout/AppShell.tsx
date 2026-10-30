@@ -32,7 +32,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Header />
       <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 md:px-10 lg:px-12 xl:px-16 pt-3.5 sm:pt-6 lg:pt-8 pb-28 lg:pb-12 flex flex-col lg:flex-row gap-0 lg:gap-10 xl:gap-12 items-start">
         {/* Left Sidebar: Music Player */}
-        <aside className="contents lg:block lg:w-80 xl:w-[340px] shrink-0 lg:sticky lg:top-20 lg:z-20">
+        <aside className="contents lg:block lg:w-80 xl:w-[340px] shrink-0 lg:sticky lg:top-20 lg:z-[210]">
           <MusicPlayer />
         </aside>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,16 @@ import {
 
 export function DonationSection() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 640);
+    };
+    checkDesktop();
+    window.addEventListener("resize", checkDesktop);
+    return () => window.removeEventListener("resize", checkDesktop);
+  }, []);
 
   const handleDownloadQR = () => {
     const a = document.createElement("a");
@@ -79,16 +89,28 @@ export function DonationSection() {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent
           id="donationSheetContent"
-          containerClassName="items-end justify-center p-0"
-          className="relative z-10 w-full max-w-md bg-[#0d121f] border-t border-x border-gray-800/90 rounded-t-3xl shadow-[0_-12px_45px_rgba(0,0,0,0.85)] p-5 sm:p-6 text-center space-y-4 max-h-[90vh] overflow-y-auto"
-          initial={{ y: "100%" }}
-          animate={{ y: 0 }}
-          exit={{ y: "100%" }}
-          transition={{ type: "spring", damping: 28, stiffness: 300 }}
+          containerClassName={
+            isDesktop ? "items-center justify-center p-4 sm:p-6" : "items-end justify-center p-0"
+          }
+          className={
+            isDesktop
+              ? "w-full max-w-md bg-[#0d121f] border border-gray-800 rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.9)] p-6 text-center space-y-4 overflow-hidden select-none"
+              : "w-full max-w-md bg-[#0d121f] border-t border-x border-gray-800/90 rounded-t-3xl shadow-[0_-12px_45px_rgba(0,0,0,0.85)] p-5 text-center space-y-4 max-h-[90vh] overflow-y-auto select-none"
+          }
+          initial={isDesktop ? { opacity: 0, scale: 0.94, y: 12 } : { y: "100%" }}
+          animate={isDesktop ? { opacity: 1, scale: 1, y: 0 } : { y: 0 }}
+          exit={isDesktop ? { opacity: 0, scale: 0.94, y: 12 } : { y: "100%" }}
+          transition={
+            isDesktop
+              ? { duration: 0.22, ease: "easeOut" }
+              : { type: "spring", damping: 28, stiffness: 300 }
+          }
           style={{ overscrollBehavior: "contain" }}
         >
-          {/* Top Drag Handle */}
-          <div className="w-12 h-1.5 rounded-full bg-gray-700/80 mx-auto -mt-1 cursor-grab" />
+          {/* Top Drag Handle (Mobile only) */}
+          {!isDesktop && (
+            <div className="w-12 h-1.5 rounded-full bg-gray-700/80 mx-auto -mt-1 cursor-grab" />
+          )}
 
           {/* Header & Close Button */}
           <div className="flex items-center justify-between pb-1">

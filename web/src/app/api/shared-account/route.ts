@@ -1,11 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export const fetchCache = "force-no-store";
 
-const SHARED_EMAIL = process.env.SHARED_FREE_EMAIL || "ampremcommunity@sharklasers.com";
-const GUERRILLA_USER = process.env.SHARED_GUERRILLA_USER || "ampremcommunity";
+const SHARED_ACCOUNTS = [
+  { id: "1", user: "ampremcommunity", email: "ampremcommunity@sharklasers.com", name: "Akun 1" },
+  { id: "2", user: "ampremcommunity2", email: "ampremcommunity2@sharklasers.com", name: "Akun 2" },
+  { id: "3", user: "ampremcommunity3", email: "ampremcommunity3@sharklasers.com", name: "Akun 3" },
+];
 
 function extractLoginLink(htmlContent?: string, textContent?: string, email?: string): string | null {
   const combined = `${textContent || ""} ${htmlContent || ""}`;
@@ -63,7 +66,14 @@ function extractLoginLink(htmlContent?: string, textContent?: string, email?: st
   return link;
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const requestedId = searchParams.get("account") || "1";
+  const activeAccount = SHARED_ACCOUNTS.find((a) => a.id === requestedId) || SHARED_ACCOUNTS[0];
+
+  const emailToUse = activeAccount.email;
+  const userToUse = activeAccount.user;
+
   try {
     // 1. Dapatkan sesi baru dari Guerrilla Mail
     const initRes = await fetch("https://api.guerrillamail.com/ajax.php?f=get_email_address", {
@@ -74,7 +84,9 @@ export async function GET() {
       return NextResponse.json(
         {
           success: false,
-          email: SHARED_EMAIL,
+          activeAccountId: activeAccount.id,
+          email: emailToUse,
+          accounts: SHARED_ACCOUNTS.map((a) => ({ id: a.id, name: a.name, email: a.email })),
           error: "Gagal menginisialisasi sesi mailbox publik",
           messages: [],
         },
@@ -85,10 +97,10 @@ export async function GET() {
     const initData = await initRes.json();
     const sid = initData.sid_token;
 
-    // 2. Set username mailbox ke ampremcommunity
+    // 2. Set username mailbox ke akun yang dipilih
     await fetch(
       `https://api.guerrillamail.com/ajax.php?f=set_email_user&email_user=${encodeURIComponent(
-        GUERRILLA_USER
+        userToUse
       )}&lang=en&sid_token=${sid}`,
       { cache: "no-store" }
     );
@@ -103,7 +115,9 @@ export async function GET() {
       return NextResponse.json(
         {
           success: false,
-          email: SHARED_EMAIL,
+          activeAccountId: activeAccount.id,
+          email: emailToUse,
+          accounts: SHARED_ACCOUNTS.map((a) => ({ id: a.id, name: a.name, email: a.email })),
           error: "Gagal mengambil daftar email masuk",
           messages: [],
         },
@@ -142,7 +156,7 @@ export async function GET() {
           if (!mailRes.ok) return null;
           const mailData = await mailRes.json();
 
-          const loginLink = extractLoginLink(mailData.mail_body, mailData.mail_excerpt, SHARED_EMAIL);
+          const loginLink = extractLoginLink(mailData.mail_body, mailData.mail_excerpt, emailToUse);
 
           return {
             id: String(m.mail_id),
@@ -162,7 +176,9 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
-      email: SHARED_EMAIL,
+      activeAccountId: activeAccount.id,
+      email: emailToUse,
+      accounts: SHARED_ACCOUNTS.map((a) => ({ id: a.id, name: a.name, email: a.email })),
       total: validMessages.length,
       messages: validMessages,
     });
@@ -170,7 +186,9 @@ export async function GET() {
     return NextResponse.json(
       {
         success: false,
-        email: SHARED_EMAIL,
+        activeAccountId: activeAccount.id,
+        email: emailToUse,
+        accounts: SHARED_ACCOUNTS.map((a) => ({ id: a.id, name: a.name, email: a.email })),
         error: error.message || "Terjadi kesalahan internal server",
         messages: [],
       },

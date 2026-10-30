@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Sheet,
   SheetContent,
@@ -21,9 +22,17 @@ interface SharedEmailMessage {
   loginLink: string | null;
 }
 
+const ACCOUNTS = [
+  { id: "1", name: "Akun 1", email: "ampremcommunity@sharklasers.com" },
+  { id: "2", name: "Akun 2", email: "ampremcommunity2@sharklasers.com" },
+  { id: "3", name: "Akun 3", email: "ampremcommunity3@sharklasers.com" },
+];
+
 export function SharedAccountSection() {
   const [isOpen, setIsOpen] = useState(false);
-  const [email, setEmail] = useState("ampremcommunity@sharklasers.com");
+  const [selectedAccountId, setSelectedAccountId] = useState("1");
+  const currentAccount = ACCOUNTS.find((a) => a.id === selectedAccountId) || ACCOUNTS[0];
+
   const [messages, setMessages] = useState<SharedEmailMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
@@ -36,35 +45,37 @@ export function SharedAccountSection() {
     return () => clearInterval(timer);
   }, []);
 
-  const fetchInbox = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/shared-account", { cache: "no-store" });
-      const data = await res.json();
-      if (data.success) {
-        setEmail(data.email || "ampremcommunity@sharklasers.com");
-        setMessages(data.messages || []);
-        setLastUpdated(
-          new Date().toLocaleTimeString("id-ID", {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-          })
-        );
+  const fetchInbox = useCallback(
+    async (accountId = selectedAccountId) => {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/shared-account?account=${accountId}`, { cache: "no-store" });
+        const data = await res.json();
+        if (data.success) {
+          setMessages(data.messages || []);
+          setLastUpdated(
+            new Date().toLocaleTimeString("id-ID", {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+            })
+          );
+        }
+      } catch (err) {
+        console.error("Gagal memuat inbox akun bersama:", err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Gagal memuat inbox akun bersama:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [selectedAccountId]
+  );
 
   useEffect(() => {
-    fetchInbox();
+    fetchInbox(selectedAccountId);
     // Auto-refresh setiap 5 detik agar tautan login yang baru masuk langsung muncul
-    const interval = setInterval(fetchInbox, 5000);
+    const interval = setInterval(() => fetchInbox(selectedAccountId), 5000);
     return () => clearInterval(interval);
-  }, [fetchInbox]);
+  }, [fetchInbox, selectedAccountId]);
 
   const copyToClipboard = (text: string, onSuccess: () => void) => {
     try {
@@ -99,7 +110,7 @@ export function SharedAccountSection() {
   };
 
   const handleCopyEmail = () => {
-    copyToClipboard(email, () => {
+    copyToClipboard(currentAccount.email, () => {
       setCopiedEmail(true);
       setTimeout(() => setCopiedEmail(false), 2500);
     });
@@ -128,7 +139,7 @@ export function SharedAccountSection() {
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") setIsOpen(true);
         }}
-        className="group relative p-3 sm:p-4 rounded-2xl bg-gradient-to-r from-[#121826] via-[#0d1624] to-[#121826] border border-[#00e599]/35 hover:border-[#00e599]/70 shadow-lg hover:shadow-[0_0_25px_rgba(0,229,153,0.15)] transition-all duration-300 cursor-pointer overflow-hidden flex items-center justify-between gap-3"
+        className="group relative p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-[#121826] via-[#0d1624] to-[#121826] border border-[#00e599]/35 hover:border-[#00e599]/70 shadow-lg hover:shadow-[0_0_25px_rgba(0,229,153,0.15)] transition-all duration-300 cursor-pointer overflow-hidden flex items-center justify-between gap-3"
       >
         {/* Subtle decorative background ambient light */}
         <div className="absolute -top-12 -right-12 w-32 h-32 bg-[#00e599]/10 rounded-full blur-2xl group-hover:bg-[#00e599]/20 transition-all pointer-events-none" />
@@ -140,14 +151,14 @@ export function SharedAccountSection() {
           <div className="space-y-0.5 min-w-0">
             <div className="flex items-center space-x-2">
               <span className="text-xs sm:text-sm font-bold text-white group-hover:text-[#00e599] transition-colors truncate">
-                Gamau ribet? Pake akun sharing aja nih
+                Gamau ribet? Pake 3 akun sharing gratis aja nih
               </span>
               <span className="text-[9px] uppercase px-2 py-0.5 rounded-full bg-[#00e599]/15 text-[#00e599] font-bold border border-[#00e599]/30 shrink-0 hidden sm:inline-block">
-                Gratis
+                3 Akun Pro VIP
               </span>
             </div>
             <p className="text-[11px] sm:text-xs text-gray-400 truncate">
-              Tinggal salin email & klik tautan masuk yang otomatis muncul. Siap pakai!
+              Tersedia Akun 1, 2, & 3. Semua sudah aktif lisensi Pro VIP 1 Tahun!
             </p>
           </div>
         </div>
@@ -170,7 +181,7 @@ export function SharedAccountSection() {
         </div>
       </div>
 
-      {/* Slide-over Drawer / Sheet for Shared Account */}
+      {/* Slide-over Drawer / Sheet for Shared Accounts */}
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetContent
           side="right"
@@ -181,14 +192,14 @@ export function SharedAccountSection() {
           <SheetHeader className="px-5 py-4 border-b border-gray-800 flex items-center justify-between bg-[#0d121f] shrink-0">
             <div className="flex items-center space-x-2.5">
               <div className="w-8 h-8 rounded-xl bg-[#00e599]/15 border border-[#00e599]/30 flex items-center justify-center text-[#00e599]">
-                <i className="fa-solid fa-key text-sm"></i>
+                <i className="fa-solid fa-users text-sm"></i>
               </div>
               <div className="text-left">
                 <SheetTitle className="text-sm sm:text-base font-bold text-gray-100 font-piximisa tracking-wide">
-                  Akun Sharing Alight Motion
+                  3 Akun Sharing Alight Motion
                 </SheetTitle>
                 <SheetDescription className="text-[11px] text-gray-400">
-                  Login instan tanpa perlu daftar email pribadi
+                  Semua akun aktif Pro VIP 1 Tahun (s/d 30 Okt 2027)
                 </SheetDescription>
               </div>
             </div>
@@ -208,15 +219,58 @@ export function SharedAccountSection() {
 
           {/* Sheet Body (Scrollable) */}
           <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
+            {/* Account Selector Tabs */}
+            <div className="space-y-1.5">
+              <span className="text-[10px] sm:text-[11px] font-semibold text-gray-400 uppercase tracking-wider block">
+                Pilih Akun yang Ingin Digunakan:
+              </span>
+              <div className="grid grid-cols-3 gap-1.5 p-1 bg-[#0d121f] rounded-2xl border border-gray-800">
+                {ACCOUNTS.map((acc) => (
+                  <button
+                    key={acc.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedAccountId(acc.id);
+                      setCopiedEmail(false);
+                      setMessages([]);
+                      fetchInbox(acc.id);
+                    }}
+                    className={cn(
+                      "py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center space-y-0.5",
+                      selectedAccountId === acc.id
+                        ? "bg-gradient-to-r from-[#00e599] to-[#00c985] text-gray-950 shadow-md shadow-[#00e599]/20"
+                        : "text-gray-400 hover:text-gray-200 hover:bg-gray-800/60"
+                    )}
+                  >
+                    <span>{acc.name}</span>
+                    <span
+                      className={cn(
+                        "text-[9px] font-mono",
+                        selectedAccountId === acc.id ? "text-gray-900 font-semibold" : "text-emerald-400/80"
+                      )}
+                    >
+                      Pro VIP
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Email Card & Copy Button */}
             <div className="p-3.5 sm:p-4 rounded-2xl bg-[#0d121f] border border-gray-800 space-y-2.5 shadow-inner">
-              <span className="text-[10px] sm:text-[11px] font-semibold text-gray-400 uppercase tracking-wider block">
-                Alamat Email Bersama
-              </span>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] sm:text-[11px] font-semibold text-gray-400 uppercase tracking-wider block">
+                  Alamat Email {currentAccount.name}
+                </span>
+                <span className="text-[10px] text-[#00e599] font-semibold">
+                  Aktif 1 Tahun
+                </span>
+              </div>
+
               <div className="flex items-center space-x-2 bg-[#090d16] p-2.5 rounded-xl border border-gray-800/80">
                 <i className="fa-regular fa-envelope text-[#00e599] text-sm shrink-0"></i>
                 <span className="text-xs sm:text-sm font-mono font-bold text-white break-all select-all flex-1">
-                  {email}
+                  {currentAccount.email}
                 </span>
               </div>
 
@@ -226,7 +280,7 @@ export function SharedAccountSection() {
                 className="w-full h-9 rounded-xl bg-gradient-to-r from-[#00e599] to-[#00c985] hover:from-[#1affaa] hover:to-[#00e599] text-gray-950 font-bold text-xs flex items-center justify-center space-x-1.5 shadow-md shadow-[#00e599]/20 transition active:scale-95"
               >
                 <i className={copiedEmail ? "fa-solid fa-check text-xs" : "fa-regular fa-copy text-xs"}></i>
-                <span>{copiedEmail ? "Email Berhasil Disalin!" : "Salin Email"}</span>
+                <span>{copiedEmail ? "Email Berhasil Disalin!" : `Salin Email ${currentAccount.name}`}</span>
               </Button>
             </div>
 
@@ -235,7 +289,9 @@ export function SharedAccountSection() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <i className="fa-solid fa-inbox text-[#00e599] text-sm"></i>
-                  <h3 className="text-xs sm:text-sm font-bold text-white">Kotak Masuk Login</h3>
+                  <h3 className="text-xs sm:text-sm font-bold text-white">
+                    Kotak Masuk {currentAccount.name}
+                  </h3>
                   {lastUpdated && (
                     <span className="text-[10px] text-gray-500 font-mono hidden sm:inline">
                       ({lastUpdated})
@@ -247,7 +303,7 @@ export function SharedAccountSection() {
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={fetchInbox}
+                  onClick={() => fetchInbox(selectedAccountId)}
                   disabled={loading}
                   className="h-7 px-2.5 py-1 text-[11px] rounded-lg bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-semibold space-x-1"
                 >
@@ -264,10 +320,10 @@ export function SharedAccountSection() {
                     </div>
                     <div className="space-y-1 max-w-sm">
                       <p className="text-xs font-semibold text-gray-300">
-                        Belum ada permintaan login masuk
+                        Belum ada permintaan login untuk {currentAccount.name}
                       </p>
                       <p className="text-[11px] text-gray-500 leading-relaxed">
-                        Masukkan email di atas pada aplikasi Alight Motion di HP Anda lalu kirim link masuk. Tautan login akan otomatis muncul di sini dan berlaku selama 1 menit.
+                        Masukkan email <strong className="text-white font-mono">{currentAccount.email}</strong> pada aplikasi Alight Motion di HP Anda lalu kirim link masuk.
                       </p>
                     </div>
                   </div>
@@ -338,7 +394,7 @@ export function SharedAccountSection() {
                                 <i className="fa-solid fa-circle-info text-[#00e599] mt-0.5 shrink-0 text-xs"></i>
                                 <span>
                                   Pastikan saat meminta link di HP, email yang dimasukkan sama persis:{" "}
-                                  <strong className="text-white font-mono">{email}</strong>
+                                  <strong className="text-white font-mono">{currentAccount.email}</strong>
                                 </span>
                               </p>
                             </div>

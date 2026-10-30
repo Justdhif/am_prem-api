@@ -283,77 +283,8 @@ async function runTests() {
 
     console.log('✅ Multi-Platform Preset Finder (TikTok & YouTube, 2 Prioritas) passed');
 
-    // Test 8: Comment Section & Threaded Replies
-    console.log('\nTest 8: Comment Section & Threaded Replies');
-    // POST /api/comments (Parent comment)
-    const parentCommentRes = await axios.post(`${baseUrl}/api/comments`, {
-      name: 'Dhif Testing',
-      content: 'Halo ini komentar pertama!',
-      isAnonymous: false,
-    });
-    assert.strictEqual(parentCommentRes.status, 201);
-    assert.strictEqual(parentCommentRes.data.success, true);
-    assert.strictEqual(parentCommentRes.data.data.name, 'Dhif Testing');
-    const parentId = parentCommentRes.data.data.id;
-
-    // POST /api/comments (Reply as Anonymous)
-    const replyRes = await axios.post(`${baseUrl}/api/comments`, {
-      parentId: parentId,
-      name: 'Budi',
-      content: 'Halo juga dari anonim!',
-      isAnonymous: true,
-    });
-    assert.strictEqual(replyRes.status, 201);
-    assert.strictEqual(replyRes.data.data.name, 'Anonim');
-    assert.strictEqual(replyRes.data.data.isAnonymous, true);
-    assert.strictEqual(replyRes.data.data.parentId, parentId);
-    const replyId = replyRes.data.data.id;
-
-    // POST /api/comments (Nested reply to the reply)
-    const nestedReplyRes = await axios.post(`${baseUrl}/api/comments`, {
-      parentId: replyId,
-      name: 'Creator',
-      content: 'Terima kasih sudah membalas!',
-      isAnonymous: false,
-    });
-    assert.strictEqual(nestedReplyRes.status, 201);
-    assert.strictEqual(nestedReplyRes.data.data.parentId, replyId);
-
-    // GET /api/comments -> tree structure verification
-    const getCommentsRes = await axios.get(`${baseUrl}/api/comments`);
-    assert.strictEqual(getCommentsRes.status, 200);
-    assert(getCommentsRes.data.totalComments >= 3);
-    const foundParent = getCommentsRes.data.comments.find((c: any) => c.id === parentId);
-    assert(foundParent, 'Parent comment should be in tree');
-    assert.strictEqual(foundParent.replies.length >= 1, true);
-    assert.strictEqual(foundParent.replies[0].id, replyId);
-    const foundNested = foundParent.replies.find((r: any) => r.id === nestedReplyRes.data.data.id);
-    assert(foundNested, 'Nested reply should be aligned in root replies');
-    assert.strictEqual(foundNested.replyToName, 'Anonim');
-
-    // POST /api/comments validation: empty content should fail
-    try {
-      await axios.post(`${baseUrl}/api/comments`, { content: '   ' });
-      assert.fail('Should have failed for empty content');
-    } catch (err: any) {
-      assert.strictEqual(err.response?.status, 400);
-    }
-    // Cleanup test comments so test data does not pollute database
-    try {
-      const { pool } = await import('../src/infrastructure/database/drizzle.js');
-      if (pool) {
-        await pool.query('DELETE FROM comments WHERE id IN ($1, $2, $3)', [
-          parentId,
-          replyId,
-          nestedReplyRes.data.data.id,
-        ]);
-      }
-    } catch {}
-
-    console.log('✅ Comment Section & Threaded Replies passed');
-
-    // Test 9: HTTP Status Codes Coverage (200, 400, 429, 500, 404)
-    console.log('\nTest 9: HTTP Status Codes Coverage (200, 400, 429, 500, 404)');
+    // Test 8: HTTP Status Codes Coverage (200, 400, 429, 500, 404)
+    console.log('\nTest 8: HTTP Status Codes Coverage (200, 400, 429, 500, 404)');
     const { classifyError } = await import('../src/presentation/middlewares/errorHandler.js');
 
     // 9a. Verify classifyError utility

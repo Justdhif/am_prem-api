@@ -34,7 +34,7 @@ function extractLoginLink(htmlContent: string, textContent: string): string | nu
   return null;
 }
 
-async function getMailTmToken(email: string, pass: string): Promise<string | null> {
+async function getMailTmToken(email: string, pass: string): Promise<{ token: string | null; debug?: string }> {
   try {
     const res = await fetch("https://api.mail.tm/token", {
       method: "POST",
@@ -52,13 +52,14 @@ async function getMailTmToken(email: string, pass: string): Promise<string | nul
     });
 
     if (!res.ok) {
-      return null;
+      const errText = await res.text().catch(() => "");
+      return { token: null, debug: `HTTP ${res.status}: ${errText}` };
     }
 
     const data = await res.json();
-    return data.token || null;
-  } catch {
-    return null;
+    return { token: data.token || null, debug: "OK" };
+  } catch (err: any) {
+    return { token: null, debug: `Exception: ${err?.message || err}` };
   }
 }
 
@@ -67,22 +68,25 @@ export async function GET() {
   const passToUse = (process.env.SHARED_FREE_PASSWORD || DEFAULT_PASSWORD).trim();
 
   // Dapatkan token (dengan retry ke DEFAULT_PASSWORD jika env bermasalah)
-  let token = await getMailTmToken(emailToUse, passToUse);
-  if (!token && (emailToUse !== DEFAULT_EMAIL || passToUse !== DEFAULT_PASSWORD)) {
-    token = await getMailTmToken(DEFAULT_EMAIL, DEFAULT_PASSWORD);
+  let authResult = await getMailTmToken(emailToUse, passToUse);
+  if (!authResult.token && (emailToUse !== DEFAULT_EMAIL || passToUse !== DEFAULT_PASSWORD)) {
+    authResult = await getMailTmToken(DEFAULT_EMAIL, DEFAULT_PASSWORD);
   }
 
-  if (!token) {
+  if (!authResult.token) {
     return NextResponse.json(
       {
         success: false,
+        version: "2026-10-30-v2",
         email: emailToUse,
-        error: "Gagal mengautentikasi ke mailbox publik",
+        error: `Gagal mengautentikasi ke mailbox publik (${authResult.debug})`,
         messages: [],
       },
       { status: 502 }
     );
   }
+
+  const token = authResult.token;
 
   try {
     // Ambil daftar pesan terbaru

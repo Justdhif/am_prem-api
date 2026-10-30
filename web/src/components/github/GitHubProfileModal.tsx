@@ -118,8 +118,8 @@ export function GitHubProfileModal({ isOpen, onClose }: GitHubProfileModalProps)
         <DialogHeader
           className={
             isDesktop
-              ? "px-6 py-4 border-b border-gray-800/80 flex items-center justify-between bg-[#111726]/90 shrink-0"
-              : "px-4 py-3 border-b border-gray-800/80 flex items-center justify-between bg-[#111726]/80 shrink-0"
+              ? "px-6 py-4 border-b border-gray-800/80 flex items-center justify-between shrink-0"
+              : "px-4 py-3 border-b border-gray-800/80 flex items-center justify-between shrink-0"
           }
         >
           <div className="flex items-center space-x-2.5">
@@ -199,13 +199,9 @@ export function GitHubProfileModal({ isOpen, onClose }: GitHubProfileModalProps)
               <h4 className={isDesktop ? "text-base font-bold text-white flex items-center justify-center" : "text-sm font-bold text-white flex items-center justify-center"}>
                 <span>{profile.displayName}</span>
               </h4>
-              <span
-                className={`inline-block mt-0.5 px-2.5 py-0.5 rounded-full bg-gray-800/80 text-gray-400 font-mono ${
-                  isDesktop ? "text-xs" : "text-[11px]"
-                }`}
-              >
+              <p className="text-xs text-gray-400 font-mono mt-0.5">
                 @{profile.username}
-              </span>
+              </p>
             </div>
 
             {/* Bio */}
@@ -216,13 +212,9 @@ export function GitHubProfileModal({ isOpen, onClose }: GitHubProfileModalProps)
             )}
           </div>
 
-          {/* 3-Column Stats Grid (Repos | Pengikut | Mengikuti) */}
-          <div
-            className={`grid grid-cols-3 bg-[#141b2b] border border-gray-800/90 rounded-2xl text-center ${
-              isDesktop ? "gap-2.5 p-3.5" : "gap-2 p-3"
-            }`}
-          >
-            <div className="flex flex-col items-center justify-center space-y-1">
+          {/* 3-Column Stats (Repos | Pengikut | Mengikuti) without card styling */}
+          <div className="grid grid-cols-3 border-y border-gray-800/80 py-3 sm:py-3.5 text-center divide-x divide-gray-800/80">
+            <div className="flex flex-col items-center justify-center space-y-1 px-1">
               <span className="text-[10px] font-medium text-gray-400 flex items-center gap-1">
                 <i className="fa-solid fa-book-bookmark text-[10px] text-amber-400"></i>
                 <span>Repositori</span>
@@ -232,7 +224,7 @@ export function GitHubProfileModal({ isOpen, onClose }: GitHubProfileModalProps)
               </span>
             </div>
 
-            <div className="flex flex-col items-center justify-center space-y-1 border-x border-gray-800/80 px-2">
+            <div className="flex flex-col items-center justify-center space-y-1 px-1">
               <span className="text-[10px] font-medium text-gray-400 flex items-center gap-1">
                 <i className="fa-solid fa-users text-[10px] text-[#00e599]"></i>
                 <span>Pengikut</span>
@@ -242,7 +234,7 @@ export function GitHubProfileModal({ isOpen, onClose }: GitHubProfileModalProps)
               </span>
             </div>
 
-            <div className="flex flex-col items-center justify-center space-y-1">
+            <div className="flex flex-col items-center justify-center space-y-1 px-1">
               <span className="text-[10px] font-medium text-gray-400 flex items-center gap-1">
                 <i className="fa-solid fa-user-plus text-[10px] text-blue-400"></i>
                 <span>Mengikuti</span>
@@ -258,8 +250,8 @@ export function GitHubProfileModal({ isOpen, onClose }: GitHubProfileModalProps)
         <DialogFooter
           className={
             isDesktop
-              ? "px-6 py-4 border-t border-gray-800/80 bg-[#111726]/90 flex items-center gap-3 shrink-0"
-              : "p-3 border-t border-gray-800/80 bg-[#111726]/80 flex items-center gap-2 shrink-0"
+              ? "px-6 py-4 border-t border-gray-800/80 flex items-center gap-3 shrink-0"
+              : "p-3 border-t border-gray-800/80 flex items-center gap-2 shrink-0"
           }
         >
           <Button

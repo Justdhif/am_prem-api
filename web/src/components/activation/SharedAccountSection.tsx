@@ -57,7 +57,7 @@ export function SharedAccountSection() {
   };
 
   return (
-    <section className="p-5 sm:p-7 bg-[#121826] border border-[#00e599]/30 rounded-2xl sm:rounded-3xl shadow-2xl space-y-6 relative overflow-hidden">
+    <section className="px-5 pb-5 pt-3 sm:px-7 sm:pb-7 sm:pt-4 bg-[#121826] border border-[#00e599]/30 rounded-2xl sm:rounded-3xl shadow-2xl space-y-5 relative overflow-hidden">
       {/* Decorative ambient background glows */}
       <div className="absolute -top-16 -right-16 w-48 h-48 bg-[#00e599]/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -100,47 +100,8 @@ export function SharedAccountSection() {
         </Button>
       </div>
 
-      {/* Step Guide List */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs relative z-10">
-        <div className="p-3.5 rounded-xl bg-[#0a0e17]/80 border border-gray-800/80 space-y-1.5">
-          <div className="flex items-center space-x-2 text-[#00e599] font-bold">
-            <span className="w-5 h-5 rounded-full bg-[#00e599]/20 border border-[#00e599]/40 flex items-center justify-center text-[10px]">
-              1
-            </span>
-            <span>Salin Email</span>
-          </div>
-          <p className="text-gray-400 text-[11px] leading-relaxed">
-            Salin alamat email di atas, buka aplikasi Alight Motion di HP Anda, pilih masuk via Email lalu masukkan email tersebut.
-          </p>
-        </div>
-
-        <div className="p-3.5 rounded-xl bg-[#0a0e17]/80 border border-gray-800/80 space-y-1.5">
-          <div className="flex items-center space-x-2 text-[#00e599] font-bold">
-            <span className="w-5 h-5 rounded-full bg-[#00e599]/20 border border-[#00e599]/40 flex items-center justify-center text-[10px]">
-              2
-            </span>
-            <span>Kirim Link Masuk</span>
-          </div>
-          <p className="text-gray-400 text-[11px] leading-relaxed">
-            Klik tombol kirim tautan masuk di aplikasi HP Anda. Alight Motion akan mengirim magic link ke email bersama ini.
-          </p>
-        </div>
-
-        <div className="p-3.5 rounded-xl bg-[#0a0e17]/80 border border-gray-800/80 space-y-1.5">
-          <div className="flex items-center space-x-2 text-[#00e599] font-bold">
-            <span className="w-5 h-5 rounded-full bg-[#00e599]/20 border border-[#00e599]/40 flex items-center justify-center text-[10px]">
-              3
-            </span>
-            <span>Klik &amp; Otomatis Login</span>
-          </div>
-          <p className="text-gray-400 text-[11px] leading-relaxed">
-            Lihat daftar pesan masuk di bawah. Klik tombol <strong>&ldquo;Login ke Alight Motion&rdquo;</strong>, akun Anda otomatis ter-login!
-          </p>
-        </div>
-      </div>
-
       {/* Inbox & Latest Magic Link Card */}
-      <div className="space-y-3 pt-2 relative z-10">
+      <div className="space-y-3 relative z-10">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <i className="fa-solid fa-inbox text-[#00e599] text-sm"></i>

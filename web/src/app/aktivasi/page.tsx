@@ -7,6 +7,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { ActivationForm } from "@/components/activation/ActivationForm";
+import { SharedAccountSection } from "@/components/activation/SharedAccountSection";
 import { StepsCard } from "@/components/dashboard/StepsCard";
 import type { Metadata } from "next";
 
@@ -49,6 +50,9 @@ export default function AktivasiPage() {
           </p>
         </div>
       </div>
+
+      {/* Shared Free Community Account */}
+      <SharedAccountSection />
 
       {/* Steps Overview */}
       <StepsCard />

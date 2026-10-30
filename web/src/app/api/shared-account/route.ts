@@ -35,16 +35,20 @@ function extractLoginLink(htmlContent: string, textContent: string): string | nu
   return null;
 }
 
+const MAIL_TM_HEADERS = {
+  "Content-Type": "application/json",
+  Accept: "application/json, text/plain, */*",
+  Origin: "https://mail.tm",
+  Referer: "https://mail.tm/",
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+};
+
 async function getMailTmToken(email: string, pass: string): Promise<{ token: string | null; debug?: string }> {
   try {
     const res = await fetch("https://api.mail.tm/token", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-      },
+      headers: MAIL_TM_HEADERS,
       body: JSON.stringify({
         address: email.trim(),
         password: pass.trim(),
@@ -93,10 +97,8 @@ export async function GET() {
     // Ambil daftar pesan terbaru
     const messagesRes = await fetch("https://api.mail.tm/messages?page=1", {
       headers: {
+        ...MAIL_TM_HEADERS,
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       },
       cache: "no-store",
     });
@@ -122,10 +124,8 @@ export async function GET() {
         try {
           const detailRes = await fetch(`https://api.mail.tm/messages/${msg.id}`, {
             headers: {
+              ...MAIL_TM_HEADERS,
               Authorization: `Bearer ${token}`,
-              Accept: "application/json",
-              "User-Agent":
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             },
             cache: "no-store",
           });

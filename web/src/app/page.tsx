@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="space-y-6 sm:space-y-8">
-      {/* Header & Breadcrumb Container (Konsisten dengan Docs, Aktivasi, & Preset space-y-4) */}
+      {/* Header & Breadcrumb */}
       <div className="space-y-4 pt-0">
         {/* Breadcrumb Navigation */}
         <Breadcrumb>
@@ -40,10 +40,10 @@ export default function Home() {
         <HeroStats />
       </div>
 
-      {/* Conceptual 2-step activation workflow overview */}
+      {/* Activation Steps */}
       <StepsCard />
 
-      {/* Primary Service Navigation Cards, Feature Highlights, and FAQ */}
+      {/* Overview & FAQ */}
       <HomeOverview />
     </div>
   );

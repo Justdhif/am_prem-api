@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface CodeBlockProps {
   code: string;
@@ -42,10 +43,12 @@ export function CodeBlock({
       </pre>
 
       {curlSnippet && (
-        <button
+        <Button
           type="button"
+          variant="secondary"
+          size="sm"
           onClick={handleCopy}
-          className="absolute top-2 right-2 px-2.5 py-1 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white text-[11px] font-medium transition active:scale-95 flex items-center space-x-1 border border-gray-700/60 shadow-sm cursor-pointer"
+          className="absolute top-2 right-2 h-7 px-2.5 py-1 text-[11px] font-medium transition active:scale-95 flex items-center space-x-1 border border-gray-700/60 shadow-sm"
           title="Salin perintah cURL"
         >
           <i
@@ -55,7 +58,7 @@ export function CodeBlock({
             )}
           ></i>
           <span>{copied ? "Tersalin!" : "Salin cURL"}</span>
-        </button>
+        </Button>
       )}
     </div>
   );

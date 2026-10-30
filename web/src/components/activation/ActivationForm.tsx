@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { apiClient } from "@/lib/api";
-import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 export function ActivationForm() {
   const [email, setEmail] = useState("");
@@ -77,7 +79,7 @@ export function ActivationForm() {
 
   return (
     <div className="space-y-6 sm:space-y-7 text-left w-full">
-      {/* CARD 1: Langkah 1 - Kirim Magic Link Email */}
+      {/* Step 1: Send Magic Link */}
       <section className="p-5 sm:p-7 bg-[#121826] border border-gray-800/90 rounded-2xl shadow-xl space-y-5">
         <div className="space-y-1.5">
           <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-[#00e599]/15 text-[#00e599] border border-[#00e599]/30 text-[11px] font-bold">
@@ -144,22 +146,22 @@ export function ActivationForm() {
                 </div>
                 <p className="text-gray-300 leading-relaxed">{sendSuccessMessage}</p>
                 <div className="pt-1.5">
-                  <a
+                  <Link
                     href="#step-2-form"
                     className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#00e599] text-gray-950 font-bold text-xs hover:bg-[#1affaa] transition active:scale-95"
                   >
                     <span>Lanjut Tempel Link di Langkah 2</span>
                     <i className="fa-solid fa-arrow-down text-[10px]"></i>
-                  </a>
+                  </Link>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
 
-          <button
+          <Button
             type="submit"
             disabled={sendLoading}
-            className="w-full py-3 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-[0.99] cursor-pointer disabled:opacity-50"
+            className="w-full h-auto py-3 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/20"
           >
             {sendLoading ? (
               <>
@@ -172,11 +174,11 @@ export function ActivationForm() {
                 <span>Kirim Magic Link Verifikasi</span>
               </>
             )}
-          </button>
+          </Button>
         </form>
       </section>
 
-      {/* CARD 2: Langkah 2 - Verifikasi & Aktivasi Lisensi */}
+      {/* Step 2: Verify & Activate */}
       <section
         id="step-2-form"
         className="p-5 sm:p-7 bg-[#121826] border border-gray-800/90 rounded-2xl shadow-xl space-y-5"
@@ -255,10 +257,10 @@ export function ActivationForm() {
                 </motion.div>
               )}
 
-              <button
+              <Button
                 type="submit"
                 disabled={verifyLoading}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-[#00e599] to-emerald-400 hover:from-[#1affaa] hover:to-emerald-300 text-gray-950 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/25 active:scale-[0.99] cursor-pointer disabled:opacity-50"
+                className="w-full h-auto py-3 rounded-xl bg-gradient-to-r from-[#00e599] to-emerald-400 hover:from-[#1affaa] hover:to-emerald-300 text-gray-950 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/25"
               >
                 {verifyLoading ? (
                   <>
@@ -271,10 +273,10 @@ export function ActivationForm() {
                     <span>Aktivasi AM Premium 1 Tahun Sekarang</span>
                   </>
                 )}
-              </button>
+              </Button>
             </motion.form>
           ) : (
-            /* CELEBRATORY SUCCESS STATE */
+            /* Success State */
             <motion.div
               key="verify-success"
               initial={{ scale: 0.95, opacity: 0 }}
@@ -326,16 +328,17 @@ export function ActivationForm() {
                 </div>
               </div>
 
-              <button
+              <Button
                 type="button"
+                variant="secondary"
                 onClick={() => {
                   setVerifyResult(null);
                   setVerifyLink("");
                 }}
-                className="px-5 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-semibold transition cursor-pointer active:scale-95"
+                className="px-5 py-2 text-xs font-semibold"
               >
                 Aktivasi Akun Lain
-              </button>
+              </Button>
             </motion.div>
           )}
         </AnimatePresence>

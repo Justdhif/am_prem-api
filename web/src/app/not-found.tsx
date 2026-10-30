@@ -42,7 +42,7 @@ export default function NotFound() {
             </p>
           </div>
 
-          {/* Quick Actions */}
+          {/* Navigation Actions */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-3">
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
               <Link
@@ -55,7 +55,7 @@ export default function NotFound() {
             </motion.div>
 
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
-              <a
+              <Link
                 href="https://wa.me/447762422507"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -63,7 +63,7 @@ export default function NotFound() {
               >
                 <i className="fa-brands fa-whatsapp text-emerald-400 text-sm"></i>
                 <span>Hubungi Creator</span>
-              </a>
+              </Link>
             </motion.div>
           </div>
         </motion.div>

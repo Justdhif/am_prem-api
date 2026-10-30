@@ -48,7 +48,7 @@ export function HomeOverview() {
 
   return (
     <div className="space-y-8 sm:space-y-10 text-left w-full">
-      {/* 1. OVERVIEW FITUR ALIGHT MOTION PREMIUM */}
+      {/* Feature Highlights */}
       <motion.section
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -91,7 +91,7 @@ export function HomeOverview() {
         </div>
       </motion.section>
 
-      {/* 2. FAQ SECTION (Overview Pertanyaan Umum) */}
+      {/* FAQ Overview */}
       <motion.section
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -129,7 +129,7 @@ export function HomeOverview() {
         </div>
       </motion.section>
 
-      {/* 3. SECTION DONASI & DUKUNGAN KREATOR (Paling Bawah) */}
+      {/* Creator Donation Section */}
       <DonationSection />
     </div>
   );

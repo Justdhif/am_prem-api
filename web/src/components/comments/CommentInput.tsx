@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { EmojiPicker } from "./EmojiPicker";
+import { Button } from "@/components/ui/button";
 
 interface CommentInputProps {
   replyTarget: { id: string; name: string } | null;
@@ -171,10 +172,7 @@ export function CommentInput({
 
   return (
     <>
-      {/* ─────────────────────────────────────────────────────────────
-          1. DESKTOP VIEW (sm:block, hidden on mobile)
-          Normal inline comment composer inside CommentDrawer
-         ───────────────────────────────────────────────────────────── */}
+      {/* Desktop Composer */}
       <div className="hidden sm:block bg-[#0d121f] px-3 pb-3 pt-2 shrink-0 relative border-t border-gray-800/80">
         {/* Emoji Picker Popup */}
         <AnimatePresence>
@@ -202,13 +200,15 @@ export function CommentInput({
                   Membalas <strong className="text-[#00e599]">@{replyTarget.name}</strong>
                 </span>
               </div>
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="sm"
                 onClick={onCancelReply}
-                className="text-gray-500 hover:text-white text-xs cursor-pointer flex items-center"
+                className="h-auto p-0 text-gray-500 hover:text-white text-xs hover:bg-transparent"
               >
                 <i className="fa-solid fa-xmark mr-1"></i>Batal
-              </button>
+              </Button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -264,33 +264,33 @@ export function CommentInput({
             />
           </div>
 
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => setShowEmoji((prev) => !prev)}
-            className="w-9 h-9 rounded-full bg-[#1a2234] hover:bg-gray-800 text-gray-400 hover:text-[#00e599] flex items-center justify-center transition shadow-md shrink-0 active:scale-95 mb-0.5 border border-transparent hover:border-gray-700 cursor-pointer"
+            className="w-9 h-9 rounded-full bg-[#1a2234] hover:bg-gray-800 text-gray-400 hover:text-[#00e599] shadow-md shrink-0 mb-0.5 border border-transparent hover:border-gray-700"
             title="Pilih emoji"
           >
             <i className="fa-regular fa-face-smile text-lg"></i>
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="submit"
+            size="icon"
             disabled={submitting || !content.trim()}
-            className="w-9 h-9 rounded-full bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold flex items-center justify-center transition shadow-md shrink-0 active:scale-95 disabled:opacity-40 mb-0.5 cursor-pointer"
+            className="w-9 h-9 rounded-full bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold shadow-md shrink-0 disabled:opacity-40 mb-0.5"
           >
             {submitting ? (
               <i className="fa-solid fa-spinner fa-spin text-xs"></i>
             ) : (
               <i className="fa-solid fa-arrow-up text-sm"></i>
             )}
-          </button>
+          </Button>
         </form>
       </div>
 
-      {/* ─────────────────────────────────────────────────────────────
-          2. MOBILE VIEW TRIGGER BAR (block sm:hidden)
-          Tapping this bar slides up the dedicated Bottom Sheet Modal
-         ───────────────────────────────────────────────────────────── */}
+      {/* Mobile Composer Trigger Bar */}
       <div className="block sm:hidden bg-[#0d121f] px-3.5 py-2.5 border-t border-gray-800/80 shrink-0">
         {replyTarget && (
           <div className="flex items-center justify-between pb-2 text-xs text-gray-400">
@@ -300,13 +300,15 @@ export function CommentInput({
                 Membalas <strong className="text-[#00e599]">@{replyTarget.name}</strong>
               </span>
             </div>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={onCancelReply}
-              className="text-gray-500 hover:text-white text-[11px] cursor-pointer flex items-center shrink-0 ml-2"
+              className="h-auto p-0 text-gray-500 hover:text-white text-[11px] hover:bg-transparent shrink-0 ml-2"
             >
               <i className="fa-solid fa-xmark mr-1"></i>Batal
-            </button>
+            </Button>
           </div>
         )}
 
@@ -344,10 +346,7 @@ export function CommentInput({
         </div>
       </div>
 
-      {/* ─────────────────────────────────────────────────────────────
-          3. MOBILE DEDICATED BOTTOM SHEET MODAL (Via Portal)
-          Adapts perfectly to virtual mobile keyboards without disrupting drawer
-         ───────────────────────────────────────────────────────────── */}
+      {/* Mobile Bottom Sheet Modal */}
       {hasMounted &&
         typeof document !== "undefined" &&
         createPortal(
@@ -393,20 +392,22 @@ export function CommentInput({
                         {replyTarget ? `Balas Komentar` : `Tulis Komentar`}
                       </span>
                     </div>
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon"
                       onClick={() => {
                         setIsMobileModalOpen(false);
                         setShowEmoji(false);
                       }}
-                      className="w-7 h-7 rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white flex items-center justify-center text-xs transition cursor-pointer active:scale-95"
+                      className="w-7 h-7 rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white text-xs"
                       aria-label="Tutup"
                     >
                       <i className="fa-solid fa-xmark"></i>
-                    </button>
+                    </Button>
                   </div>
 
-                  {/* Modal Body (Scrollable if needed) */}
+                  {/* Modal Body */}
                   <div className="p-3.5 space-y-2.5 overflow-y-auto overscroll-contain relative">
                     {/* Reply target banner */}
                     {replyTarget && (
@@ -417,13 +418,15 @@ export function CommentInput({
                             Membalas <strong>@{replyTarget.name}</strong>
                           </span>
                         </div>
-                        <button
+                        <Button
                           type="button"
+                          variant="ghost"
+                          size="sm"
                           onClick={onCancelReply}
-                          className="text-gray-400 hover:text-white text-xs px-1.5 py-0.5 rounded cursor-pointer shrink-0 ml-2"
+                          className="h-auto p-0 text-gray-400 hover:text-white text-xs px-1.5 py-0.5 hover:bg-transparent shrink-0 ml-2"
                         >
                           <i className="fa-solid fa-xmark mr-1"></i>Batal
-                        </button>
+                        </Button>
                       </div>
                     )}
 
@@ -483,10 +486,12 @@ export function CommentInput({
                       <div className="flex items-center justify-between pt-2.5 border-t border-gray-800/60 mt-2">
                         <div className="flex items-center space-x-2">
                           {/* Emoji Trigger Button */}
-                          <button
+                          <Button
                             type="button"
+                            variant="ghost"
+                            size="icon"
                             onClick={() => setShowEmoji((prev) => !prev)}
-                            className={`w-8 h-8 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer ${
+                            className={`w-8 h-8 rounded-full flex items-center justify-center transition active:scale-95 ${
                               showEmoji
                                 ? "bg-[#00e599]/20 text-[#00e599] border border-[#00e599]/40 shadow-sm shadow-[#00e599]/20"
                                 : "bg-[#1f2b42] text-gray-400 hover:text-white"
@@ -494,7 +499,7 @@ export function CommentInput({
                             title="Pilih emoji"
                           >
                             <i className="fa-regular fa-face-smile text-base"></i>
-                          </button>
+                          </Button>
 
                           {/* Character counter */}
                           <span className="text-[10px] text-gray-500 font-medium select-none">
@@ -503,11 +508,12 @@ export function CommentInput({
                         </div>
 
                         {/* Embedded Send Button */}
-                        <button
+                        <Button
                           type="button"
+                          size="icon"
                           onClick={() => handleSubmit()}
                           disabled={submitting || !content.trim()}
-                          className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#00e599] to-[#00b377] text-gray-950 font-bold flex items-center justify-center transition shadow-md shadow-[#00e599]/25 hover:shadow-[#00e599]/40 active:scale-95 disabled:opacity-30 disabled:grayscale cursor-pointer shrink-0"
+                          className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#00e599] to-[#00b377] text-gray-950 font-bold flex items-center justify-center transition shadow-md shadow-[#00e599]/25 hover:shadow-[#00e599]/40 active:scale-95 disabled:opacity-30 disabled:grayscale shrink-0"
                           title="Kirim Komentar"
                         >
                           {submitting ? (
@@ -515,7 +521,7 @@ export function CommentInput({
                           ) : (
                             <i className="fa-solid fa-arrow-up text-xs"></i>
                           )}
-                        </button>
+                        </Button>
                       </div>
                     </div>
 

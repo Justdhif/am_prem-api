@@ -6,6 +6,7 @@ import { SendLinkForm } from "./SendLinkForm";
 import { VerifyLinkForm } from "./VerifyLinkForm";
 import { PresetFinderForm } from "./PresetFinderForm";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export function PlaygroundTab() {
   const [activeSubTab, setActiveSubTab] = useState<"send" | "verify" | "preset">("send");
@@ -28,50 +29,50 @@ export function PlaygroundTab() {
 
       {/* Sub Navigation Pills */}
       <div className="flex items-center space-x-2 border-b border-gray-800 pb-3 overflow-x-auto no-scrollbar">
-        <button
+        <Button
           type="button"
           onClick={() => setActiveSubTab("send")}
           className={cn(
-            "px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 cursor-pointer shrink-0 active:scale-95",
+            "h-auto px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 shrink-0",
             activeSubTab === "send"
               ? "bg-[#00e599] text-gray-950 shadow-md shadow-[#00e599]/20"
-              : "text-gray-400 hover:text-white hover:bg-gray-800/80"
+              : "bg-transparent text-gray-400 hover:text-white hover:bg-gray-800/80 shadow-none border-0"
           )}
         >
           <span className="w-4 h-4 rounded-full bg-gray-950/20 text-center text-[10px] font-black leading-4 inline-block font-mono">1</span>
           <span>1. Kirim Magic Link</span>
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
           onClick={() => setActiveSubTab("verify")}
           className={cn(
-            "px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 cursor-pointer shrink-0 active:scale-95",
+            "h-auto px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 shrink-0",
             activeSubTab === "verify"
               ? "bg-[#00e599] text-gray-950 shadow-md shadow-[#00e599]/20"
-              : "text-gray-400 hover:text-white hover:bg-gray-800/80"
+              : "bg-transparent text-gray-400 hover:text-white hover:bg-gray-800/80 shadow-none border-0"
           )}
         >
           <span className="w-4 h-4 rounded-full bg-gray-950/20 text-center text-[10px] font-black leading-4 inline-block font-mono">2</span>
           <span>2. Verifikasi &amp; Aktivasi</span>
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
           onClick={() => setActiveSubTab("preset")}
           className={cn(
-            "px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 cursor-pointer shrink-0 active:scale-95",
+            "h-auto px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 shrink-0",
             activeSubTab === "preset"
               ? "bg-[#00e599] text-gray-950 shadow-md shadow-[#00e599]/20"
-              : "text-gray-400 hover:text-white hover:bg-gray-800/80"
+              : "bg-transparent text-gray-400 hover:text-white hover:bg-gray-800/80 shadow-none border-0"
           )}
         >
           <span className="w-4 h-4 rounded-full bg-gray-950/20 text-center text-[10px] font-black leading-4 inline-block font-mono">3</span>
           <span>3. Cari Preset (VT/YT)</span>
-        </button>
+        </Button>
       </div>
 
-      {/* Sub Tab Contents with Smooth Animated Transition */}
+      {/* Sub Tab Contents */}
       <AnimatePresence mode="wait">
         {activeSubTab === "send" && (
           <motion.div

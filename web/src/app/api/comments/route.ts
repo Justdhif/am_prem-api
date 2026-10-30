@@ -98,12 +98,12 @@ export async function POST(request: NextRequest) {
       displayName = displayName.substring(0, 50);
     }
 
-    // Sanitasi sederhana
+    // Sanitize content
     const sanitizedContent = rawContent
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
 
-    // Jika komentar balasan, cari detail nama dan komentar yang sedang dibalas
+    // Fetch parent comment metadata for replies
     let replyToName: string | null = null;
     let replyToContent: string | null = null;
 
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
           displayName
         )}&background=00e599&color=0d121f&bold=true`;
 
-    // Kirim notifikasi WhatsApp via Fonnte secara aman (dengan detail balasan jika ada)
+    // Send WhatsApp notification via Fonnte
     try {
       await sendFonnteCommentNotification({
         name: displayName,

@@ -53,7 +53,7 @@ export function HeroStats() {
       transition={{ duration: 0.45, ease: "easeOut" }}
       className="space-y-5 relative max-w-full pt-0"
     >
-      {/* Top Banner (Minimalist, Clean & Wide Typography) */}
+      {/* Hero Header */}
       <div className="space-y-1.5 pt-0">
         <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide mt-0 pt-0 font-piximisa">
           Platform Alight Motion Premium &amp; Preset
@@ -63,9 +63,9 @@ export function HeroStats() {
         </p>
       </div>
 
-      {/* Primary Stats Grid (Cardless & Minimalist) */}
+      {/* Key Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Stat 1: Total Premium */}
+        {/* Total Premium Stat */}
         <div className="flex items-center space-x-3.5 py-1">
           <div className="w-12 h-12 rounded-2xl bg-[#00e599]/10 border border-[#00e599]/25 flex items-center justify-center text-[#00e599] shrink-0 shadow-sm shadow-[#00e599]/10">
             <i className="fa-solid fa-crown text-lg"></i>
@@ -78,7 +78,7 @@ export function HeroStats() {
           </div>
         </div>
 
-        {/* Stat 2: Aktivasi Hari Ini (Tanpa Animasi Ping) */}
+        {/* Today Activations Stat */}
         <div className="flex items-center space-x-3.5 py-1">
           <div className="w-12 h-12 rounded-2xl bg-gray-800/60 border border-gray-700/60 flex items-center justify-center text-amber-400 shrink-0">
             <i className="fa-solid fa-bolt-lightning text-lg"></i>
@@ -92,7 +92,7 @@ export function HeroStats() {
         </div>
       </div>
 
-      {/* Spline Wave Neon Area Chart - Wrapped in Dedicated Card */}
+      {/* Activation Trend Chart */}
       <Card className="p-4 sm:p-5 bg-[#121826] border border-gray-800/90 rounded-2xl shadow-xl overflow-hidden relative">
         <ActivationChart
           totalActivations={stats.total}

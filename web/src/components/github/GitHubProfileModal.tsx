@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 interface GitHubProfileModalProps {
   isOpen: boolean;
@@ -122,9 +124,7 @@ export function GitHubProfileModal({ isOpen, onClose }: GitHubProfileModalProps)
           />
 
           {isDesktop ? (
-            /* ─────────────────────────────────────────────────────────────
-               1. DESKTOP MODE: Centered Floating Dialog Modal
-               ───────────────────────────────────────────────────────────── */
+            /* Desktop Dialog Mode */
             <motion.div
               key="github-desktop-dialog"
               initial={{ opacity: 0, scale: 0.94, y: 12 }}
@@ -145,14 +145,16 @@ export function GitHubProfileModal({ isOpen, onClose }: GitHubProfileModalProps)
                   </div>
                 </div>
 
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={onClose}
-                  className="w-8 h-8 rounded-xl bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white transition flex items-center justify-center cursor-pointer active:scale-95"
+                  className="w-8 h-8 rounded-xl bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white"
                   aria-label="Tutup Dialog"
                 >
                   <i className="fa-solid fa-xmark text-sm"></i>
-                </button>
+                </Button>
               </div>
 
               {/* Body */}
@@ -230,16 +232,17 @@ export function GitHubProfileModal({ isOpen, onClose }: GitHubProfileModalProps)
 
               {/* Actions Footer */}
               <div className="px-6 py-4 border-t border-gray-800/80 bg-[#111726]/90 flex items-center gap-3 shrink-0">
-                <button
+                <Button
                   type="button"
+                  variant="secondary"
                   onClick={handleCopyLink}
-                  className="flex-1 py-2.5 px-3 rounded-xl bg-gray-800/90 hover:bg-gray-700 active:scale-98 text-gray-200 font-semibold text-xs transition flex items-center justify-center space-x-2 cursor-pointer border border-gray-700/60"
+                  className="flex-1 h-auto py-2.5 px-3 rounded-xl bg-gray-800/90 hover:bg-gray-700 text-gray-200 font-semibold text-xs border border-gray-700/60"
                 >
                   <i className={copied ? "fa-solid fa-check text-[#00e599]" : "fa-regular fa-clone"}></i>
                   <span>{copied ? "Link Tersalin!" : "Salin Link"}</span>
-                </button>
+                </Button>
 
-                <a
+                <Link
                   href={profile.profileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -248,13 +251,11 @@ export function GitHubProfileModal({ isOpen, onClose }: GitHubProfileModalProps)
                   <i className="fa-brands fa-github text-sm"></i>
                   <span>Buka di GitHub</span>
                   <i className="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
-                </a>
+                </Link>
               </div>
             </motion.div>
           ) : (
-            /* ─────────────────────────────────────────────────────────────
-               2. MOBILE MODE: Bottom Sheet Modal with Drag Indicator
-               ───────────────────────────────────────────────────────────── */
+            /* Mobile Bottom Sheet Mode */
             <motion.div
               key="github-mobile-sheet"
               initial={{ y: "100%" }}
@@ -280,14 +281,16 @@ export function GitHubProfileModal({ isOpen, onClose }: GitHubProfileModalProps)
                   </div>
                 </div>
 
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={onClose}
-                  className="w-7 h-7 rounded-lg bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white transition flex items-center justify-center cursor-pointer active:scale-95"
+                  className="w-7 h-7 rounded-lg bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white"
                   aria-label="Tutup"
                 >
                   <i className="fa-solid fa-xmark text-sm"></i>
-                </button>
+                </Button>
               </div>
 
               {/* Mobile Sheet Content */}
@@ -365,16 +368,17 @@ export function GitHubProfileModal({ isOpen, onClose }: GitHubProfileModalProps)
 
               {/* Mobile Sheet Footer Actions */}
               <div className="p-3 border-t border-gray-800/80 bg-[#111726]/80 flex items-center gap-2 shrink-0">
-                <button
+                <Button
                   type="button"
+                  variant="secondary"
                   onClick={handleCopyLink}
-                  className="flex-1 py-2.5 px-3 rounded-xl bg-gray-800 hover:bg-gray-700 active:scale-98 text-gray-200 font-semibold text-xs transition flex items-center justify-center space-x-1.5 cursor-pointer border border-gray-700/60"
+                  className="flex-1 h-auto py-2.5 px-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 font-semibold text-xs border border-gray-700/60"
                 >
                   <i className={copied ? "fa-solid fa-check text-[#00e599]" : "fa-regular fa-clone"}></i>
                   <span>{copied ? "Tersalin!" : "Salin"}</span>
-                </button>
+                </Button>
 
-                <a
+                <Link
                   href={profile.profileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -383,7 +387,7 @@ export function GitHubProfileModal({ isOpen, onClose }: GitHubProfileModalProps)
                   <i className="fa-brands fa-github text-xs"></i>
                   <span>Buka di GitHub</span>
                   <i className="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-                </a>
+                </Link>
               </div>
             </motion.div>
           )}

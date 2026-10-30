@@ -420,7 +420,7 @@ export function MusicPlayer() {
 
     return (
       <div className={cn("w-full text-left", isModal ? "flex-1 flex flex-col justify-between" : "")}>
-      {/* Header Bar (Desktop only, mobile modal has unified top bar) */}
+      {/* Header Bar */}
       {!isModal && (
         <div className="flex items-center justify-between p-4 pb-3 border-b border-gray-800/80 mb-0">
           <div className="flex items-center space-x-2 text-left">
@@ -481,9 +481,9 @@ export function MusicPlayer() {
         </div>
       )}
 
-      {/* Container for both tabs with matched height to eliminate jumping */}
+      {/* Tab Content Container */}
       <div className={cn("relative w-full", isModal ? "flex-1 flex flex-col min-h-0" : "")}>
-        {/* 1. Tab Lagu (Player) */}
+        {/* Player Tab */}
         <div
           ref={currentPlayerRef}
           className={cn(
@@ -494,7 +494,7 @@ export function MusicPlayer() {
               : "opacity-0 pointer-events-none invisible absolute inset-x-0 top-0"
           )}
         >
-            {/* 1. Album Cover - Full bleed on top, left, right (edges touch borders/screen) */}
+            {/* Album Cover */}
             <div
               className={cn(
                 "relative overflow-hidden group/cover select-none shrink-0 w-full",
@@ -515,7 +515,7 @@ export function MusicPlayer() {
                 priority
               />
 
-              {/* Dynamic Canvas Video Loop (Transitions smoothly in when music plays) */}
+              {/* Dynamic Canvas Video Loop */}
               {currentTrack.video && (
                 <video
                   ref={isModal ? modalVideoRef : desktopVideoRef}
@@ -537,13 +537,13 @@ export function MusicPlayer() {
                 />
               )}
 
-              {/* Soft bottom-only gradient fade to card background (#0d121f), lowered so the cover remains bright and clear */}
+              {/* Cover Gradient Overlay */}
               <div className="absolute inset-x-0 bottom-0 h-20 sm:h-24 bg-gradient-to-t from-[#0d121f] via-[#0d121f]/75 to-transparent pointer-events-none z-[2]" />
             </div>
 
-            {/* Padded Content below cover (Lyrics, Title, Progress, Controls, Volume - grouped snugly at bottom) */}
+            {/* Track Controls & Lyrics */}
             <div className={cn("flex-1 flex flex-col justify-end text-left", isModal ? "px-5 sm:px-6 pb-6 -mt-6 relative z-10 space-y-2.5 sm:space-y-3" : "px-4 pb-4 space-y-3.5")}>
-              {/* 2. 3-Line Dynamic Synchronized Lyrics */}
+              {/* Synchronized Lyrics */}
               <div className="py-1 px-0.5 text-left select-none overflow-hidden h-[86px] min-h-[86px] max-h-[86px] shrink-0 flex flex-col justify-between">
                 {/* Previous Line */}
                 <div
@@ -815,7 +815,7 @@ export function MusicPlayer() {
             </div>
           </div>
 
-          {/* 2. Tab Lirik (Lyrics) - Height locked exactly to currentTargetHeight on desktop, full height in modal */}
+          {/* Full Lyrics Tab */}
           <div
             style={isModal ? undefined : { height: `${currentTargetHeight}px` }}
             className={cn(
@@ -874,7 +874,7 @@ export function MusicPlayer() {
               </div>
             </div>
 
-            {/* Dynamic Scrollable Full Lyrics List (Fills remaining height) */}
+            {/* Scrollable Lyrics List */}
             <div
               ref={currentLyricsRef}
               className="flex-1 min-h-0 overflow-y-auto px-1 py-3 space-y-2.5 custom-scrollbar rounded-xl bg-[#0d121f]/40 border border-gray-800/60 relative select-none text-left"
@@ -903,7 +903,7 @@ export function MusicPlayer() {
               })}
             </div>
 
-            {/* Back to Player Button */}
+            {/* Back to Player */}
             <button
               type="button"
               onClick={() => setActiveTab("player")}
@@ -920,7 +920,7 @@ export function MusicPlayer() {
 
   return (
     <>
-      {/* Hidden Native Audio Element (stays mounted and active continuously) */}
+      {/* Hidden Audio Element */}
       <audio
         ref={audioRef}
         src={currentTrack.src}
@@ -931,7 +931,7 @@ export function MusicPlayer() {
         className="hidden"
       />
 
-      {/* 1. Desktop Mode Player: Inline in Sidebar (Hidden on Mobile < lg) */}
+      {/* Desktop Sidebar Player */}
       <motion.div
         initial={{ opacity: 0, x: -20, scale: 0.98 }}
         animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -941,7 +941,7 @@ export function MusicPlayer() {
         {renderPlayerBody(false)}
       </motion.div>
 
-      {/* 2. Mobile Mode: Floating Sticky Mini Player Bar (Spotify Style, Sticky Bottom = 0, Visible ONLY on < lg) */}
+      {/* Mobile Sticky Mini Player */}
       <motion.div
         initial={{ opacity: 0, y: 35 }}
         animate={{
@@ -989,7 +989,7 @@ export function MusicPlayer() {
             </div>
           </div>
 
-          {/* Right Controls: [Previous Track] [Play/Pause Glow Circle] [Next Track] */}
+          {/* Playback Controls */}
           <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
             {/* Previous Track */}
             <button
@@ -1005,7 +1005,7 @@ export function MusicPlayer() {
               <i className="fa-solid fa-backward-step text-base"></i>
             </button>
 
-            {/* Play / Pause Button (Transparent, aligned with Prev and Next) */}
+            {/* Play / Pause Button */}
             <button
               type="button"
               aria-label={isPlaying ? "Jeda" : "Putar"}
@@ -1039,7 +1039,7 @@ export function MusicPlayer() {
             </button>
           </div>
 
-          {/* White Audio Progress Bar (at bottom edge of mini player card) */}
+          {/* Audio Progress Bar */}
           <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-white/20 overflow-hidden rounded-b-2xl">
             <div
               className="h-full bg-white transition-all duration-150 rounded-b-2xl"
@@ -1049,7 +1049,7 @@ export function MusicPlayer() {
         </div>
       </motion.div>
 
-      {/* 3. Mobile Fullscreen Audio Player Modal (Rendered via Portal to document.body with z-[100]) */}
+      {/* Mobile Fullscreen Modal */}
       {hasMounted && typeof document !== "undefined" &&
         createPortal(
           <AnimatePresence>
@@ -1063,7 +1063,7 @@ export function MusicPlayer() {
                 className="fixed inset-0 z-[190] lg:hidden bg-[#0d121f] h-[100dvh] h-full w-full flex flex-col text-left overflow-hidden select-none"
                 style={{ touchAction: "none" }}
               >
-                {/* Top Unified Floating Header Bar */}
+                {/* Floating Header */}
                 <div className="absolute top-0 inset-x-0 w-full px-4 pt-3.5 pb-2.5 flex items-center justify-between z-30 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
                   {/* Collapse Button */}
                   <button
@@ -1075,7 +1075,7 @@ export function MusicPlayer() {
                     <i className="fa-solid fa-chevron-down text-sm"></i>
                   </button>
 
-                  {/* Center Tab Switcher: [Lagu] [Lirik] */}
+                  {/* Tab Switcher */}
                   <div className="flex items-center bg-black/50 backdrop-blur-md p-1 rounded-xl border border-white/10 text-xs shadow-lg">
                     <button
                       type="button"
@@ -1105,11 +1105,11 @@ export function MusicPlayer() {
                     </button>
                   </div>
 
-                  {/* Right Spacer (Balances collapse button for center tab alignment) */}
+                  {/* Right Spacer */}
                   <div className="w-9 h-9" aria-hidden="true" />
                 </div>
 
-                {/* Full Height Content Body - Edge-to-Edge container for seamless hero cover */}
+                {/* Modal Content Body */}
                 <div
                   className="flex-1 w-full min-h-0 overflow-y-auto flex flex-col justify-between custom-scrollbar relative"
                   style={{ touchAction: "pan-y" }}

@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { apiClient } from "@/lib/api";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
+import { Button } from "@/components/ui/button";
 import { VideoPlayer } from "@/components/player/VideoPlayer";
 
 export function PresetFinderForm() {
@@ -168,31 +170,35 @@ export function PresetFinderForm() {
           </AnimatePresence>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-            {/* Tombol Contoh Link */}
+            {/* Example Link Buttons */}
             <div className="grid grid-cols-2 sm:flex sm:items-center gap-2">
-              <button
+              <Button
                 type="button"
+                variant="secondary"
+                size="sm"
                 onClick={() => setPresetUrl("https://www.tiktok.com/@tiktok/video/7106594312292453675")}
-                className="px-3 py-2 rounded-xl bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-white text-xs font-medium transition flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer"
+                className="text-xs font-medium space-x-1.5"
               >
                 <i className="fa-brands fa-tiktok text-xs"></i>
                 <span>Contoh TikTok</span>
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="secondary"
+                size="sm"
                 onClick={() => setPresetUrl("https://youtu.be/dQw4w9WgXcQ")}
-                className="px-3 py-2 rounded-xl bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-white text-xs font-medium transition flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer"
+                className="text-xs font-medium space-x-1.5"
               >
                 <i className="fa-brands fa-youtube text-xs text-red-400"></i>
                 <span>Contoh YouTube</span>
-              </button>
+              </Button>
             </div>
 
-            {/* Tombol Submit Scan */}
-            <button
+            {/* Submit Scan Button */}
+            <Button
               type="submit"
               disabled={presetLoading}
-              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/20 active:scale-95 cursor-pointer disabled:opacity-50"
+              className="w-full sm:w-auto h-auto px-6 py-2.5 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/20"
             >
               {presetLoading ? (
                 <>
@@ -205,13 +211,11 @@ export function PresetFinderForm() {
                   <span>Pindai &amp; Ekstrak</span>
                 </>
               )}
-            </button>
+            </Button>
           </div>
         </form>
 
-        {/* ══════════════════════════════════════════════════════════ */}
-        {/* PREVIEW VIDEO & MEDIA DOWNLOADER (EMPTY STATE / ACTIVE)   */}
-        {/* ══════════════════════════════════════════════════════════ */}
+        {/* Video Preview & Media Downloader Section */}
         <div className="pt-5 border-t border-gray-800/90 space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="space-y-0.5">
@@ -298,18 +302,20 @@ export function PresetFinderForm() {
                   </h4>
                 </div>
 
-                {/* Action Salin Link Video */}
+                {/* Copy Video Link Action */}
                 {activeVideo.videoUrl && (
                   <div className="flex items-center space-x-2 shrink-0">
-                    <button
+                    <Button
                       type="button"
+                      variant="secondary"
+                      size="sm"
                       onClick={() => handleCopyMediaLink(activeVideo.videoUrl!, "video")}
-                      className="px-2.5 py-1.5 rounded-lg bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-white text-[11px] font-medium transition flex items-center space-x-1 cursor-pointer"
+                      className="text-[11px] font-medium space-x-1"
                     >
                       <i className={cn("text-[11px]", copiedMedia === "video" ? "fa-solid fa-check text-[#00e599]" : "fa-regular fa-copy")}></i>
                       <span>{copiedMedia === "video" ? "Tersalin!" : "Salin Link"}</span>
-                    </button>
-                    <a
+                    </Button>
+                    <Link
                       href={activeVideo.videoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -317,7 +323,7 @@ export function PresetFinderForm() {
                     >
                       <i className="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                       <span>Buka Tab</span>
-                    </a>
+                    </Link>
                   </div>
                 )}
               </div>
@@ -361,9 +367,9 @@ export function PresetFinderForm() {
             </div>
           )}
 
-          {/* OPSI UNDUH: VIDEO DENGAN AUDIO VS AUDIO SAJA */}
+          {/* Download Options: Video vs Audio */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            {/* KARTU UNDUH 1: VIDEO DENGAN AUDIO (MP4) */}
+            {/* Download Option 1: Video (MP4) */}
             <div className="p-4 rounded-xl bg-[#0d121f] border border-gray-800/90 hover:border-[#00e599]/40 transition space-y-3 flex flex-col justify-between">
               <div className="space-y-1">
                 <div className="flex items-center space-x-2">
@@ -384,7 +390,7 @@ export function PresetFinderForm() {
                 </p>
               </div>
 
-              <button
+              <Button
                 type="button"
                 disabled={!activeVideo?.videoUrl || downloadingType === "video"}
                 onClick={() =>
@@ -396,9 +402,9 @@ export function PresetFinderForm() {
                   )
                 }
                 className={cn(
-                  "w-full py-2.5 px-4 rounded-xl font-bold text-xs transition flex items-center justify-center space-x-2 shadow-md active:scale-95",
+                  "w-full h-auto py-2.5 px-4 rounded-xl font-bold text-xs transition flex items-center justify-center space-x-2 shadow-md",
                   activeVideo?.videoUrl
-                    ? "bg-[#00e599] hover:bg-[#1affaa] text-gray-950 shadow-[#00e599]/15 cursor-pointer"
+                    ? "bg-[#00e599] hover:bg-[#1affaa] text-gray-950 shadow-[#00e599]/15"
                     : "bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700/50"
                 )}
               >
@@ -418,10 +424,10 @@ export function PresetFinderForm() {
                     <span>Menunggu Link Video</span>
                   </>
                 )}
-              </button>
+              </Button>
             </div>
 
-            {/* KARTU UNDUH 2: AUDIO SAJA (MP3) */}
+            {/* Download Option 2: Audio Only (MP3) */}
             <div className="p-4 rounded-xl bg-[#0d121f] border border-gray-800/90 hover:border-sky-500/40 transition space-y-3 flex flex-col justify-between">
               <div className="space-y-1">
                 <div className="flex items-center space-x-2">
@@ -442,7 +448,7 @@ export function PresetFinderForm() {
                 </p>
               </div>
 
-              <button
+              <Button
                 type="button"
                 disabled={(!activeVideo?.audioUrl && !activeVideo?.videoUrl) || downloadingType === "audio"}
                 onClick={() => {
@@ -456,9 +462,9 @@ export function PresetFinderForm() {
                   }
                 }}
                 className={cn(
-                  "w-full py-2.5 px-4 rounded-xl font-bold text-xs transition flex items-center justify-center space-x-2 shadow-md active:scale-95",
+                  "w-full h-auto py-2.5 px-4 rounded-xl font-bold text-xs transition flex items-center justify-center space-x-2 shadow-md",
                   activeVideo?.audioUrl || activeVideo?.videoUrl
-                    ? "bg-sky-500 hover:bg-sky-400 text-gray-950 shadow-sky-500/15 cursor-pointer"
+                    ? "bg-sky-500 hover:bg-sky-400 text-gray-950 shadow-sky-500/15"
                     : "bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700/50"
                 )}
               >
@@ -478,14 +484,12 @@ export function PresetFinderForm() {
                     <span>Menunggu Link Video</span>
                   </>
                 )}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
 
-        {/* ══════════════════════════════════════════════════════════ */}
-        {/* HASIL PINDAIAN LINK PRESET ALIGHT MOTION                   */}
-        {/* ══════════════════════════════════════════════════════════ */}
+        {/* Detected Preset Links */}
         <AnimatePresence>
           {presetResult && (
             <motion.div
@@ -495,7 +499,7 @@ export function PresetFinderForm() {
               transition={{ duration: 0.3 }}
               className="space-y-4 pt-5 border-t border-gray-800"
             >
-              {/* Ringkasan Presets Ditemukan */}
+              {/* Presets Summary */}
               <div className="flex items-center justify-between text-xs font-semibold text-gray-300 px-1">
                 <span className="flex items-center space-x-1.5">
                   <i className="fa-solid fa-file-code text-[#00e599]"></i>
@@ -628,10 +632,12 @@ export function PresetFinderForm() {
                         </div>
 
                         <div className="flex items-center space-x-2 shrink-0">
-                          <button
+                          <Button
                             type="button"
+                            variant="secondary"
+                            size="sm"
                             onClick={() => handleCopy(linkUrl, idx)}
-                            className="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-medium transition cursor-pointer flex items-center space-x-1 active:scale-95"
+                            className="text-xs font-medium space-x-1"
                           >
                             <i
                               className={cn(
@@ -642,9 +648,9 @@ export function PresetFinderForm() {
                               )}
                             ></i>
                             <span>{copiedIndex === idx ? "Tersalin!" : "Salin"}</span>
-                          </button>
+                          </Button>
 
-                          <a
+                          <Link
                             href={linkUrl}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -661,7 +667,7 @@ export function PresetFinderForm() {
                           >
                             <span>{buttonLabel}</span>
                             <i className="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                          </a>
+                          </Link>
                         </div>
                       </motion.div>
                     );

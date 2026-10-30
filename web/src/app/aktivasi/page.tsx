@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function AktivasiPage() {
   return (
     <div className="space-y-6 sm:space-y-8">
-      {/* Header & Breadcrumb Container (Konsisten dengan Docs space-y-4) */}
+      {/* Header & Breadcrumb */}
       <div className="space-y-4 pt-0">
         {/* Breadcrumb Navigation */}
         <Breadcrumb>

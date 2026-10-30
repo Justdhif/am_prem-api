@@ -14,9 +14,7 @@ export interface VideoPlayerProps {
   onEnded?: () => void;
 }
 
-/**
- * Helper untuk mendeteksi apakah URL adalah embed YouTube atau URL video YouTube
- */
+// Helper to detect YouTube embed or watch URL
 function getYouTubeEmbedUrl(url?: string): string | null {
   if (!url) return null;
   if (url.includes("youtube.com/embed/")) return url;
@@ -293,7 +291,7 @@ export function VideoPlayer({
         className
       )}
     >
-      {/* HTML5 Video Element (Klik layar tidak pause, hanya refresh controls) */}
+      {/* HTML5 Video Element */}
       <video
         ref={videoRef}
         key={src}
@@ -327,7 +325,7 @@ export function VideoPlayer({
         </div>
       )}
 
-      {/* Big Play Overlay Button (hanya tampil saat video dijeda) */}
+      {/* Play Overlay Button */}
       {!isPlaying && (
         <button
           type="button"

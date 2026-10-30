@@ -59,7 +59,7 @@ export function ActivationChart({
     return result;
   }, [history, todayActivations, loading]);
 
-  // Chart coordinate dimensions (enhanced height for mobile view)
+  // Chart dimensions
   const width = 500;
   const height = 200;
   const padLeft = 24;
@@ -136,7 +136,7 @@ export function ActivationChart({
         )}
       </div>
 
-      {/* Responsive SVG Chart with generous vertical space on mobile (no gepeng) */}
+      {/* Responsive SVG Chart */}
       <div className="relative w-full h-48 sm:h-56 select-none">
         <svg
           viewBox={`0 0 ${width} ${height}`}
@@ -260,7 +260,7 @@ export function ActivationChart({
                   className="transition-all duration-200"
                 />
 
-                {/* Day Labels at Bottom with plenty of clearance from curve */}
+                {/* Day Labels */}
                 <text
                   x={pt.x}
                   y={height - 10}

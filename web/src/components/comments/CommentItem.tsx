@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { CommentItem as CommentItemType } from "@/lib/api";
+import { Button } from "@/components/ui/button";
 
 interface CommentItemProps {
   comment: CommentItemType;
@@ -60,13 +61,15 @@ export function CommentItem({ comment, onReply }: CommentItemProps) {
 
         <div className="flex items-center space-x-3 mt-1.5 text-[11px] text-gray-500">
           <span>{comment.formattedTime || "Baru saja"}</span>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="sm"
             onClick={() => onReply(comment.id, comment.name || "Anonim")}
-            className="font-bold text-gray-400 hover:text-white transition cursor-pointer"
+            className="h-auto p-0 font-bold text-gray-400 hover:text-white text-[11px] hover:bg-transparent"
           >
             Balas
-          </button>
+          </Button>
         </div>
 
         {/* Nested Replies */}

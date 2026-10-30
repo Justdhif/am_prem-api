@@ -73,22 +73,26 @@ export function PresetFinderForm() {
 
           <div className="flex items-center justify-between gap-2 pt-1 flex-wrap">
             <div className="flex items-center space-x-1.5">
-              <button
+              <Button
                 type="button"
+                variant="secondary"
+                size="sm"
                 onClick={handleFillTikTokSample}
-                className="px-2.5 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition active:scale-95 cursor-pointer flex items-center space-x-1"
+                className="text-xs font-medium space-x-1"
               >
                 <i className="fa-brands fa-tiktok text-[11px]"></i>
                 <span>Contoh TikTok</span>
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="secondary"
+                size="sm"
                 onClick={handleFillYouTubeSample}
-                className="px-2.5 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition active:scale-95 cursor-pointer flex items-center space-x-1"
+                className="text-xs font-medium space-x-1"
               >
                 <i className="fa-brands fa-youtube text-[11px] text-red-400"></i>
                 <span>Contoh YouTube</span>
-              </button>
+              </Button>
             </div>
             <Button type="submit" disabled={loading} size="sm">
               {loading ? (

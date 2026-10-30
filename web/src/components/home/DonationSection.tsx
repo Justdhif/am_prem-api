@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
+import { Button } from "@/components/ui/button";
 
 export function DonationSection() {
   const [isOpen, setIsOpen] = useState(false);
@@ -54,7 +55,7 @@ export function DonationSection() {
 
   return (
     <>
-      {/* ── BANNER MODERN DONASI (PALING BAWAH) ── */}
+      {/* Donation Banner */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -103,7 +104,7 @@ export function DonationSection() {
         </div>
       </motion.div>
 
-      {/* ── BOTTOM SHEET MODAL (SLIDE DARI BAWAH) ── */}
+      {/* Donation Bottom Sheet Modal */}
       {hasMounted &&
         createPortal(
           <AnimatePresence>
@@ -140,17 +141,19 @@ export function DonationSection() {
                       <i className="fa-solid fa-qrcode text-xs"></i>
                       <span>Justdhif Store</span>
                     </span>
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon"
                       onClick={() => setIsOpen(false)}
-                      className="w-8 h-8 rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white flex items-center justify-center transition active:scale-90 cursor-pointer"
+                      className="w-8 h-8 rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white"
                       aria-label="Tutup"
                     >
                       <i className="fa-solid fa-xmark text-sm"></i>
-                    </button>
+                    </Button>
                   </div>
 
-                  {/* Ucapan Terimakasih */}
+                  {/* Thank You Note */}
                   <div className="space-y-1.5 px-2">
                     <h3 className="text-lg sm:text-xl font-bold text-white font-piximisa">
                       Terima Kasih Banyak! 💚
@@ -160,7 +163,7 @@ export function DonationSection() {
                     </p>
                   </div>
 
-                  {/* Gambar QRIS Resmi */}
+                  {/* Official QRIS Image */}
                   <div className="p-3 rounded-2xl bg-[#080d16] border border-gray-800/90 shadow-inner flex flex-col items-center justify-center">
                     <div className="relative w-full max-w-[270px] sm:max-w-[290px] aspect-[727/1024] rounded-xl overflow-hidden shadow-lg border border-gray-700/60 bg-white">
                       <Image
@@ -173,15 +176,15 @@ export function DonationSection() {
                     </div>
                   </div>
 
-                  {/* Button Unduh QR */}
-                  <button
+                  {/* Download QR Button */}
+                  <Button
                     type="button"
                     onClick={handleDownloadQR}
-                    className="w-full py-3 px-4 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/20 transition active:scale-95 cursor-pointer"
+                    className="w-full h-auto py-3 px-4 rounded-xl bg-[#00e599] hover:bg-[#1affaa] text-gray-950 font-bold text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-lg shadow-[#00e599]/20"
                   >
                     <i className="fa-solid fa-download text-sm"></i>
                     <span>Unduh QR Code</span>
-                  </button>
+                  </Button>
                 </motion.div>
               </div>
             )}

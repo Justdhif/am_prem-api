@@ -90,13 +90,15 @@ export function VerifyLinkForm({ initialEmail = "" }: VerifyLinkFormProps) {
           </div>
 
           <div className="flex items-center justify-between gap-2 pt-1 flex-wrap">
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="sm"
               onClick={handleFillSample}
-              className="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition active:scale-95 cursor-pointer"
+              className="text-xs font-medium"
             >
               <i className="fa-regular fa-paste mr-1 text-[11px]"></i>Isi Contoh Data
-            </button>
+            </Button>
             <Button type="submit" disabled={loading} size="sm">
               {loading ? (
                 <>

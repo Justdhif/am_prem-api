@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { EndpointCard } from "./EndpointCard";
 import { BotCommands } from "./BotCommands";
@@ -277,7 +278,7 @@ echo $result;`,
 
   return (
     <div className="space-y-8 text-left w-full">
-      {/* 1. PRO BASE URL HERO CARD */}
+      {/* Base URL Hero Card */}
       <motion.div
         id="overview"
         initial={{ opacity: 0, y: 15 }}
@@ -292,7 +293,7 @@ echo $result;`,
             </span>
           </div>
 
-          <a
+          <Link
             href={`${BASE_URL}/health`}
             target="_blank"
             rel="noopener noreferrer"
@@ -300,7 +301,7 @@ echo $result;`,
           >
             <span>Health Check: /health</span>
             <i className="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-          </a>
+          </Link>
         </div>
 
         {/* Base URL Box */}
@@ -348,7 +349,7 @@ echo $result;`,
         </div>
       </motion.div>
 
-      {/* 2. QUICK JUMP NAVIGATION PILLS */}
+      {/* Quick Jump Navigation */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -381,7 +382,7 @@ echo $result;`,
         </div>
       </motion.div>
 
-      {/* 3. ENDPOINT LIST */}
+      {/* Endpoint List */}
       <div className="space-y-6 sm:space-y-8">
         {/* Endpoint 1: Send Link */}
         <EndpointCard
@@ -675,13 +676,13 @@ echo $result;`,
         />
       </div>
 
-      {/* 4. BOT COMMANDS REFERENCE */}
+      {/* Bot Commands Reference */}
       <BotCommands />
 
-      {/* 5. FAQ & TROUBLESHOOTING */}
+      {/* FAQ Section */}
       <FaqSection />
 
-      {/* 6. SUPPORT BANNER */}
+      {/* Support Banner */}
       <WhatsAppBanner />
     </div>
   );

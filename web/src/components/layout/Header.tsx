@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { GitHubProfileModal } from "@/components/github/GitHubProfileModal";
 
 export function Header() {
@@ -31,8 +32,7 @@ export function Header() {
     item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)
   );
 
-  // Hitung posisi horizontal (X) dari link yang aktif secara presisi
-  // Pendekatan ini 100% kebal terhadap offset scroll vertikal (delta Y) sehingga animasi HANYA bergeser ke samping
+  // Calculate horizontal active nav indicator position
   useEffect(() => {
     const updateIndicator = () => {
       if (activeIndex !== -1 && itemRefs.current[activeIndex]) {
@@ -196,22 +196,26 @@ export function Header() {
 
         {/* Right: GitHub Icon & Mobile Hamburger Toggle */}
         <div className="flex items-center space-x-2 shrink-0">
-          {/* GitHub Profile Button - Opens Profile Modal */}
-          <button
+          {/* GitHub Profile Button */}
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => setIsGitHubModalOpen(true)}
-            className="p-2 text-gray-400 hover:text-[#00e599] transition active:scale-95 flex items-center justify-center rounded-lg hover:bg-white/5 cursor-pointer"
+            className="text-gray-400 hover:text-[#00e599] hover:bg-white/5 h-9 w-9"
             title="Lihat Profil GitHub @Justdhif"
             aria-label="Lihat Profil GitHub @Justdhif"
           >
             <i className="fa-brands fa-github text-xl"></i>
-          </button>
+          </Button>
 
-          {/* Mobile Hamburger Button */}
-          <button
+          {/* Mobile Menu Toggle Button */}
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition active:scale-95 cursor-pointer flex items-center justify-center md:hidden"
+            className="text-gray-300 hover:text-white hover:bg-white/5 md:hidden h-9 w-9"
             aria-label={isMobileMenuOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
           >
             <i
@@ -220,7 +224,7 @@ export function Header() {
                 isMobileMenuOpen ? "fa-solid fa-xmark text-[#00e599]" : "fa-solid fa-bars"
               )}
             />
-          </button>
+          </Button>
         </div>
       </div>
     </header>
@@ -290,7 +294,7 @@ export function Header() {
 
               {/* WhatsApp Help Shortcut in Mobile Menu */}
               <div className="pt-2 mt-2 border-t border-gray-800/80">
-                <a
+                <Link
                   href="https://wa.me/447762422507?text=Halo%20Admin%2C%20saya%20butuh%20bantuan%20terkait%20layanan%20Alight%20Motion%20Premium"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -306,7 +310,7 @@ export function Header() {
                     </div>
                   </div>
                   <i className="fa-solid fa-arrow-up-right-from-square text-[10px] text-emerald-400"></i>
-                </a>
+                </Link>
               </div>
             </motion.div>
           </div>

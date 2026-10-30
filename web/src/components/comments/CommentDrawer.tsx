@@ -7,6 +7,7 @@ import { CommentItem } from "./CommentItem";
 import { CommentInput } from "./CommentInput";
 import { LogoLoader } from "./LogoLoader";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export function CommentDrawer() {
   const [isOpen, setIsOpen] = useState(false);
@@ -117,7 +118,7 @@ export function CommentDrawer() {
 
   return (
     <>
-      {/* Floating Action Button (FAB) Bottom Right - Dynamically shifts down when mini player hides on scroll */}
+      {/* Floating Action Button (FAB) */}
       <div
         className={cn(
           "fixed right-4 sm:right-6 z-[135] transition-all duration-500 ease-in-out",
@@ -187,18 +188,20 @@ export function CommentDrawer() {
                     <p className="text-[11px] text-gray-400">Diskusi seputar Alight Motion Pro</p>
                   </div>
                 </div>
-                <button
+                <Button
                   id="btnCloseComments"
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   aria-label="Tutup Komentar"
                   onClick={() => setIsOpen(false)}
-                  className="w-8 h-8 rounded-lg bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-gray-200 transition flex items-center justify-center cursor-pointer"
+                  className="w-8 h-8 rounded-lg bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-gray-200"
                 >
                   <i className="fa-solid fa-xmark text-sm"></i>
-                </button>
+                </Button>
               </div>
 
-              {/* Comment List Container (Scrollable independently) */}
+              {/* Comment List */}
               <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3.5 custom-scrollbar relative overscroll-contain">
                 {loading ? (
                   <div className="py-20 flex flex-col items-center justify-center text-center">
@@ -222,29 +225,33 @@ export function CommentDrawer() {
 
               {/* Pagination Bar */}
               <div className="px-3.5 py-2 border-t border-gray-800/80 bg-[#0d121f] flex items-center justify-between text-xs text-gray-400 select-none shrink-0">
-                <button
+                <Button
                   type="button"
+                  variant="secondary"
+                  size="sm"
                   disabled={page <= 1 || loading}
                   onClick={() => loadComments(page - 1)}
-                  className="px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-30 disabled:pointer-events-none text-gray-300 text-[11px] font-semibold transition flex items-center space-x-1 cursor-pointer active:scale-95"
+                  className="h-7 px-2.5 py-1 text-[11px] font-semibold space-x-1"
                 >
                   <i className="fa-solid fa-chevron-left text-[10px]"></i>
                   <span>Sebelumnya</span>
-                </button>
+                </Button>
 
                 <span className="font-medium text-gray-400 text-[11px] font-mono">
                   Hal {page} dari {totalPages}
                 </span>
 
-                <button
+                <Button
                   type="button"
+                  variant="secondary"
+                  size="sm"
                   disabled={page >= totalPages || loading}
                   onClick={() => loadComments(page + 1)}
-                  className="px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-30 disabled:pointer-events-none text-gray-300 text-[11px] font-semibold transition flex items-center space-x-1 cursor-pointer active:scale-95"
+                  className="h-7 px-2.5 py-1 text-[11px] font-semibold space-x-1"
                 >
                   <span>Selanjutnya</span>
                   <i className="fa-solid fa-chevron-right text-[10px]"></i>
-                </button>
+                </Button>
               </div>
 
               {/* Bottom Input Form */}

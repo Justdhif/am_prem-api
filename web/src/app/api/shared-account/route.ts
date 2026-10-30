@@ -6,7 +6,17 @@ export const revalidate = 0;
 export const fetchCache = "force-no-store";
 
 const DEFAULT_EMAIL = "ampremcommunity@maxxspace.com";
-const DEFAULT_PASSWORD = "AmPremSecretPassword2026!";
+
+// Permanent Mail.tm JWT token for ampremcommunity@maxxspace.com (never expires, no exp field)
+const STATIC_TOKEN =
+  process.env.SHARED_MAIL_TOKEN ||
+  "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3OTMzNDY4NjAsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJhZGRyZXNzIjoiYW1wcmVtY29tbXVuaXR5QG1heHhzcGFjZS5jb20iLCJpZCI6IjZhZTQzZjhkNmUzMmExNmRmYjAxNDU5MiIsIm1lcmN1cmUiOnsic3Vic2NyaWJlIjpbIi9hY2NvdW50cy82YWU0M2Y4ZDZlMzJhMTZkZmIwMTQ1OTIiXX19.1JrtjMk2B13e1enfF1iW6WcVyc4LLPLBJHW5KdwYVU0o6TFvH5j6GFCbApL6mqYLLR94YRRIYwJoNFkcEdYvvg";
+
+const MAIL_TM_HEADERS = {
+  Accept: "application/json, text/plain, */*",
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+};
 
 interface MessageMember {
   id: string;
@@ -19,7 +29,13 @@ interface MessageMember {
 function extractLoginLink(htmlContent: string, textContent: string): string | null {
   // 1. Prioritaskan tautan dalam tag <a href="..."> dari HTML
   const hrefMatch = htmlContent.match(/href=['"](https?:\/\/[^'"]+)['"]/i);
-  if (hrefMatch && (hrefMatch[1].includes("firebaseapp.com") || hrefMatch[1].includes("alightcreative.com"))) {
+  if (
+    hrefMatch &&
+    (hrefMatch[1].includes("firebaseapp.com") ||
+      hrefMatch[1].includes("alightcreative.com") ||
+      hrefMatch[1].includes("auth_action") ||
+      hrefMatch[1].includes("auth/action"))
+  ) {
     return hrefMatch[1].replace(/&amp;/g, "&");
   }
 
@@ -35,80 +51,27 @@ function extractLoginLink(htmlContent: string, textContent: string): string | nu
   return null;
 }
 
-const MAIL_TM_HEADERS = {
-  "Content-Type": "application/json",
-  Accept: "application/json, text/plain, */*",
-  Origin: "https://mail.tm",
-  Referer: "https://mail.tm/",
-  "User-Agent":
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-};
-
-async function getMailTmToken(email: string, pass: string): Promise<{ token: string | null; debug?: string }> {
-  try {
-    const res = await fetch("https://api.mail.tm/token", {
-      method: "POST",
-      headers: MAIL_TM_HEADERS,
-      body: JSON.stringify({
-        address: email.trim(),
-        password: pass.trim(),
-      }),
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      const errText = await res.text().catch(() => "");
-      return { token: null, debug: `HTTP ${res.status}: ${errText}` };
-    }
-
-    const data = await res.json();
-    return { token: data.token || null, debug: "OK" };
-  } catch (err: any) {
-    return { token: null, debug: `Exception: ${err?.message || err}` };
-  }
-}
-
 export async function GET() {
   const emailToUse = (process.env.SHARED_FREE_EMAIL || DEFAULT_EMAIL).trim();
-  const passToUse = (process.env.SHARED_FREE_PASSWORD || DEFAULT_PASSWORD).trim();
-
-  // Dapatkan token (dengan retry ke DEFAULT_PASSWORD jika env bermasalah)
-  let authResult = await getMailTmToken(emailToUse, passToUse);
-  if (!authResult.token && (emailToUse !== DEFAULT_EMAIL || passToUse !== DEFAULT_PASSWORD)) {
-    authResult = await getMailTmToken(DEFAULT_EMAIL, DEFAULT_PASSWORD);
-  }
-
-  if (!authResult.token) {
-    return NextResponse.json(
-      {
-        success: false,
-        version: "2026-10-30-v2",
-        email: emailToUse,
-        error: `Gagal mengautentikasi ke mailbox publik (${authResult.debug})`,
-        messages: [],
-      },
-      { status: 502 }
-    );
-  }
-
-  const token = authResult.token;
 
   try {
-    // Ambil daftar pesan terbaru
+    // Ambil daftar pesan terbaru langsung menggunakan token
     const messagesRes = await fetch("https://api.mail.tm/messages?page=1", {
       headers: {
         ...MAIL_TM_HEADERS,
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${STATIC_TOKEN}`,
       },
       cache: "no-store",
     });
 
     if (!messagesRes.ok) {
+      const errText = await messagesRes.text().catch(() => "");
       return NextResponse.json(
         {
           success: false,
+          version: "2026-10-30-v3-token",
           email: emailToUse,
-          error: "Gagal mengambil pesan dari mailbox",
+          error: `Gagal mengambil pesan dari mailbox: HTTP ${messagesRes.status} ${errText}`,
           messages: [],
         },
         { status: 502 }
@@ -125,7 +88,7 @@ export async function GET() {
           const detailRes = await fetch(`https://api.mail.tm/messages/${msg.id}`, {
             headers: {
               ...MAIL_TM_HEADERS,
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${STATIC_TOKEN}`,
             },
             cache: "no-store",
           });
@@ -159,6 +122,7 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
+      version: "2026-10-30-v3-token",
       email: emailToUse,
       total: messagesData["hydra:totalItems"] || 0,
       messages: validMessages,
@@ -167,6 +131,7 @@ export async function GET() {
     return NextResponse.json(
       {
         success: false,
+        version: "2026-10-30-v3-token",
         email: emailToUse,
         error: error.message || "Terjadi kesalahan internal server",
         messages: [],

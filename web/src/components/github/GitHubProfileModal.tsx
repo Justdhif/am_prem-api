@@ -213,7 +213,7 @@ export function GitHubProfileModal({ isOpen, onClose }: GitHubProfileModalProps)
           </div>
 
           {/* 3-Column Stats (Repos | Pengikut | Mengikuti) without card styling */}
-          <div className="grid grid-cols-3 border-y border-gray-800/80 py-3 sm:py-3.5 text-center divide-x divide-gray-800/80">
+          <div className="grid grid-cols-3 py-1.5 sm:py-2 text-center divide-x divide-gray-800/80">
             <div className="flex flex-col items-center justify-center space-y-1 px-1">
               <span className="text-[10px] font-medium text-gray-400 flex items-center gap-1">
                 <i className="fa-solid fa-book-bookmark text-[10px] text-amber-400"></i>

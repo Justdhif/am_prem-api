@@ -14,7 +14,7 @@ interface SharedEmailMessage {
 }
 
 export function SharedAccountSection() {
-  const [email, setEmail] = useState("ampremcommunity@maxxspace.com");
+  const [email, setEmail] = useState("ampremcommunity@sharklasers.com");
   const [messages, setMessages] = useState<SharedEmailMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
@@ -26,7 +26,7 @@ export function SharedAccountSection() {
       const res = await fetch("/api/shared-account", { cache: "no-store" });
       const data = await res.json();
       if (data.success) {
-        setEmail(data.email || "ampremcommunity@maxxspace.com");
+        setEmail(data.email || "ampremcommunity@sharklasers.com");
         setMessages(data.messages || []);
         setLastUpdated(
           new Date().toLocaleTimeString("id-ID", {

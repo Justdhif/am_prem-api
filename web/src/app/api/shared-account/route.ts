@@ -1,34 +1,17 @@
 import { NextResponse } from "next/server";
 
-export const runtime = "edge";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export const fetchCache = "force-no-store";
 
-const DEFAULT_EMAIL = "ampremcommunity@maxxspace.com";
+const SHARED_EMAIL = process.env.SHARED_FREE_EMAIL || "ampremcommunity@sharklasers.com";
+const GUERRILLA_USER = process.env.SHARED_GUERRILLA_USER || "ampremcommunity";
 
-// Permanent Mail.tm JWT token for ampremcommunity@maxxspace.com (never expires, no exp field)
-const STATIC_TOKEN =
-  process.env.SHARED_MAIL_TOKEN ||
-  "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3OTMzNDY4NjAsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJhZGRyZXNzIjoiYW1wcmVtY29tbXVuaXR5QG1heHhzcGFjZS5jb20iLCJpZCI6IjZhZTQzZjhkNmUzMmExNmRmYjAxNDU5MiIsIm1lcmN1cmUiOnsic3Vic2NyaWJlIjpbIi9hY2NvdW50cy82YWU0M2Y4ZDZlMzJhMTZkZmIwMTQ1OTIiXX19.1JrtjMk2B13e1enfF1iW6WcVyc4LLPLBJHW5KdwYVU0o6TFvH5j6GFCbApL6mqYLLR94YRRIYwJoNFkcEdYvvg";
+function extractLoginLink(htmlContent?: string, textContent?: string): string | null {
+  const combined = `${textContent || ""} ${htmlContent || ""}`;
 
-const MAIL_TM_HEADERS = {
-  Accept: "application/json, text/plain, */*",
-  "User-Agent":
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-};
-
-interface MessageMember {
-  id: string;
-  from: { address: string; name: string };
-  subject: string;
-  intro: string;
-  createdAt: string;
-}
-
-function extractLoginLink(htmlContent: string, textContent: string): string | null {
   // 1. Prioritaskan tautan dalam tag <a href="..."> dari HTML
-  const hrefMatch = htmlContent.match(/href=['"](https?:\/\/[^'"]+)['"]/i);
+  const hrefMatch = combined.match(/href=['"](https?:\/\/[^'"]+)['"]/i);
   if (
     hrefMatch &&
     (hrefMatch[1].includes("firebaseapp.com") ||
@@ -40,7 +23,6 @@ function extractLoginLink(htmlContent: string, textContent: string): string | nu
   }
 
   // 2. Fallback regex untuk URL Alight Creative / Firebase auth
-  const combined = `${textContent} ${htmlContent}`;
   const generalMatch = combined.match(
     /(https?:\/\/(?:alight-creative\.firebaseapp\.com|alightcreative\.com)[^\s"'<>]+)/i
   );
@@ -52,64 +34,82 @@ function extractLoginLink(htmlContent: string, textContent: string): string | nu
 }
 
 export async function GET() {
-  const emailToUse = (process.env.SHARED_FREE_EMAIL || DEFAULT_EMAIL).trim();
-
   try {
-    // Ambil daftar pesan terbaru langsung menggunakan token
-    const messagesRes = await fetch("https://api.mail.tm/messages?page=1", {
-      headers: {
-        ...MAIL_TM_HEADERS,
-        Authorization: `Bearer ${STATIC_TOKEN}`,
-      },
+    // 1. Dapatkan sesi baru dari Guerrilla Mail (dapat diakses dari semua IP tanpa blokir)
+    const initRes = await fetch("https://api.guerrillamail.com/ajax.php?f=get_email_address", {
       cache: "no-store",
     });
 
-    if (!messagesRes.ok) {
-      const errText = await messagesRes.text().catch(() => "");
+    if (!initRes.ok) {
       return NextResponse.json(
         {
           success: false,
-          version: "2026-10-30-v3-token",
-          email: emailToUse,
-          error: `Gagal mengambil pesan dari mailbox: HTTP ${messagesRes.status} ${errText}`,
+          email: SHARED_EMAIL,
+          error: "Gagal menginisialisasi sesi mailbox publik",
           messages: [],
         },
         { status: 502 }
       );
     }
 
-    const messagesData = await messagesRes.json();
-    const members: MessageMember[] = messagesData["hydra:member"] || [];
+    const initData = await initRes.json();
+    const sid = initData.sid_token;
 
-    // Ambil detail maksimal 6 pesan teratas
+    // 2. Set username mailbox ke ampremcommunity
+    await fetch(
+      `https://api.guerrillamail.com/ajax.php?f=set_email_user&email_user=${encodeURIComponent(
+        GUERRILLA_USER
+      )}&lang=en&sid_token=${sid}`,
+      { cache: "no-store" }
+    );
+
+    // 3. Periksa daftar email masuk
+    const checkRes = await fetch(
+      `https://api.guerrillamail.com/ajax.php?f=check_email&seq=0&sid_token=${sid}`,
+      { cache: "no-store" }
+    );
+
+    if (!checkRes.ok) {
+      return NextResponse.json(
+        {
+          success: false,
+          email: SHARED_EMAIL,
+          error: "Gagal mengambil daftar email masuk",
+          messages: [],
+        },
+        { status: 502 }
+      );
+    }
+
+    const checkData = await checkRes.json();
+    const rawList = Array.isArray(checkData.list) ? checkData.list : [];
+
+    // Filter pesan sambutan default Guerrilla Mail
+    const actualMessages = rawList.filter(
+      (m: any) =>
+        m.mail_from !== "no-reply@guerrillamail.com" &&
+        !String(m.mail_subject || "").toLowerCase().includes("welcome to guerrilla mail")
+    );
+
+    // 4. Ambil detail konten tiap pesan untuk ekstrak magic login link
     const detailedMessages = await Promise.all(
-      members.slice(0, 6).map(async (msg) => {
+      actualMessages.slice(0, 5).map(async (m: any) => {
         try {
-          const detailRes = await fetch(`https://api.mail.tm/messages/${msg.id}`, {
-            headers: {
-              ...MAIL_TM_HEADERS,
-              Authorization: `Bearer ${STATIC_TOKEN}`,
-            },
-            cache: "no-store",
-          });
+          const mailRes = await fetch(
+            `https://api.guerrillamail.com/ajax.php?f=fetch_email&email_id=${m.mail_id}&sid_token=${sid}`,
+            { cache: "no-store" }
+          );
 
-          if (!detailRes.ok) return null;
-          const detail = await detailRes.json();
+          if (!mailRes.ok) return null;
+          const mailData = await mailRes.json();
 
-          const rawText = detail.text || "";
-          const rawHtml = Array.isArray(detail.html)
-            ? detail.html.join(" ")
-            : typeof detail.html === "string"
-            ? detail.html
-            : "";
-
-          const loginLink = extractLoginLink(rawHtml, rawText);
+          const loginLink = extractLoginLink(mailData.mail_body, mailData.mail_excerpt);
 
           return {
-            id: msg.id,
-            from: msg.from.address || msg.from.name || "Alight Creative",
-            subject: msg.subject,
-            createdAt: msg.createdAt,
+            id: String(m.mail_id),
+            from: m.mail_from || "Alight Creative",
+            subject: m.mail_subject || "Tautan Masuk Alight Motion",
+            createdAt: new Date(Number(m.mail_timestamp) * 1000).toISOString(),
             loginLink,
           };
         } catch {
@@ -122,17 +122,15 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
-      version: "2026-10-30-v3-token",
-      email: emailToUse,
-      total: messagesData["hydra:totalItems"] || 0,
+      email: SHARED_EMAIL,
+      total: validMessages.length,
       messages: validMessages,
     });
   } catch (error: any) {
     return NextResponse.json(
       {
         success: false,
-        version: "2026-10-30-v3-token",
-        email: emailToUse,
+        email: SHARED_EMAIL,
         error: error.message || "Terjadi kesalahan internal server",
         messages: [],
       },

@@ -2,21 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { apiClient, DailyStatItem } from "@/lib/api";
-import { ActivationChart } from "./ActivationChart";
-import { Card } from "@/components/ui/card";
+import { apiClient } from "@/lib/api";
 
 export function HeroStats() {
   const [stats, setStats] = useState<{
     total: number;
     today: number;
     loading: boolean;
-    history: DailyStatItem[];
   }>({
     total: 0,
     today: 0,
     loading: true,
-    history: [],
   });
 
   useEffect(() => {
@@ -30,7 +26,6 @@ export function HeroStats() {
             total: data.totalActivations ?? 0,
             today: data.todayActivations ?? 0,
             loading: false,
-            history: data.history || [],
           });
         }
       } catch (e) {
@@ -91,16 +86,6 @@ export function HeroStats() {
           </div>
         </div>
       </div>
-
-      {/* Activation Trend Chart */}
-      <Card className="p-4 sm:p-5 bg-[#121826] border border-gray-800/90 rounded-2xl shadow-xl overflow-hidden relative">
-        <ActivationChart
-          totalActivations={stats.total}
-          todayActivations={stats.today}
-          history={stats.history}
-          loading={stats.loading}
-        />
-      </Card>
     </motion.div>
   );
 }

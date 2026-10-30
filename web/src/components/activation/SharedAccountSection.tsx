@@ -45,8 +45,8 @@ export function SharedAccountSection() {
 
   useEffect(() => {
     fetchInbox();
-    // Auto-refresh setiap 8 detik agar tautan login yang baru masuk langsung muncul
-    const interval = setInterval(fetchInbox, 8000);
+    // Auto-refresh setiap 5 detik agar tautan login yang baru masuk langsung muncul
+    const interval = setInterval(fetchInbox, 5000);
     return () => clearInterval(interval);
   }, [fetchInbox]);
 

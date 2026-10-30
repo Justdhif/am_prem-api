@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 
-const SHARED_EMAIL = process.env.SHARED_FREE_EMAIL || "ampremcommunity@maxxspace.com";
-const SHARED_PASSWORD = process.env.SHARED_FREE_PASSWORD || "AmPremSecretPassword2026!";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+
+const DEFAULT_EMAIL = "ampremcommunity@maxxspace.com";
+const DEFAULT_PASSWORD = "AmPremSecretPassword2026!";
 
 interface MessageMember {
   id: string;
@@ -11,36 +15,84 @@ interface MessageMember {
   createdAt: string;
 }
 
-export async function GET() {
+function extractLoginLink(htmlContent: string, textContent: string): string | null {
+  // 1. Prioritaskan tautan dalam tag <a href="..."> dari HTML
+  const hrefMatch = htmlContent.match(/href=['"](https?:\/\/[^'"]+)['"]/i);
+  if (hrefMatch && (hrefMatch[1].includes("firebaseapp.com") || hrefMatch[1].includes("alightcreative.com"))) {
+    return hrefMatch[1].replace(/&amp;/g, "&");
+  }
+
+  // 2. Fallback regex untuk URL Alight Creative / Firebase auth
+  const combined = `${textContent} ${htmlContent}`;
+  const generalMatch = combined.match(
+    /(https?:\/\/(?:alight-creative\.firebaseapp\.com|alightcreative\.com)[^\s"'<>]+)/i
+  );
+  if (generalMatch) {
+    return generalMatch[1].replace(/&amp;/g, "&");
+  }
+
+  return null;
+}
+
+async function getMailTmToken(email: string, pass: string): Promise<string | null> {
   try {
-    // 1. Dapatkan token auth dari mail.tm
-    const tokenRes = await fetch("https://api.mail.tm/token", {
+    const res = await fetch("https://api.mail.tm/token", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      },
       body: JSON.stringify({
-        address: SHARED_EMAIL,
-        password: SHARED_PASSWORD,
+        address: email.trim(),
+        password: pass.trim(),
       }),
       cache: "no-store",
     });
 
-    if (!tokenRes.ok) {
-      return NextResponse.json(
-        {
-          success: false,
-          email: SHARED_EMAIL,
-          error: "Gagal mengautentikasi ke mailbox publik",
-          messages: [],
-        },
-        { status: 502 }
-      );
+    if (!res.ok) {
+      return null;
     }
 
-    const { token } = await tokenRes.json();
+    const data = await res.json();
+    return data.token || null;
+  } catch {
+    return null;
+  }
+}
 
-    // 2. Ambil daftar pesan terbaru
+export async function GET() {
+  const emailToUse = (process.env.SHARED_FREE_EMAIL || DEFAULT_EMAIL).trim();
+  const passToUse = (process.env.SHARED_FREE_PASSWORD || DEFAULT_PASSWORD).trim();
+
+  // Dapatkan token (dengan retry ke DEFAULT_PASSWORD jika env bermasalah)
+  let token = await getMailTmToken(emailToUse, passToUse);
+  if (!token && (emailToUse !== DEFAULT_EMAIL || passToUse !== DEFAULT_PASSWORD)) {
+    token = await getMailTmToken(DEFAULT_EMAIL, DEFAULT_PASSWORD);
+  }
+
+  if (!token) {
+    return NextResponse.json(
+      {
+        success: false,
+        email: emailToUse,
+        error: "Gagal mengautentikasi ke mailbox publik",
+        messages: [],
+      },
+      { status: 502 }
+    );
+  }
+
+  try {
+    // Ambil daftar pesan terbaru
     const messagesRes = await fetch("https://api.mail.tm/messages?page=1", {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      },
       cache: "no-store",
     });
 
@@ -48,7 +100,7 @@ export async function GET() {
       return NextResponse.json(
         {
           success: false,
-          email: SHARED_EMAIL,
+          email: emailToUse,
           error: "Gagal mengambil pesan dari mailbox",
           messages: [],
         },
@@ -59,32 +111,38 @@ export async function GET() {
     const messagesData = await messagesRes.json();
     const members: MessageMember[] = messagesData["hydra:member"] || [];
 
-    // 3. Ambil detail untuk maksimal 5 pesan teratas untuk mengekstrak login link Alight Motion
+    // Ambil detail maksimal 6 pesan teratas
     const detailedMessages = await Promise.all(
-      members.slice(0, 5).map(async (msg) => {
+      members.slice(0, 6).map(async (msg) => {
         try {
           const detailRes = await fetch(`https://api.mail.tm/messages/${msg.id}`, {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+              "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            },
             cache: "no-store",
           });
+
           if (!detailRes.ok) return null;
           const detail = await detailRes.json();
 
           const rawText = detail.text || "";
-          const rawHtml = Array.isArray(detail.html) ? detail.html.join(" ") : detail.html || "";
-          const content = `${rawText} ${rawHtml}`;
+          const rawHtml = Array.isArray(detail.html)
+            ? detail.html.join(" ")
+            : typeof detail.html === "string"
+            ? detail.html
+            : "";
 
-          // Ekstrak tautan login / verifikasi Alight Motion
-          // Format umum: https://alightcreative.com/__/auth/action?... atau link Firebase
-          const linkRegex = /(https?:\/\/[^\s"'>]+(?:alightcreative\.com|\.firebaseapp\.com|\/auth\/action)[^\s"'>]+)/i;
-          const match = content.match(linkRegex);
+          const loginLink = extractLoginLink(rawHtml, rawText);
 
           return {
             id: msg.id,
-            from: msg.from.address || msg.from.name || "Alight Motion",
+            from: msg.from.address || msg.from.name || "Alight Creative",
             subject: msg.subject,
             createdAt: msg.createdAt,
-            loginLink: match ? match[1].replace(/&amp;/g, "&") : null,
+            loginLink,
           };
         } catch {
           return null;
@@ -96,7 +154,7 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
-      email: SHARED_EMAIL,
+      email: emailToUse,
       total: messagesData["hydra:totalItems"] || 0,
       messages: validMessages,
     });
@@ -104,7 +162,7 @@ export async function GET() {
     return NextResponse.json(
       {
         success: false,
-        email: SHARED_EMAIL,
+        email: emailToUse,
         error: error.message || "Terjadi kesalahan internal server",
         messages: [],
       },

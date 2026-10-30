@@ -63,11 +63,7 @@ export function SharedAccountSection() {
       <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Header Info */}
-      <div className="space-y-2 relative z-10">
-        <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#00e599]/15 text-[#00e599] border border-[#00e599]/30 text-xs font-bold">
-          <i className="fa-solid fa-crown text-[11px]"></i>
-          <span>Akun Publik Bersama Gratis</span>
-        </div>
+      <div className="space-y-1.5 relative z-10">
         <h2 className="text-lg sm:text-xl font-black text-white font-piximisa tracking-wide flex items-center space-x-2">
           <span>Login Akun Premium Alight Motion Siap Pakai</span>
         </h2>
@@ -128,14 +124,18 @@ export function SharedAccountSection() {
 
         <div className="space-y-2.5">
           {messages.length === 0 ? (
-            <div className="p-6 rounded-2xl bg-[#0a0e17] border border-gray-800/80 text-center space-y-2">
-              <i className="fa-regular fa-envelope-open text-2xl text-gray-500 block"></i>
-              <p className="text-xs text-gray-400">
-                Belum ada permintaan login baru. Silakan kirim tautan masuk dari Alight Motion di HP Anda ke email di atas!
-              </p>
-              <p className="text-[11px] text-gray-500">
-                Pesan masuk akan otomatis muncul di sini dalam beberapa detik.
-              </p>
+            <div className="py-7 px-5 rounded-2xl bg-[#0a0e17] border border-gray-800/80 text-center flex flex-col items-center justify-center space-y-3">
+              <div className="w-11 h-11 rounded-2xl bg-[#121826] border border-gray-800 flex items-center justify-center text-gray-400">
+                <i className="fa-regular fa-envelope-open text-lg"></i>
+              </div>
+              <div className="space-y-1 max-w-md">
+                <p className="text-xs font-semibold text-gray-300">
+                  Belum ada permintaan login masuk
+                </p>
+                <p className="text-[11px] text-gray-500 leading-relaxed">
+                  Masukkan email di atas pada aplikasi Alight Motion di HP Anda lalu kirim link masuk. Tautan login akan otomatis muncul di sini.
+                </p>
+              </div>
             </div>
           ) : (
             <AnimatePresence>

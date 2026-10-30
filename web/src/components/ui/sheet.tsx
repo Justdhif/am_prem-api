@@ -114,7 +114,7 @@ export function SheetClose({
 }
 
 const sheetVariants = cva(
-  "fixed z-[180] flex flex-col bg-[#090d16] shadow-2xl transition-all",
+  "fixed z-[310] flex flex-col bg-[#090d16] shadow-2xl transition-all",
   {
     variants: {
       side: {
@@ -203,7 +203,7 @@ export const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(
                 setOpen(false);
                 onClose?.();
               }}
-              className="fixed inset-0 bg-black/65 backdrop-blur-sm z-[180] touch-none"
+              className="fixed inset-0 bg-black/65 backdrop-blur-sm z-[300] touch-none"
             />
 
             {/* Sheet Panel */}

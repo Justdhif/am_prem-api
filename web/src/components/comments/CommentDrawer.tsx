@@ -135,7 +135,7 @@ export function CommentDrawer() {
         id="commentDrawer"
         side="right"
         aria-label="Panel Komentar Komunitas"
-        className="p-0 border-l border-gray-800 shadow-2xl z-[180] flex flex-col w-full sm:w-[420px] max-w-full bg-[#090d16]"
+        className="p-0 border-l border-gray-800 shadow-2xl z-[310] flex flex-col w-full sm:w-[420px] max-w-full bg-[#090d16]"
       >
         {/* Header */}
         <SheetHeader className="px-5 py-3.5 border-b border-gray-800 flex items-center justify-between bg-[#0d121f] shrink-0">
